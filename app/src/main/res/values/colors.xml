@@ -4,4 +4,9 @@
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorPrimaryLight">#BBDEFB</color>
     <color name="colorAccent">#EB6D07</color>
+
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="dividerColor">#e5e5e5</color>
+    <color name="appRipple">#99FFFFFF</color>
 </resources>
