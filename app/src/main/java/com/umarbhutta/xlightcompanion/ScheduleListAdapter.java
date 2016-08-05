@@ -24,7 +24,7 @@ public class ScheduleListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return Common.scheduleTimes.length;
+        return Common.MAX_SCHEDULES;
     }
 
     private class ScheduleListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
