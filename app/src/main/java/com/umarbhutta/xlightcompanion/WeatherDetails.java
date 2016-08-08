@@ -5,7 +5,8 @@ package com.umarbhutta.xlightcompanion;
  */
 public class WeatherDetails {
     private String mIcon;
-    private double mTemp;
+    private double mTempF;
+    private int mTempC;
 
     public String getIcon() {
         return mIcon;
@@ -15,11 +16,13 @@ public class WeatherDetails {
         this.mIcon = mIcon;
     }
 
-    public double getTemp() {
-        return mTemp;
+    public int getTemp() {
+        return mTempC;
     }
 
     public void setTemp(double mTemp) {
-        this.mTemp = mTemp;
+        this.mTempF = mTemp;
+
+        mTempC = (int) ((mTempF - 32.0) * (5.0/9.0));
     }
 }

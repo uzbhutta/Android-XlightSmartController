@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
-    TextView outsideTemp;
+    TextView outsideTemp, degreeSymbol;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     WeatherDetails mWeatherDetails;
@@ -43,6 +43,7 @@ public class GlanceFragment extends Fragment {
 
         fab = (com.github.clans.fab.FloatingActionButton) view.findViewById(R.id.fab);
         outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
+        degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
 
         //setup recycler view
         RecyclerView devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
@@ -106,7 +107,8 @@ public class GlanceFragment extends Fragment {
     }
 
     private void updateDisplay() {
-        outsideTemp.setText(mWeatherDetails.getTemp() + "");
+        outsideTemp.setText(" " + mWeatherDetails.getTemp());
+        degreeSymbol.setText("\u00B0");
     }
 
     private WeatherDetails getWeatherDetails(String jsonData) throws JSONException {
