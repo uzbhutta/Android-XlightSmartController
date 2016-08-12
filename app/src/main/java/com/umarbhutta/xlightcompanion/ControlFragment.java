@@ -1,9 +1,11 @@
 package com.umarbhutta.xlightcompanion;
 
-import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +15,9 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.larswerkman.holocolorpicker.ColorPicker;
-import com.larswerkman.holocolorpicker.SVBar;
+import me.priyesh.chroma.ChromaDialog;
+import me.priyesh.chroma.ColorMode;
+import me.priyesh.chroma.ColorSelectListener;
 
 /**
  * Created by Umar Bhutta.
@@ -39,10 +42,10 @@ public class ControlFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     //send "on" message to DevPowerSwitch
-                    Common.devSoftSwitch(getContext(), 0, 0, "on");
+                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.VSTATUS_ON);
                 } else {
                     //send "off" message to DevPowerSwitch
-                    Common.devSoftSwitch(getContext(), 0, 0, "off");
+                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.VSTATUS_OFF);
                 }
             }
         });
@@ -50,31 +53,27 @@ public class ControlFragment extends Fragment {
         colorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(getContext());
-                //setting custom layout to dialog
-                dialog.setContentView(R.layout.colorpicker_dialog);
-                dialog.setTitle("Set Color");
+                new ChromaDialog.Builder()
+                        .initialColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
+                        .colorMode(ColorMode.RGB) // There's also ARGB and HSV
+                        .onColorSelected(new ColorSelectListener() {
+                            @Override
+                            public void onColorSelected(int color) {
+                                Log.e(TAG, "int: " + color);
+                                String colorHex = String.format("%06X", (0xFFFFFF & color));
+                                Log.e(TAG, "HEX: #" + colorHex);
 
-                ColorPicker picker = (ColorPicker) dialog.findViewById(R.id.picker);
-                SVBar svBar = (SVBar) dialog.findViewById(R.id.svbar);
-                picker.addSVBar(svBar);
+                                int c = (int)Long.parseLong(colorHex, 16);
+                                int r = (c >> 16) & 0xFF;
+                                int g = (c >> 8) & 0xFF;
+                                int b = (c >> 0) & 0xFF;
+                                Log.e(TAG, "RGB: " + r + "," + g + "," + b);
 
-                //To get the color
-                picker.getColor();
-                //To set the old selected color
-                picker.setOldCenterColor(picker.getColor());
-                //to turn of showing the old color
-                picker.setShowOldCenterColor(false);
 
-                //adds listener to the color picker which is implemented
-                picker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
-                    @Override
-                    public void onColorSelected(int color) {
-                        Log.e(TAG, "The color selected is: " + color);
-                    }
-                });
-
-                dialog.show();
+                            }
+                        })
+                        .create()
+                        .show(getFragmentManager(), "dialog");
             }
         });
 
