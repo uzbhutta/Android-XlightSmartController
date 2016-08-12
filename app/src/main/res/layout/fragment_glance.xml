@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:id="@+id/mainTempLL"
+        android:id="@+id/mainLightsLL"
         android:layout_height="275dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -110,7 +110,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="33dp"
-        android:layout_below="@+id/mainTempLL"
+        android:layout_below="@+id/mainLightsLL"
         android:background="@color/textDarkGrey"
         android:minHeight="?attr/actionBarSize"
         android:paddingLeft="20dp">
@@ -149,7 +149,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/mainTempLL"
+        android:layout_below="@+id/mainLightsLL"
         android:layout_marginRight="20dp"
         android:layout_marginTop="-20dp"
         android:src="@drawable/ic_add_white_24dp"

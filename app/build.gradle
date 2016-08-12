@@ -32,4 +32,7 @@ dependencies {
 
     compile 'io.particle:cloudsdk:0.3.4'
     compile 'io.particle:devicesetup:0.3.6'
+
+    compile 'com.larswerkman:HoloColorPicker:1.5'
+
 }
