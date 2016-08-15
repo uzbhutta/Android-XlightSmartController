@@ -24,7 +24,7 @@ public class ScenarioListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return Common.MAX_SCHEDULES;
+        return ScenarioFragment.name.size();
     }
 
     private class ScenarioListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -45,8 +45,8 @@ public class ScenarioListAdapter extends RecyclerView.Adapter {
         public void bindView(int position) {
             int displayNum = position + 1;
             scenarioIndex.setText(displayNum + "");
-            scenarioTitle.setText(Common.scenarioNames[position]);
-            scenarioDescription.setText(Common.scenarioDescriptions[position]);
+            scenarioTitle.setText(ScenarioFragment.name.get(position));
+            scenarioDescription.setText(ScenarioFragment.info.get(position));
         }
 
         @Override

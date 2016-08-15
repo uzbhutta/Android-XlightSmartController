@@ -1,5 +1,7 @@
 package com.umarbhutta.xlightcompanion;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -22,6 +25,13 @@ public class AddScenarioActivity extends AppCompatActivity {
     private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
     private TextView colorTextView;
+    private TextView addTextView, cancelTextView;
+    private EditText nameEditText;
+
+    private boolean scenarioPower = false;
+    private int scenarioBrightness = 0;
+    private int c, r, g, b;
+    private String colorHex, scenarioName, scenarioInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +53,17 @@ public class AddScenarioActivity extends AppCompatActivity {
         powerSwitch = (Switch) findViewById(R.id.powerSwitch);
         brightnessSeekBar = (SeekBar) findViewById(R.id.brightnessSeekBar);
         colorTextView = (TextView) findViewById(R.id.colorTextView);
+        addTextView = (TextView) findViewById(R.id.addTextView);
+        cancelTextView = (TextView) findViewById(R.id.cancelTextView);
+        nameEditText = (EditText) findViewById(R.id.nameEditText);
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    //store "on" value
+                    scenarioPower = true;
                 } else {
-                    //store "off" value
+                    scenarioPower = false;
                 }
             }
         });
@@ -65,18 +78,56 @@ public class AddScenarioActivity extends AppCompatActivity {
                             @Override
                             public void onColorSelected(int color) {
                                 Log.e(TAG, "int: " + color);
-                                String colorHex = String.format("%06X", (0xFFFFFF & color));
+                                colorHex = String.format("%06X", (0xFFFFFF & color));
                                 Log.e(TAG, "HEX: #" + colorHex);
 
-                                int c = (int)Long.parseLong(colorHex, 16);
-                                int r = (c >> 16) & 0xFF;
-                                int g = (c >> 8) & 0xFF;
-                                int b = (c >> 0) & 0xFF;
+                                c = (int)Long.parseLong(colorHex, 16);
+                                r = (c >> 16) & 0xFF;
+                                g = (c >> 8) & 0xFF;
+                                b = (c >> 0) & 0xFF;
                                 Log.e(TAG, "RGB: " + r + "," + g + "," + b);
+
+                                colorTextView.setText("#" + colorHex);
+                                //colorTextView.setBackgroundColor(Integer.valueOf(colorHex));
                             }
                         })
                         .create()
                         .show(getSupportFragmentManager(), "dialog");
+            }
+        });
+
+        addTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //send info back to ScenarioFragment
+                if (nameEditText.getText().toString() != null) {
+                    scenarioName = nameEditText.getText().toString();
+                }
+
+                if (scenarioPower) {
+                    scenarioInfo = "A #" + colorHex + " color with " + scenarioBrightness + "% brightness";
+                } else {
+                    scenarioInfo = "Turn all rings off";
+                }
+
+                //SEND TO PARTICLE CLOUD FOR ALL RINGS
+                //TODO: send for multiple rings
+                Common.CldJSONCommand(AddScenarioActivity.this, scenarioPower, r, g, b);
+
+                //send data to update the list
+                Intent returnIntent = getIntent();
+                returnIntent.putExtra(ScenarioFragment.SCENARIO_NAME, scenarioName);
+                returnIntent.putExtra(ScenarioFragment.SCENARIO_INFO, scenarioInfo);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+            }
+        });
+
+        cancelTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //go back to ScenarioFragment, do nothing
+                finish();
             }
         });
     }

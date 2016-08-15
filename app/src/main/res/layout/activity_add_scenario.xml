@@ -160,6 +160,48 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/line3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/colorLL"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/dividerColor" />
+
+    <LinearLayout
+        android:id="@+id/nameLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line3"
+        android:orientation="horizontal"
+        android:paddingBottom="22dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="22dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-light"
+            android:gravity="left|start"
+            android:text="Name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textColorPrimary" />
+
+       <EditText
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:id="@+id/nameEditText"/>
+
+    </LinearLayout>
+
+
+
+
 
     <ImageView
         android:layout_width="wrap_content"
@@ -180,7 +222,7 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
-        android:paddingBottom="20dp" >
+        android:paddingBottom="30dp" >
 
 
         <TextView
@@ -188,7 +230,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="ADD"
-            android:textColor="@color/textDarkGrey"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold"
             android:layout_marginRight="8dp"
             android:id="@+id/addTextView"
@@ -200,7 +242,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="CANCEL"
-            android:textColor="@color/textDarkGrey"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold"
             android:layout_marginRight="8dp"
             android:id="@+id/cancelTextView"

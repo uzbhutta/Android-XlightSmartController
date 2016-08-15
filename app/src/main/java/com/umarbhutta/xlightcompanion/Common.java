@@ -136,4 +136,48 @@ public class Common {
         }.start();
         return resultCode;
     }
+
+    public static int CldJSONCommand(final Context context, final boolean power, final int r, final int g, final int b) {
+        new Thread() {
+            @Override
+            public void run() {
+                int scenarioNum = ScenarioFragment.name.size() + 1;
+
+                //construct first part of string input, and store it in arraylist (of size 1)
+                String json = "{'x0':'{\"op\":1, \"fl\":0, \"run\":0, \"uid\":\"s" +  scenarioNum + "\",\"ring1\":[" + power + "," + "0, 0," + r + "," + g + "," + b + "], '}";
+                ArrayList<String> cldJSONCommandInput = new ArrayList<>();
+                cldJSONCommandInput.add(json);
+                //send in first part of string
+                try {
+                    resultCode = currDevice.callFunction("CldJSONCommand", cldJSONCommandInput);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                cldJSONCommandInput.clear();
+
+                //construct second part of string input, store in arraylist
+                json = "{'x1': '\"ring2\":[\" + power + \",\" + \"0, 0,\" + r + \",\" + g + \",\" + b + \"], \"ring3\":[\" + power + \",\" + \"0, 0,\" + r + \",\" + g + \",\" + b + \"], '}";
+                cldJSONCommandInput.add(json);
+                //send in second part of string
+                try {
+                    resultCode = currDevice.callFunction("CldJSONCommand", cldJSONCommandInput);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                cldJSONCommandInput.clear();
+
+                //construct last part of string input, store in arraylist
+                json = "\"filter\":0}";
+                cldJSONCommandInput.add(json);
+                //send in last part of string
+                try {
+                    resultCode = currDevice.callFunction("CldJSONCommand", cldJSONCommandInput);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                cldJSONCommandInput.clear();
+            }
+        }.start();
+        return resultCode;
+    }
 }

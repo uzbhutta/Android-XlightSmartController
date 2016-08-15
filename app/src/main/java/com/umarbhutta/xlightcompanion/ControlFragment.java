@@ -68,6 +68,9 @@ public class ControlFragment extends Fragment {
                                 int g = (c >> 8) & 0xFF;
                                 int b = (c >> 0) & 0xFF;
                                 Log.e(TAG, "RGB: " + r + "," + g + "," + b);
+
+                                colorTextView.setText("#" + colorHex);
+                                //colorTextView.setBackgroundColor(Integer.valueOf(colorHex));
                             }
                         })
                         .create()
