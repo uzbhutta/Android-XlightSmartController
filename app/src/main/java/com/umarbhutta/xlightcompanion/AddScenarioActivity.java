@@ -1,15 +1,12 @@
 package com.umarbhutta.xlightcompanion;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -19,33 +16,41 @@ import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
 import me.priyesh.chroma.ColorSelectListener;
 
-/**
- * Created by Umar Bhutta.
- */
-public class ControlFragment extends Fragment {
-    private static final String TAG = ControlFragment.class.getSimpleName();
+public class AddScenarioActivity extends AppCompatActivity {
+
+    private static final String TAG = AddScenarioActivity.class.getSimpleName();
     private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
     private TextView colorTextView;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_control, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_scenario);
 
-        powerSwitch = (Switch) view.findViewById(R.id.powerSwitch);
-        brightnessSeekBar = (SeekBar) view.findViewById(R.id.brightnessSeekBar);
-        colorTextView = (TextView) view.findViewById(R.id.colorTextView);
+        //hide nav bar
+        getSupportActionBar().hide();
+
+        //change status bar color to accent
+        Window window = this.getWindow();
+        //clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //finally change the color
+        window.setStatusBarColor(this.getResources().getColor(R.color.colorAccent));
+
+        powerSwitch = (Switch) findViewById(R.id.powerSwitch);
+        brightnessSeekBar = (SeekBar) findViewById(R.id.brightnessSeekBar);
+        colorTextView = (TextView) findViewById(R.id.colorTextView);
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    //send "on" message to DevPowerSwitch
-                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.KEY_POWER, Common.VSTATUS_ON);
+                    //store "on" value
                 } else {
-                    //send "off" message to DevPowerSwitch
-                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.KEY_POWER, Common.VSTATUS_OFF);
+                    //store "off" value
                 }
             }
         });
@@ -54,7 +59,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 new ChromaDialog.Builder()
-                        .initialColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
+                        .initialColor(ContextCompat.getColor(AddScenarioActivity.this, R.color.colorPrimary))
                         .colorMode(ColorMode.RGB) // There's also ARGB and HSV
                         .onColorSelected(new ColorSelectListener() {
                             @Override
@@ -71,10 +76,8 @@ public class ControlFragment extends Fragment {
                             }
                         })
                         .create()
-                        .show(getFragmentManager(), "dialog");
+                        .show(getSupportFragmentManager(), "dialog");
             }
         });
-
-        return view;
     }
 }

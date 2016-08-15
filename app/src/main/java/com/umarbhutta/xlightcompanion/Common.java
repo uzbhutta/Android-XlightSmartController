@@ -19,6 +19,10 @@ public class Common {
     public static final int MAX_SCHEDULES = 6;
     public static final int MAX_DEVICES = 6;
 
+    public static final String KEY_POWER = "power";
+    public static final String KEY_COLOR = "color";
+    public static final String KEY_BRIGHTNESS = "brightness";
+
     //MySensors Xlight protocol for message
     //--------------------------------------------------------------------------------------------------------
     //NOTES: when turning light on or off, function from correct Fragment will send function here a 0 or 1 for SUBTYPE_DIMMER_VSTATUS. For on/off, functions here
@@ -75,7 +79,8 @@ public class Common {
     public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
-    public static final String[] scheduleNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
+    public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
+    public static final String[] scenarioDescriptions = {"A red color at 52% brightness", "A blue-green color at 100% brightness", "An amber color at 50% brightness", "Turn off", "A warm-white color at 100% brightness", "A green color at 52% brightness"};
 
 
     //Particle functions
@@ -95,22 +100,38 @@ public class Common {
         }).start();
     }
 
-    public static int CldPowerSwitch(final Context context, final int deviceId, int ring, final int payload) {
+    public static int CldPowerSwitch(final Context context, final int deviceId, int ring, final String type, final int command) {
         new Thread() {
             @Override
             public void run() {
                 // Make the Particle call here
-                String mySensorsMessage = deviceId + ";" + CHILD_SENSOR_ID_DIMMER + ";" + MESSAGE_TYPE_SET + ";" + ACK_YES + ";" + SUBTYPE_DIMMER_VSTATUS + ";" + payload;
 
-                ArrayList<String> cldPowerSwitchInput = new ArrayList<>();
-                cldPowerSwitchInput.add(mySensorsMessage);
+                if (type == KEY_POWER)
+                {
+                    String mySensorsMessage = deviceId + ";" + CHILD_SENSOR_ID_DIMMER + ";" + MESSAGE_TYPE_SET + ";" + ACK_YES + ";" + SUBTYPE_DIMMER_VSTATUS + ";" + command;
 
-                try {
-                    resultCode = currDevice.callFunction("CldPowerSwitch", cldPowerSwitchInput);
-                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                    e.printStackTrace();
+                    ArrayList<String> cldPowerSwitchInput = new ArrayList<>();
+                    cldPowerSwitchInput.add(mySensorsMessage);
+
+                    try {
+                        resultCode = currDevice.callFunction("CldPowerSwitch", cldPowerSwitchInput);
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    cldPowerSwitchInput.clear();
                 }
-                cldPowerSwitchInput.clear();
+                else if (type == KEY_COLOR)
+                {
+
+                }
+                else if (type == KEY_BRIGHTNESS)
+                {
+
+                }
+                else
+                {
+
+                }
             }
         }.start();
         return resultCode;

@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddScheduleActivity"></activity>
+        <activity android:name=".AddScenarioActivity"></activity>
     </application>
 
 </manifest>

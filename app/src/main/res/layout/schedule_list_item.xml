@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:layout_margin="5dp">
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -19,7 +22,7 @@
             android:fontFamily="sans-serif-light"
             android:text="11:45 AM"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/textDarkGrey"
             android:textStyle="bold"
             />
 

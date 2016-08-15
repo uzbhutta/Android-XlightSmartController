@@ -44,7 +44,7 @@ public class ScheduleListAdapter extends RecyclerView.Adapter {
         public void bindView(int position) {
             mScheduleTime.setText(Common.scheduleTimes[position]);
             mScheduleDays.setText(Common.scheduleDays[position]);
-            mScheduleName.setText(Common.scheduleNames[position]);
+            mScheduleName.setText(Common.scenarioNames[position]);
         }
 
         @Override
