@@ -10,5 +10,6 @@
     <color name="textDarkGrey">#5D5D5D</color>
 
     <color name="dividerColor">#e5e5e5</color>
+    <color name="dividerColorWhite">#80ffffff</color>
     <color name="appRipple">#99FFFFFF</color>
 </resources>

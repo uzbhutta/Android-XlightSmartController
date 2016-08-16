@@ -14,8 +14,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.util.Calendar;
-
 public class AddScheduleActivity extends AppCompatActivity {
 
     private TimePicker timePicker;
@@ -55,7 +53,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         //initialize spinner
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> scenarioAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ScenarioFragment.name);
+        ArrayAdapter<String> scenarioAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_scenario_spinner_item, ScenarioFragment.name);
         // Specify the layout to use when the list of choices appears
         scenarioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
@@ -66,8 +64,15 @@ public class AddScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //get values from timePicker
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
+                int hour = 0, minute = 0;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    hour = timePicker.getHour();
+                    minute = timePicker.getMinute();
+                } else {
+                    hour = timePicker.getCurrentHour();
+                    minute = timePicker.getCurrentMinute();
+                }
+
                 //store hour and minute in String and handle edge cases
                 String hourString = String.valueOf(hour);
                 String minuteString = String.valueOf(minute);

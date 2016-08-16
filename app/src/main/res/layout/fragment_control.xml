@@ -195,6 +195,8 @@
         <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingRight="20dp"
+            android:gravity="right"
             android:id="@+id/scenarioSpinner">
 
         </Spinner>
