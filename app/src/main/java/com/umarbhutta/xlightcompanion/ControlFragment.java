@@ -16,8 +16,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
 import me.priyesh.chroma.ColorSelectListener;
@@ -54,13 +52,9 @@ public class ControlFragment extends Fragment {
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    //send "on" message to DevPowerSwitch
-                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.KEY_POWER, Common.VSTATUS_ON);
-                } else {
-                    //send "off" message to DevPowerSwitch
-                    Common.CldPowerSwitch(getContext(), Common.DEFAULT_NODE_ID, Common.RING_ALL, Common.KEY_POWER, Common.VSTATUS_OFF);
-                }
+                //check if on or off
+                int instruction = isChecked == true ? Common.STATE_ON : Common.STATE_OFF;
+                Common.CldJsonCommandPower(Common.DEFAULT_DEVICE_ID, Common.RING_ALL, instruction);
             }
         });
 
@@ -77,6 +71,8 @@ public class ControlFragment extends Fragment {
                                 colorHex = String.format("%06X", (0xFFFFFF & color));
                                 Log.e(TAG, "HEX: #" + colorHex);
 
+                                int cw = 0;
+                                int ww = 0;
                                 int c = (int)Long.parseLong(colorHex, 16);
                                 int r = (c >> 16) & 0xFF;
                                 int g = (c >> 8) & 0xFF;
@@ -86,6 +82,8 @@ public class ControlFragment extends Fragment {
                                 colorHex = "#" + colorHex;
                                 colorTextView.setText(colorHex);
                                 colorTextView.setTextColor(Color.parseColor(colorHex));
+
+                                Common.CldJsonCommandColor(Common.DEFAULT_DEVICE_ID, Common.RING_ALL, cw, ww, r, g, b);
                             }
                         })
                         .create()

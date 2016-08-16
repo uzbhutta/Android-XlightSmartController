@@ -10,12 +10,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/timePicker"
-        android:layout_below="@+id/backButton" />
+        android:layout_below="@+id/backImageView" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/backButton"
+        android:id="@+id/backImageView"
         android:scaleX=".8"
         android:scaleY=".8"
         android:src="@drawable/go_back"
@@ -122,33 +122,16 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
-        android:paddingBottom="30dp" >
+        android:paddingBottom="20dp" >
 
 
-        <TextView
-            android:layout_width="0dp"
+        <Button
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:background="@android:color/white"
             android:text="ADD"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:layout_marginRight="8dp"
-            android:id="@+id/addTextView"
-            android:textAlignment="textEnd"
-            android:paddingRight="30dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="CANCEL"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:layout_marginRight="8dp"
-            android:id="@+id/cancelTextView"
-            android:layout_gravity="center"
-            android:paddingLeft="30dp" />
-
+            android:id="@+id/addButton"
+            android:textColor="@color/textDarkGrey"/>
 
     </LinearLayout>
 

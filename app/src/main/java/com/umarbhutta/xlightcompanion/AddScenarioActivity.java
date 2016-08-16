@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -26,12 +28,13 @@ public class AddScenarioActivity extends AppCompatActivity {
     private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
     private TextView colorTextView;
-    private TextView addTextView, cancelTextView;
+    private Button addButton;
     private EditText nameEditText;
+    private ImageView backImageView;
 
     private boolean scenarioPower = false;
     private int scenarioBrightness = 0;
-    private int c, r, g, b;
+    private int c, cw, ww, r, g, b;
     private String colorHex, scenarioName, scenarioInfo;
 
     @Override
@@ -54,18 +57,14 @@ public class AddScenarioActivity extends AppCompatActivity {
         powerSwitch = (Switch) findViewById(R.id.powerSwitch);
         brightnessSeekBar = (SeekBar) findViewById(R.id.brightnessSeekBar);
         colorTextView = (TextView) findViewById(R.id.colorTextView);
-        addTextView = (TextView) findViewById(R.id.addTextView);
-        cancelTextView = (TextView) findViewById(R.id.cancelTextView);
+        addButton = (Button) findViewById(R.id.addButton);
         nameEditText = (EditText) findViewById(R.id.nameEditText);
+        backImageView = (ImageView) findViewById(R.id.backImageView);
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    scenarioPower = true;
-                } else {
-                    scenarioPower = false;
-                }
+                scenarioPower = isChecked;
             }
         });
 
@@ -98,13 +97,11 @@ public class AddScenarioActivity extends AppCompatActivity {
             }
         });
 
-        addTextView.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //send info back to ScenarioFragment
-                if (nameEditText.getText().toString() != null) {
-                    scenarioName = nameEditText.getText().toString();
-                }
+                scenarioName = nameEditText.getText().toString();
 
                 if (scenarioPower) {
                     scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
@@ -114,7 +111,7 @@ public class AddScenarioActivity extends AppCompatActivity {
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
                 //TODO: send for multiple rings
-                Common.CldJSONCommand(AddScenarioActivity.this, scenarioPower, r, g, b);
+                Common.CldJSONConfigScenario(scenarioPower, scenarioBrightness, cw, ww, r, g, b);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();
@@ -125,7 +122,7 @@ public class AddScenarioActivity extends AppCompatActivity {
             }
         });
 
-        cancelTextView.setOnClickListener(new View.OnClickListener() {
+        backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //go back to ScenarioFragment, do nothing

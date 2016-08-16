@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -19,7 +20,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     private TimePicker timePicker;
     private CheckBox isRepeatCheckbox;
     private Spinner scenarioSpinner;
-    private TextView addTextView, cancelTextView;
+    private Button addButton;
     private ImageView backImageView;
 
     private int hour, minute;
@@ -46,9 +47,8 @@ public class AddScheduleActivity extends AppCompatActivity {
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         isRepeatCheckbox = (CheckBox) findViewById(R.id.isRepeatCheckbox);
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
-        addTextView = (TextView) findViewById(R.id.addTextView);
-        cancelTextView = (TextView) findViewById(R.id.cancelTextView);
-        backImageView = (ImageView) findViewById(R.id.backButton);
+        addButton = (Button) findViewById(R.id.addButton);
+        backImageView = (ImageView) findViewById(R.id.backImageView);
 
         //initialize spinner
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
@@ -60,11 +60,10 @@ public class AddScheduleActivity extends AppCompatActivity {
         scenarioSpinner.setAdapter(scenarioAdapter);
 
         //on click for add button
-        addTextView.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //get values from timePicker
-                int hour = 0, minute = 0;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     hour = timePicker.getHour();
                     minute = timePicker.getMinute();
