@@ -24,7 +24,7 @@ public class ScheduleListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return Common.MAX_SCHEDULES;
+        return ScheduleFragment.name.size();
     }
 
     private class ScheduleListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -42,14 +42,15 @@ public class ScheduleListAdapter extends RecyclerView.Adapter {
         }
 
         public void bindView(int position) {
-            mScheduleTime.setText(Common.scheduleTimes[position]);
-            mScheduleDays.setText(Common.scheduleDays[position]);
-            mScheduleName.setText(Common.scenarioNames[position]);
+            mScheduleName.setText(ScheduleFragment.name.get(position));
+            mScheduleTime.setText(ScheduleFragment.time.get(position));
+            mScheduleDays.setText(ScheduleFragment.days.get(position));
+            mScheduleSwitch.setEnabled(true);
         }
 
         @Override
         public void onClick(View v) {
-
+         //TODO: handle toggling off switch
         }
     }
 }

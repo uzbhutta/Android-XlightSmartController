@@ -16,6 +16,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/backButton"
+        android:scaleX=".8"
+        android:scaleY=".8"
         android:src="@drawable/go_back"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
@@ -24,5 +26,85 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repeat"
+        android:id="@+id/isRepeatCheckbox"
+        android:layout_below="@+id/timePicker"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:textColor="@android:color/white"
+        android:shadowColor="@android:color/white" />
+
+    <LinearLayout
+    android:id="@+id/scheduleLL"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/isRepeatCheckbox"
+    android:orientation="horizontal"
+    android:gravity="center_horizontal"
+    android:paddingBottom="22dp"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="22dp">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-light"
+        android:gravity="left|start"
+        android:text="Scenario"
+        android:textColor="@android:color/white" />
+
+    <Spinner
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:id="@+id/scenarioSpinner"
+        >
+
+    </Spinner>
+
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:paddingBottom="30dp" >
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ADD"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginRight="8dp"
+            android:id="@+id/addTextView"
+            android:textAlignment="textEnd"
+            android:paddingRight="30dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CANCEL"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginRight="8dp"
+            android:id="@+id/cancelTextView"
+            android:layout_gravity="center"
+            android:paddingLeft="30dp" />
+
+
+    </LinearLayout>
 
 </RelativeLayout>
