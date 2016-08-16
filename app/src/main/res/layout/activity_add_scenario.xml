@@ -155,7 +155,7 @@
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
         android:textAlignment="viewEnd"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="13dp"
         android:id="@+id/colorTextView" />
 
     </LinearLayout>
@@ -195,6 +195,7 @@
            android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_weight="1"
+           android:layout_marginRight="8dp"
            android:id="@+id/nameEditText"/>
 
     </LinearLayout>

@@ -156,7 +156,7 @@
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
         android:textAlignment="viewEnd"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="13dp"
         android:id="@+id/colorTextView" />
 
     </LinearLayout>
@@ -194,7 +194,8 @@
 
         <Spinner
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/scenarioSpinner">
 
         </Spinner>
 

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Umar Bhutta.
@@ -24,8 +25,8 @@ public class ScenarioFragment extends Fragment {
     public static String SCENARIO_NAME = "SCENARIO_NAME";
     public static String SCENARIO_INFO = "SCENARIO_INFO";
 
-    public static ArrayList<String> name = new ArrayList<>();
-    public static ArrayList<String> info = new ArrayList<>();
+    public static ArrayList<String> name = new ArrayList<>(Arrays.asList("Preset 1", "Preset 2"));
+    public static ArrayList<String> info = new ArrayList<>(Arrays.asList("A built in scenario with amber undertones", "A bright party room preset"));
 
     ScenarioListAdapter scenarioListAdapter;
     RecyclerView scenarioRecyclerView;

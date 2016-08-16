@@ -2,6 +2,7 @@ package com.umarbhutta.xlightcompanion;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -87,8 +88,9 @@ public class AddScenarioActivity extends AppCompatActivity {
                                 b = (c >> 0) & 0xFF;
                                 Log.e(TAG, "RGB: " + r + "," + g + "," + b);
 
-                                colorTextView.setText("#" + colorHex);
-                                //colorTextView.setBackgroundColor(Integer.valueOf(colorHex));
+                                colorHex = "#" + colorHex;
+                                colorTextView.setText(colorHex);
+                                colorTextView.setTextColor(Color.parseColor(colorHex));
                             }
                         })
                         .create()
@@ -105,7 +107,7 @@ public class AddScenarioActivity extends AppCompatActivity {
                 }
 
                 if (scenarioPower) {
-                    scenarioInfo = "A #" + colorHex + " color with " + scenarioBrightness + "% brightness";
+                    scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
                 } else {
                     scenarioInfo = "Turn all rings off";
                 }
