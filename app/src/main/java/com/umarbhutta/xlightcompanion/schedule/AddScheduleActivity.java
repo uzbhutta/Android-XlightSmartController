@@ -28,9 +28,9 @@ public class AddScheduleActivity extends AppCompatActivity {
     private Button addButton;
     private ImageView backImageView;
 
-    private int deviceId = ParticleBridge.DEFAULT_DEVICE_ID;
+    private int nodeId = ParticleBridge.DEFAULT_DEVICE_ID;
     private boolean isRepeat;
-    private int hour, minute, daysInt;
+    private int hour, minute, daysInt = 0;
     private String  am_pm, days, scenarioName;
 
     @Override
@@ -110,7 +110,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                 //TODO: get value of days
 
                 //TODO: send to Particle
-                ParticleBridge.CldJSONConfigSchedule(deviceId, isRepeat, daysInt, hour, minute);
+                ParticleBridge.CldJSONConfigSchedule(isRepeat, daysInt, hour, minute);
+                ParticleBridge.CldJSONConfigRule(nodeId, scenarioName);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

@@ -37,7 +37,7 @@ public class AddScenarioActivity extends AppCompatActivity {
 
     private boolean scenarioPower = false;
     private int scenarioBrightness = 0;
-    private int c, cw, ww, r, g, b;
+    private int c = 0, cw = 0, ww = 0, r = 0, g = 0, b = 0;
     private String colorHex, scenarioName, scenarioInfo;
 
     @Override

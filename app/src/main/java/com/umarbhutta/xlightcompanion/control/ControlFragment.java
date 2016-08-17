@@ -35,6 +35,7 @@ public class ControlFragment extends Fragment {
     private Spinner scenarioSpinner;
 
     private String colorHex;
+    private boolean state = false;
 
     @Nullable
     @Override
@@ -57,8 +58,8 @@ public class ControlFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //check if on or off
-                int instruction = isChecked == true ? ParticleBridge.STATE_ON : ParticleBridge.STATE_OFF;
-                ParticleBridge.CldJsonCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, instruction);
+                state = isChecked;
+                ParticleBridge.CldJsonCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
             }
         });
 
@@ -87,7 +88,7 @@ public class ControlFragment extends Fragment {
                                 colorTextView.setText(colorHex);
                                 colorTextView.setTextColor(Color.parseColor(colorHex));
 
-                                ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, cw, ww, r, g, b);
+                                ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
                             }
                         })
                         .create()
@@ -107,7 +108,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.e(TAG, "The brightness value is " + seekBar.getProgress());
-                ParticleBridge.CldJsonCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, seekBar.getProgress());
+                ParticleBridge.CldJsonCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress());
             }
         });
 
