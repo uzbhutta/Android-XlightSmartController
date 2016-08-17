@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.control;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.R;
 
 /**
  * Created by Umar Bhutta.
@@ -40,7 +43,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
         }
 
         public void bindView (int position) {
-            mDeviceName.setText(Common.deviceNames[position]);
+            mDeviceName.setText(ParticleBridge.deviceNames[position]);
         }
 
         @Override

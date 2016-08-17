@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.scenario;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.R;
 
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
@@ -97,6 +100,22 @@ public class AddScenarioActivity extends AppCompatActivity {
             }
         });
 
+        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.e(TAG, "The brightness value is " + seekBar.getProgress());
+                scenarioBrightness = seekBar.getProgress();
+            }
+        });
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +130,7 @@ public class AddScenarioActivity extends AppCompatActivity {
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
                 //TODO: send for multiple rings
-                Common.CldJSONConfigScenario(scenarioPower, scenarioBrightness, cw, ww, r, g, b);
+                ParticleBridge.CldJSONConfigScenario(scenarioPower, scenarioBrightness, cw, ww, r, g, b);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

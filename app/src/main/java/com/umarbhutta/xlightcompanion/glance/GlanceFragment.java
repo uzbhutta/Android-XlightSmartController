@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.glance;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -20,6 +20,10 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.umarbhutta.xlightcompanion.main.MainActivity;
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.SimpleDividerItemDecoration;
+import com.umarbhutta.xlightcompanion.control.DevicesListAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;

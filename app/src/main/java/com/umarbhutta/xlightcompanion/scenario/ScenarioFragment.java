@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.scenario;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Arrays;

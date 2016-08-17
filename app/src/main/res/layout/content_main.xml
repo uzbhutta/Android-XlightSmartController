@@ -7,5 +7,5 @@
     android:id="@+id/placeholder"
     android:layout_marginTop="?attr/actionBarSize"
     android:elevation="0dp"
-    tools:context=".MainActivity">
+    tools:context=".main.MainActivity">
 </FrameLayout>

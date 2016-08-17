@@ -1,6 +1,10 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.particle;
 
 import android.content.Context;
+
+import com.umarbhutta.xlightcompanion.main.MainActivity;
+import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
+import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +17,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 /**
  * Created by Umar Bhutta.
  */
-public class Common {
+public class ParticleBridge {
     //Max num constants
     public static final int MAX_SCHEDULES = 6;
     public static final int MAX_DEVICES = 6;
@@ -39,9 +43,11 @@ public class Common {
     public static final int RING_1 = 1;
     public static final int RING_2 = 2;
     public static final int RING_3 = 3;
-    //SUBTYPE_DIMMER_STATUS values
+    //on/off values
     public static final int STATE_OFF = 0;
     public static final int STATE_ON = 1;
+    //default alarm id
+    public static final int DEFAULT_ALARM_ID = 255;
 
 
     //constants for testing lists
@@ -165,6 +171,39 @@ public class Common {
                     e.printStackTrace();
                 }
                 cldJSONCommandInput.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
+    public static int CldJSONConfigSchedule(final int deviceId, final boolean isRepeat, final int weekdays, final int hour,  final int minute) {
+        new Thread() {
+            @Override
+            public void run() {
+                int scheduleNum = ScheduleFragment.name.size() + 1;
+
+                //construct first part of string input, and store it in arraylist (of size 1)
+                String json = "{'x0':'{\"op\":1, \"fl\":0, \"run\":0, \"uid\":\"a" + scheduleNum + "\",\"isRepeat\":[" + isRepeat + ", '}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                //send in first part of string
+                try {
+                    resultCode = currDevice.callFunction("CldJSONConfig", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+
+                //construct second part of string input, store in arraylist
+                json = "{'x1': '\"weekdays\":" +  weekdays + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\"" + DEFAULT_ALARM_ID + "}'}";
+                message.add(json);
+                //send in second part of string
+                try {
+                    resultCode = currDevice.callFunction("CldJSONConfig", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
             }
         }.start();
         return resultCode;

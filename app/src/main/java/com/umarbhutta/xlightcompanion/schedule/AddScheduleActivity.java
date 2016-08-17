@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.schedule;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,8 +12,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
+
+import java.util.Calendar;
 
 public class AddScheduleActivity extends AppCompatActivity {
 
@@ -23,9 +28,10 @@ public class AddScheduleActivity extends AppCompatActivity {
     private Button addButton;
     private ImageView backImageView;
 
-    private int hour, minute;
+    private int deviceId = ParticleBridge.DEFAULT_DEVICE_ID;
     private boolean isRepeat;
-    private String days, scenarioName;
+    private int hour, minute, daysInt;
+    private String  am_pm, days, scenarioName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +78,24 @@ public class AddScheduleActivity extends AppCompatActivity {
                     minute = timePicker.getCurrentMinute();
                 }
 
+                Calendar datetime = Calendar.getInstance();
+                datetime.set(Calendar.HOUR_OF_DAY, hour);
+                datetime.set(Calendar.MINUTE, minute);
+
+                if (datetime.get(Calendar.AM_PM) == Calendar.AM) {
+                    am_pm = "AM";
+                } else if (datetime.get(Calendar.AM_PM) == Calendar.PM) {
+                    am_pm = "PM";
+                }
+
                 //store hour and minute in String and handle edge cases
                 String hourString = String.valueOf(hour);
                 String minuteString = String.valueOf(minute);
                 if (hour > 12) {
                     hourString = String.valueOf(hour - 12);
+                }
+                if (hourString.length() == 1) {
+                    hourString = "0" + hourString;
                 }
                 if (minute < 12) {
                     minuteString = "0" + String.valueOf(minute);
@@ -91,12 +110,14 @@ public class AddScheduleActivity extends AppCompatActivity {
                 //TODO: get value of days
 
                 //TODO: send to Particle
+                ParticleBridge.CldJSONConfigSchedule(deviceId, isRepeat, daysInt, hour, minute);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra(ScheduleFragment.SCENARIO_NAME, scenarioName);
-                returnIntent.putExtra(ScheduleFragment.SCHEDULE_HOUR, hour);
-                returnIntent.putExtra(ScheduleFragment.SCHEDULE_MINUTE, minute);
+                returnIntent.putExtra(ScheduleFragment.SCHEDULE_HOUR, hourString);
+                returnIntent.putExtra(ScheduleFragment.SCHEDULE_MINUTE, minuteString);
+                returnIntent.putExtra(ScheduleFragment.SCHEDULE_AMPM, am_pm);
                 returnIntent.putExtra(ScheduleFragment.SCHEDULE_ISREPEAT, isRepeat);
                 returnIntent.putExtra(ScheduleFragment.SCHEDULE_DAYS, days);
                 setResult(Activity.RESULT_OK, returnIntent);

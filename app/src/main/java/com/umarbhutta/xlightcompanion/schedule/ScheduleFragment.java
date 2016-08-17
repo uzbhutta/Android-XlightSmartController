@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.schedule;
 
 
 import android.app.Activity;
@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.SimpleDividerItemDecoration;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Umar Bhutta.
@@ -25,6 +27,7 @@ public class ScheduleFragment extends Fragment {
     public static String SCENARIO_NAME = "SCENARIO_NAME";
     public static String SCHEDULE_HOUR = "SCHEDULE_HOUR";
     public static String SCHEDULE_MINUTE = "SCHEDULE_MINUTE";
+    public static String SCHEDULE_AMPM = "SCHEDULE_AMPM";
     public static String SCHEDULE_ISREPEAT = "SCHEDULE_ISREPEAT";
     public static String SCHEDULE_DAYS = "SCHEDULE_DAYS";
 
@@ -77,20 +80,21 @@ public class ScheduleFragment extends Fragment {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 String incomingName = data.getStringExtra(SCENARIO_NAME);
-                int incomingHour = data.getIntExtra(SCHEDULE_HOUR, 12);
-                int incomingMinute = data.getIntExtra(SCHEDULE_MINUTE, 30);
+                String incomingHour = data.getStringExtra(SCHEDULE_HOUR);
+                String incomingMinute = data.getStringExtra(SCHEDULE_MINUTE);
+                String incomingAMPM = data.getStringExtra(SCHEDULE_AMPM);
                 boolean incomingIsRepeat = data.getBooleanExtra(SCHEDULE_ISREPEAT, false);
                 String incomingDays = data.getStringExtra(SCHEDULE_ISREPEAT);
 
                 name.add(incomingName);
-                time.add(incomingHour + ":" + incomingMinute);
+                time.add(incomingHour + ":" + incomingMinute + " " + incomingAMPM);
                 days.add("Mo We Th Fr Su");
 
                 scheduleListAdapter.notifyDataSetChanged();
                 Toast.makeText(getActivity(), "The schedule has been successfully added", Toast.LENGTH_SHORT).show();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(getActivity(), "No new schedule were added to the list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "No new schedule was added to the list", Toast.LENGTH_SHORT).show();
             }
         }
     }

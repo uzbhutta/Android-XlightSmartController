@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.control;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +15,10 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
@@ -53,8 +57,8 @@ public class ControlFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //check if on or off
-                int instruction = isChecked == true ? Common.STATE_ON : Common.STATE_OFF;
-                Common.CldJsonCommandPower(Common.DEFAULT_DEVICE_ID, Common.RING_ALL, instruction);
+                int instruction = isChecked == true ? ParticleBridge.STATE_ON : ParticleBridge.STATE_OFF;
+                ParticleBridge.CldJsonCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, instruction);
             }
         });
 
@@ -83,11 +87,27 @@ public class ControlFragment extends Fragment {
                                 colorTextView.setText(colorHex);
                                 colorTextView.setTextColor(Color.parseColor(colorHex));
 
-                                Common.CldJsonCommandColor(Common.DEFAULT_DEVICE_ID, Common.RING_ALL, cw, ww, r, g, b);
+                                ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, cw, ww, r, g, b);
                             }
                         })
                         .create()
                         .show(getFragmentManager(), "dialog");
+            }
+        });
+
+        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.e(TAG, "The brightness value is " + seekBar.getProgress());
+                ParticleBridge.CldJsonCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, seekBar.getProgress());
             }
         });
 

@@ -1,12 +1,8 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.main;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,9 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+
+import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.control.ControlFragment;
+import com.umarbhutta.xlightcompanion.glance.GlanceFragment;
+import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
+import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         //login to Particle cloud
-        Common.authenticate(this);
+        ParticleBridge.authenticate(this);
 
         //setup drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

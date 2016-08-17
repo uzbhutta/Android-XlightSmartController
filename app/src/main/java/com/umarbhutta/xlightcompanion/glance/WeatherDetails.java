@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion;
+package com.umarbhutta.xlightcompanion.glance;
 
 /**
  * Created by Umar Bhutta.
