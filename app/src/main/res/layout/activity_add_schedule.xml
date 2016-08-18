@@ -94,25 +94,18 @@
     android:paddingRight="30dp"
     android:paddingTop="22dp">
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_weight="1"
-        android:gravity="left|start"
-        android:text="Scenario"
-        android:textSize="15sp"
-        android:textColor="@android:color/white"
-        android:paddingLeft="5dp"/>
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/deviceSpinner" />
 
     <Spinner
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:id="@+id/scenarioSpinner"
-        >
-
-    </Spinner>
+        />
 
 </LinearLayout>
 

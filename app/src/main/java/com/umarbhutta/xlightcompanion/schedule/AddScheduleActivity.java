@@ -25,13 +25,14 @@ public class AddScheduleActivity extends AppCompatActivity {
     private TimePicker timePicker;
     private CheckBox isRepeatCheckbox;
     private Spinner scenarioSpinner;
+    private Spinner deviceSpinner;
     private Button addButton;
     private ImageView backImageView;
 
     private int nodeId = ParticleBridge.DEFAULT_DEVICE_ID;
     private boolean isRepeat;
     private int hour, minute, daysInt = 0;
-    private String  am_pm, days, scenarioName;
+    private String  am_pm, days, scenarioName, scenarioDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +54,27 @@ public class AddScheduleActivity extends AppCompatActivity {
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         isRepeatCheckbox = (CheckBox) findViewById(R.id.isRepeatCheckbox);
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
+        deviceSpinner = (Spinner) findViewById(R.id.deviceSpinner);
         addButton = (Button) findViewById(R.id.addButton);
         backImageView = (ImageView) findViewById(R.id.backImageView);
 
-        //initialize spinner
+        //initialize scenario spinner
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> scenarioAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_scenario_spinner_item, ScenarioFragment.name);
+        final ArrayAdapter<String> scenarioAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_spinner_item, ScenarioFragment.name);
         // Specify the layout to use when the list of choices appears
         scenarioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
         scenarioSpinner.setAdapter(scenarioAdapter);
+
+        //initialize device spinner
+        deviceSpinner = (Spinner) findViewById(R.id.deviceSpinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> deviceAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_spinner_item, ParticleBridge.deviceNames);
+        // Specify the layout to use when the list of choices appears
+        deviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the scenarioAdapter to the spinner
+        deviceSpinner.setAdapter(deviceAdapter);
 
         //on click for add button
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -104,12 +115,14 @@ public class AddScheduleActivity extends AppCompatActivity {
                 //get value of isRepeat
                 isRepeat = isRepeatCheckbox.isChecked();
 
-                //get value of spinner
+                //get value of device spinner
+                scenarioDevice = scenarioSpinner.getSelectedItem().toString();
+
+                //get value of scenario spinner
                 scenarioName = scenarioSpinner.getSelectedItem().toString();
 
                 //TODO: get value of days
 
-                //TODO: send to Particle
                 ParticleBridge.CldJSONConfigSchedule(isRepeat, daysInt, hour, minute);
                 ParticleBridge.CldJSONConfigRule(nodeId, scenarioName);
 
