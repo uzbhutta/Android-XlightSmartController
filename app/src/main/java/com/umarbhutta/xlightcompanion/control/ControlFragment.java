@@ -1,6 +1,7 @@
 package com.umarbhutta.xlightcompanion.control;
 
 import android.graphics.Color;
+import android.media.Ringtone;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,12 +16,15 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
 import com.umarbhutta.xlightcompanion.R;
@@ -43,11 +47,20 @@ public class ControlFragment extends Fragment {
     private TextView colorTextView;
     private Spinner scenarioSpinner;
     private LinearLayout scenarioNoneLL;
+    private ToggleButton ring1Button, ring2Button, ring3Button;
+    private TextView deviceRingLabel;
 
     private ArrayList<String> scenarioDropdown;
 
     private String colorHex;
     private boolean state = false;
+    boolean ring1 = false, ring2 = false, ring3 = false;
+
+    private static final String DEFAULT_LAMP_TEXT = "LIVING ROOM";
+    private static final String RING1_TEXT = "RING 1";
+    private static final String RING2_TEXT = "RING 2";
+    private static final String RING3_TEXT = "RING 3";
+    private static final String RINGALL_TEXT = "ALL RINGS";
 
     @Nullable
     @Override
@@ -62,6 +75,10 @@ public class ControlFragment extends Fragment {
         colorTextView = (TextView) view.findViewById(R.id.colorTextView);
         scenarioNoneLL = (LinearLayout) view.findViewById(R.id.scenarioNoneLL);
         scenarioNoneLL.setAlpha(1);
+        ring1Button = (ToggleButton) view.findViewById(R.id.ring1Button);
+        ring2Button = (ToggleButton) view.findViewById(R.id.ring2Button);
+        ring3Button = (ToggleButton) view.findViewById(R.id.ring3Button);
+        deviceRingLabel = (TextView) view.findViewById(R.id.deviceRingLabel);
 
         scenarioSpinner = (Spinner) view.findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -149,6 +166,83 @@ public class ControlFragment extends Fragment {
             }
         });
 
+        ring1Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ring1 = true;
+                    Toast.makeText(getContext(), "Ring 1 chosen", Toast.LENGTH_SHORT).show();
+                } else {
+                    ring1 = false;
+                }
+                updateDeviceRingLabel();
+            }
+        });
+        ring2Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ring2 = true;
+                    Toast.makeText(getContext(), "Ring 2 chosen", Toast.LENGTH_SHORT).show();
+                } else {
+                    ring2 = false;
+                }
+                updateDeviceRingLabel();
+            }
+        });
+        ring3Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ring3 = true;
+                    Toast.makeText(getContext(), "Ring 3 chosen", Toast.LENGTH_SHORT).show();
+                } else {
+                    ring3 = false;
+                }
+                updateDeviceRingLabel();
+            }
+        });
+
         return view;
+    }
+
+    private void updateDeviceRingLabel() {
+        String label = DEFAULT_LAMP_TEXT;
+
+        if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
+        {
+            label += ", " + RINGALL_TEXT;
+        }
+        else if (ring1 && ring2)
+        {
+            label += ", " + RING1_TEXT + " & " + RING2_TEXT;
+        }
+        else if (ring2 && ring3)
+        {
+            label += ", " + RING2_TEXT + " & " + RING3_TEXT;
+        }
+        else if (ring1 && ring3)
+        {
+            label += ", " + RING1_TEXT + " & " + RING3_TEXT;
+        }
+        else if (ring1)
+        {
+            label += ", " + RING1_TEXT ;
+        }
+        else if (ring2)
+        {
+            label += ", " + RING2_TEXT ;
+        }
+        else if (ring3)
+        {
+            label += ", " + RING3_TEXT ;
+        }
+        else
+        {
+            label += "";
+        }
+
+        deviceRingLabel.setText(label);
+
     }
 }
