@@ -40,6 +40,7 @@ public class ParticleBridge {
     public static final int VALUE_POWER = 1;
     public static final int VALUE_COLOR = 2;
     public static final int VALUE_BRIGHTNESS = 3;
+    public static final int VALUE_SCENARIO = 4;
     //device id
     public static final int DEFAULT_DEVICE_ID = 1;
     //ring values
@@ -129,6 +130,30 @@ public class ParticleBridge {
                 int power = state ? 1 : 0;
 
                 String json = "{\"cmd\":" + VALUE_COLOR + ",\"node_id\":" + nodeId + ",\"ring\":" + ring + ",\"color\":[" + power + "," + cw + "," + ww + "," + r + "," + g + "," + b + "]}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                try {
+                    Log.e(TAG, message.get(0));
+                    resultCode = currDevice.callFunction("CldJsonCommand", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
+
+    public static int CldJsonCommandScenario(final int nodeId, final int position) {
+        new Thread() {
+            @Override
+            public void run() {
+                //position corresponds to the spinner in Control. position of 1 corresponds to s1, 2 to s2. The 0th index in the spinner is the "None" item,
+                //hence the parameter of position is good to go in this function as is - doesn't need to be incremented by 1 for the uid for scenario
+
+                // Make the Particle call here
+                String json = "{\"cmd\":" + VALUE_SCENARIO + ",\"node_id\":" + nodeId + ",\"SNT_id\":" + position + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -267,4 +292,5 @@ public class ParticleBridge {
         }.start();
         return resultCode;
     }
+
 }

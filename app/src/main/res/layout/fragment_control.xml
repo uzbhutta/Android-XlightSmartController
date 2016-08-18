@@ -43,148 +43,22 @@
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
-
     <LinearLayout
-        android:id="@+id/powerLL"
+        android:id="@+id/scenarioLL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
         android:orientation="horizontal"
-        android:paddingBottom="22dp"
+        android:paddingBottom="25dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:paddingTop="22dp">
+        android:paddingTop="25dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-light"
-            android:gravity="left|start"
-            android:text="Power"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/textColorPrimary" />
-
-        <Switch
-            android:id="@+id/powerSwitch"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/line1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/powerLL"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@color/dividerColor" />
-
-
-    <LinearLayout
-        android:id="@+id/brightnessLL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line1"
-        android:orientation="horizontal"
-        android:paddingBottom="22dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingTop="22dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-light"
-            android:gravity="left|start"
-            android:text="Brightness"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/textColorPrimary" />
-
-        <SeekBar
-            android:id="@+id/brightnessSeekBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingRight="0dp" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/line2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/brightnessLL"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@color/dividerColor" />
-
-
-    <LinearLayout
-        android:id="@+id/colorLL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line2"
-        android:orientation="horizontal"
-        android:paddingBottom="22dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingTop="22dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-light"
-            android:gravity="left|start"
-            android:text="Color"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/textColorPrimary" />
-
-        <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="SELECT"
-        android:textColor="@color/colorAccent"
-        android:textStyle="bold"
-        android:textAlignment="viewEnd"
-        android:layout_marginRight="13dp"
-        android:id="@+id/colorTextView" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/line3"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/colorLL"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@color/dividerColor" />
-
-    <LinearLayout
-        android:id="@+id/scheduleLL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/line3"
-        android:orientation="horizontal"
-        android:paddingBottom="22dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingTop="22dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif-light"
             android:gravity="left|start"
@@ -193,14 +67,149 @@
             android:textColor="@color/textColorPrimary" />
 
         <Spinner
+            android:id="@+id/scenarioSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="20dp"
+            android:layout_gravity="center_vertical"
             android:gravity="right"
-            android:id="@+id/scenarioSpinner">
+            android:paddingRight="20dp">
 
         </Spinner>
 
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/scenarioLL"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/dividerColor" />
+
+    <LinearLayout
+        android:id="@+id/scenarioNoneLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/powerLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line1"
+            android:orientation="horizontal"
+            android:paddingBottom="22dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="22dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-light"
+                android:gravity="left|start"
+                android:text="Power"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textColorPrimary" />
+
+            <Switch
+                android:id="@+id/powerSwitch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/powerLL"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/dividerColor" />
+
+
+        <LinearLayout
+            android:id="@+id/brightnessLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line2"
+            android:orientation="horizontal"
+            android:paddingBottom="22dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="22dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-light"
+                android:gravity="left|start"
+                android:text="Brightness"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textColorPrimary" />
+
+            <SeekBar
+                android:id="@+id/brightnessSeekBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingRight="0dp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/brightnessLL"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/dividerColor" />
+
+
+        <LinearLayout
+            android:id="@+id/colorLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line3"
+            android:orientation="horizontal"
+            android:paddingBottom="22dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="22dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-light"
+                android:gravity="left|start"
+                android:text="Color"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/colorTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="13dp"
+                android:layout_weight="1"
+                android:text="SELECT"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold" />
+
+        </LinearLayout>
     </LinearLayout>
 
 

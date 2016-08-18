@@ -125,7 +125,7 @@ public class AddScenarioActivity extends AppCompatActivity {
                 if (scenarioPower) {
                     scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
                 } else {
-                    scenarioInfo = "Turn all rings off";
+                    scenarioInfo = "Turn the chandelier rings off";
                 }
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
