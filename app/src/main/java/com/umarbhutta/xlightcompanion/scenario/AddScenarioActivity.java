@@ -10,11 +10,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -28,17 +30,16 @@ import me.priyesh.chroma.ColorSelectListener;
 public class AddScenarioActivity extends AppCompatActivity {
 
     private static final String TAG = AddScenarioActivity.class.getSimpleName();
-    private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
     private TextView colorTextView;
     private Button addButton;
     private EditText nameEditText;
     private ImageView backImageView;
+    private Spinner filterSpinner;
 
-    private boolean scenarioPower = false;
     private int scenarioBrightness = 0;
     private int c = 0, cw = 0, ww = 0, r = 0, g = 0, b = 0;
-    private String colorHex, scenarioName, scenarioInfo;
+    private String colorHex, scenarioName, scenarioInfo, scenarioFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +58,19 @@ public class AddScenarioActivity extends AppCompatActivity {
         //finally change the color
         window.setStatusBarColor(this.getResources().getColor(R.color.colorAccent));
 
-        powerSwitch = (Switch) findViewById(R.id.powerSwitch);
         brightnessSeekBar = (SeekBar) findViewById(R.id.brightnessSeekBar);
         colorTextView = (TextView) findViewById(R.id.colorTextView);
         addButton = (Button) findViewById(R.id.addButton);
         nameEditText = (EditText) findViewById(R.id.nameEditText);
         backImageView = (ImageView) findViewById(R.id.backImageView);
 
-        powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                scenarioPower = isChecked;
-            }
-        });
+        filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(this, R.layout.control_scenario_spinner_item, ParticleBridge.filterNames);
+        // Specify the layout to use when the list of choices appears
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the scenarioAdapter to the spinner
+        filterSpinner.setAdapter(filterAdapter);
 
         colorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,15 +123,10 @@ public class AddScenarioActivity extends AppCompatActivity {
                 //send info back to ScenarioFragment
                 scenarioName = nameEditText.getText().toString();
 
-                if (scenarioPower) {
-                    scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
-                } else {
-                    scenarioInfo = "Turn the chandelier rings off";
-                }
+                scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
-                //TODO: send for multiple rings
-                ParticleBridge.CldJSONConfigScenario(scenarioPower, scenarioBrightness, cw, ww, r, g, b);
+                ParticleBridge.CldJSONConfigScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

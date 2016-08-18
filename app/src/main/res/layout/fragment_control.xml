@@ -138,7 +138,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/powerLL"
+            android:id="@+id/nameLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/line1"
@@ -172,7 +172,7 @@
             android:id="@+id/line2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/powerLL"
+            android:layout_below="@+id/nameLL"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:background="@color/dividerColor" />

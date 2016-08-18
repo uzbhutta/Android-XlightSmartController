@@ -61,6 +61,7 @@ public class ParticleBridge {
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
     public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
     public static final String[] scenarioDescriptions = {"A red color at 52% brightness", "A blue-green color at 100% brightness", "An amber color at 50% brightness", "Turn off", "A warm-white color at 100% brightness", "A green color at 52% brightness"};
+    public static final String[] filterNames = {"Breathe", "Music Match", "Flash"};
 
 
     //Particle functions
@@ -168,12 +169,11 @@ public class ParticleBridge {
         return resultCode;
     }
 
-    public static int CldJSONConfigScenario(final boolean state, final int brightness, final int cw, final int ww, final int r, final int g, final int b) {
+    public static int CldJSONConfigScenario(final int brightness, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
         new Thread() {
             @Override
             public void run() {
                 int scenarioId = ScenarioFragment.name.size() + 1;
-                int power = state ? 1 : 0;
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"s" + scenarioId + "\",\"ring1\":" + " '}";
@@ -189,7 +189,7 @@ public class ParticleBridge {
                 message.clear();
 
                 //construct second part of string input, store in arraylist
-                json = "{'x1': '[" + power + "," + cw +"," + ww + "," + r + "," + g + "," + b + "],\"ring2\":[" + power + "," + cw + "," + ww + "," + r + "," + g + "," + b + "], '}";
+                json = "{'x1': '[" + STATE_ON + "," + cw +"," + ww + "," + r + "," + g + "," + b + "],\"ring2\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "], '}";
                 message.add(json);
                 //send in second part of string
                 try {
@@ -201,7 +201,7 @@ public class ParticleBridge {
                 message.clear();
 
                 //construct last part of string input, store in arraylist
-                json = "\"ring3\":[" + power + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
+                json = "\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
                 message.add(json);
                 //send in last part of string
                 try {

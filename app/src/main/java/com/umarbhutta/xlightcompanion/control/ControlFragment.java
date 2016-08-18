@@ -243,6 +243,5 @@ public class ControlFragment extends Fragment {
         }
 
         deviceRingLabel.setText(label);
-
     }
 }
