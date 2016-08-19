@@ -1,7 +1,6 @@
 package com.umarbhutta.xlightcompanion.control;
 
 import android.graphics.Color;
-import android.media.Ringtone;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,13 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -32,7 +26,6 @@ import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
 import java.util.ArrayList;
 
-import io.particle.android.sdk.cloud.ParticleDevice;
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
 import me.priyesh.chroma.ColorSelectListener;
@@ -55,12 +48,6 @@ public class ControlFragment extends Fragment {
     private String colorHex;
     private boolean state = false;
     boolean ring1 = false, ring2 = false, ring3 = false;
-
-    private static final String DEFAULT_LAMP_TEXT = "LIVING ROOM";
-    private static final String RING1_TEXT = "RING 1";
-    private static final String RING2_TEXT = "RING 2";
-    private static final String RING3_TEXT = "RING 3";
-    private static final String RINGALL_TEXT = "ALL RINGS";
 
     @Nullable
     @Override
@@ -122,7 +109,42 @@ public class ControlFragment extends Fragment {
                                 colorTextView.setText(colorHex);
                                 colorTextView.setTextColor(Color.parseColor(colorHex));
 
-                                ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
+                                //send message to Particle based on which rings have been selected
+                                if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
+                                }
+                                else if (ring1 && ring2)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                }
+                                else if (ring2 && ring3)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                }
+                                else if (ring1 && ring3)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                }
+                                else if (ring1)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                }
+                                else if (ring2)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                }
+                                else if (ring3)
+                                {
+                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                }
+                                else
+                                {
+                                    //do nothing
+                                }
                             }
                         })
                         .create()
@@ -207,35 +229,35 @@ public class ControlFragment extends Fragment {
     }
 
     private void updateDeviceRingLabel() {
-        String label = DEFAULT_LAMP_TEXT;
+        String label = ParticleBridge.DEFAULT_LAMP_TEXT;
 
         if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
         {
-            label += ", " + RINGALL_TEXT;
+            label += ": " + ParticleBridge.RINGALL_TEXT;
         }
         else if (ring1 && ring2)
         {
-            label += ", " + RING1_TEXT + " & " + RING2_TEXT;
+            label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING2_TEXT;
         }
         else if (ring2 && ring3)
         {
-            label += ", " + RING2_TEXT + " & " + RING3_TEXT;
+            label += ": " + ParticleBridge.RING2_TEXT + " & " + ParticleBridge.RING3_TEXT;
         }
         else if (ring1 && ring3)
         {
-            label += ", " + RING1_TEXT + " & " + RING3_TEXT;
+            label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING3_TEXT;
         }
         else if (ring1)
         {
-            label += ", " + RING1_TEXT ;
+            label += ": " + ParticleBridge.RING1_TEXT ;
         }
         else if (ring2)
         {
-            label += ", " + RING2_TEXT ;
+            label += ": " + ParticleBridge.RING2_TEXT ;
         }
         else if (ring3)
         {
-            label += ", " + RING3_TEXT ;
+            label += ": " + ParticleBridge.RING3_TEXT ;
         }
         else
         {

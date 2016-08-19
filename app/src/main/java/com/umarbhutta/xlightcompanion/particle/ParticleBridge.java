@@ -19,7 +19,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
  * Created by Umar Bhutta.
  */
 public class ParticleBridge {
-    //misc
+    //Misc
     private static final String TAG = ParticleBridge.class.getSimpleName();
 
     //Max num constants
@@ -27,9 +27,9 @@ public class ParticleBridge {
     public static final int MAX_DEVICES = 6;
 
     //Login details
-    public static final String EMAIL = "umar.bhutta@hotmail.com";
-    public static final String PASSWORD = "ballislife2016";
-    public static final String DEVICE_ID = "30003e001547343339383037";
+    public static final String EMAIL = "sunbaoshi1975@gmail.com";
+    public static final String PASSWORD = "1qazxsw2";
+    public static final String DEVICE_ID = "2d0027001647343432313031";
 
     //Particle vars
     public static ParticleDevice currDevice;
@@ -48,6 +48,13 @@ public class ParticleBridge {
     public static final int RING_1 = 1;
     public static final int RING_2 = 2;
     public static final int RING_3 = 3;
+    //ring text
+    public static final String DEFAULT_LAMP_TEXT = "LIVING ROOM";
+    public static final String RINGALL_TEXT = "ALL RINGS";
+    public static final String RING1_TEXT = "RING 1";
+    public static final String RING2_TEXT = "RING 2";
+    public static final String RING3_TEXT = "RING 3";
+
     //on/off values
     public static final int STATE_OFF = 0;
     public static final int STATE_ON = 1;
