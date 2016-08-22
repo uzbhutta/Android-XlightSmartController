@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:src="@drawable/light_bluegr2"
+                android:src="@drawable/light_aquabg"
                 android:layout_marginTop="-10dp"
                 android:scaleType="fitXY" />
 
@@ -157,7 +157,8 @@
                 android:gravity="left|start"
                 android:text="Power"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/textColorPrimary" />
+                android:textColor="@color/textColorPrimary"
+                android:id="@+id/powerLabel" />
 
             <Switch
                 android:id="@+id/powerSwitch"
@@ -198,7 +199,8 @@
                 android:gravity="left|start"
                 android:text="Brightness"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/textColorPrimary" />
+                android:textColor="@color/textColorPrimary"
+                android:id="@+id/brightnessLabel" />
 
             <SeekBar
                 android:id="@+id/brightnessSeekBar"
@@ -239,7 +241,8 @@
                 android:gravity="left|start"
                 android:text="Color"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/textColorPrimary" />
+                android:textColor="@color/textColorPrimary"
+                android:id="@+id/colorLabel" />
 
             <TextView
                 android:id="@+id/colorTextView"

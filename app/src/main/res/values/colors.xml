@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorPrimaryLight">#BBDEFB</color>
-    <color name="colorAccent">#EB6D07</color>
+    <!--<color name="colorPrimary">#2196F3</color>-->
+    <!--<color name="colorPrimaryDark">#1976D2</color>-->
+    <!--<color name="colorPrimaryLight">#BBDEFB</color>-->
+    <!--<color name="colorAccent">#EB6D07</color>-->
+
+    <color name="colorPrimary">#3399cc</color>
+    <color name="colorPrimaryDark">#155e83</color>
+    <color name="colorAccent">#669933</color>
+
+    <!--<color name="colorPrimary">#3C91BD</color>-->
+    <!--<color name="colorPrimaryDark">#16587A</color>-->
+    <!--<color name="colorAccent">#87A180</color>-->
 
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#757575</color>
@@ -11,6 +19,7 @@
 
     <color name="dividerColor">#e5e5e5</color>
     <color name="dividerColorWhite">#48ffffff</color>
+    <color name="colorDisabled">#BDBDBD</color>
     <color name="appRipple">#99FFFFFF</color>
     <color name="negativeButtonColor">#FF5252</color>
 </resources>

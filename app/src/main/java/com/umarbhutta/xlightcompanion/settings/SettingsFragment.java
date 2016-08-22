@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion.control;
+package com.umarbhutta.xlightcompanion.settings;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
 import java.util.ArrayList;
@@ -32,15 +32,15 @@ import me.priyesh.chroma.ColorSelectListener;
 /**
  * Created by Umar Bhutta.
  */
-public class ControlFragment extends Fragment {
-    private static final String TAG = ControlFragment.class.getSimpleName();
+public class SettingsFragment extends Fragment {
+    private static final String TAG = SettingsFragment.class.getSimpleName();
     private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
     private TextView colorTextView;
     private Spinner scenarioSpinner;
     private LinearLayout scenarioNoneLL;
     private ToggleButton ring1Button, ring2Button, ring3Button;
-    private TextView deviceRingLabel, powerLabel, brightnessLabel, colorLabel;
+    private TextView deviceRingLabel;
 
     private ArrayList<String> scenarioDropdown;
 
@@ -65,9 +65,6 @@ public class ControlFragment extends Fragment {
         ring2Button = (ToggleButton) view.findViewById(R.id.ring2Button);
         ring3Button = (ToggleButton) view.findViewById(R.id.ring3Button);
         deviceRingLabel = (TextView) view.findViewById(R.id.deviceRingLabel);
-        brightnessLabel = (TextView) view.findViewById(R.id.brightnessLabel);
-        powerLabel = (TextView) view.findViewById(R.id.powerLabel);
-        colorLabel = (TextView) view.findViewById(R.id.colorLabel);
 
         scenarioSpinner = (Spinner) view.findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -101,7 +98,7 @@ public class ControlFragment extends Fragment {
 
                                 int cw = 0;
                                 int ww = 0;
-                                int c = (int) Long.parseLong(colorHex, 16);
+                                int c = (int)Long.parseLong(colorHex, 16);
                                 int r = (c >> 16) & 0xFF;
                                 int g = (c >> 8) & 0xFF;
                                 int b = (c >> 0) & 0xFF;
@@ -112,24 +109,39 @@ public class ControlFragment extends Fragment {
                                 colorTextView.setTextColor(Color.parseColor(colorHex));
 
                                 //send message to Particle based on which rings have been selected
-                                if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
+                                if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
-                                } else if (ring1 && ring2) {
+                                }
+                                else if (ring1 && ring2)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
-                                } else if (ring2 && ring3) {
+                                }
+                                else if (ring2 && ring3)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
-                                } else if (ring1 && ring3) {
+                                }
+                                else if (ring1 && ring3)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
-                                } else if (ring1) {
+                                }
+                                else if (ring1)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
-                                } else if (ring2) {
+                                }
+                                else if (ring2)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
-                                } else if (ring3) {
+                                }
+                                else if (ring3)
+                                {
                                     ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
-                                } else {
+                                }
+                                else
+                                {
                                     //do nothing
                                 }
                             }
@@ -159,16 +171,10 @@ public class ControlFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (parent.getItemAtPosition(position).toString() == "None") {
-                    //scenarioNoneLL.animate().alpha(1).setDuration(600).start();
-
-                    //enable all views below spinner
-                    disableEnableControls(true);
+                    scenarioNoneLL.animate().alpha(1).setDuration(600).start();
                 } else {
                     //if anything but "None" is selected, fade scenarioNoneLL out
-                    //scenarioNoneLL.animate().alpha(0).setDuration(500).start();
-
-                    //disable all views below spinner
-                    disableEnableControls(false);
+                    scenarioNoneLL.animate().alpha(0).setDuration(500).start();
 
                     ParticleBridge.JSONCommandScenario(ParticleBridge.DEFAULT_DEVICE_ID, position);
                     //position passed into above function corresponds to the scenarioId i.e. s1, s2, s3 to trigger
@@ -206,43 +212,39 @@ public class ControlFragment extends Fragment {
         return view;
     }
 
-    private void disableEnableControls(boolean isEnabled) {
-        powerSwitch.setEnabled(isEnabled);
-        colorTextView.setEnabled(isEnabled);
-        brightnessSeekBar.setEnabled(isEnabled);
-
-        int selectColor = R.color.colorAccent, allLabels = R.color.textColorPrimary;
-        if (isEnabled) {
-            selectColor = R.color.colorAccent;
-            allLabels = R.color.textColorPrimary;
-        } else {
-            selectColor = R.color.colorDisabled;
-            allLabels = R.color.colorDisabled;
-        }
-        colorTextView.setTextColor(ContextCompat.getColor(getActivity(), selectColor));
-        powerLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
-        brightnessLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
-        colorLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
-    }
-
     private void updateDeviceRingLabel() {
         String label = ParticleBridge.DEFAULT_LAMP_TEXT;
 
-        if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
+        if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
+        {
             label += ": " + ParticleBridge.RINGALL_TEXT;
-        } else if (ring1 && ring2) {
+        }
+        else if (ring1 && ring2)
+        {
             label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING2_TEXT;
-        } else if (ring2 && ring3) {
+        }
+        else if (ring2 && ring3)
+        {
             label += ": " + ParticleBridge.RING2_TEXT + " & " + ParticleBridge.RING3_TEXT;
-        } else if (ring1 && ring3) {
+        }
+        else if (ring1 && ring3)
+        {
             label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING3_TEXT;
-        } else if (ring1) {
-            label += ": " + ParticleBridge.RING1_TEXT;
-        } else if (ring2) {
-            label += ": " + ParticleBridge.RING2_TEXT;
-        } else if (ring3) {
-            label += ": " + ParticleBridge.RING3_TEXT;
-        } else {
+        }
+        else if (ring1)
+        {
+            label += ": " + ParticleBridge.RING1_TEXT ;
+        }
+        else if (ring2)
+        {
+            label += ": " + ParticleBridge.RING2_TEXT ;
+        }
+        else if (ring3)
+        {
+            label += ": " + ParticleBridge.RING3_TEXT ;
+        }
+        else
+        {
             label += "";
         }
 

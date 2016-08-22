@@ -27,9 +27,10 @@ public class ParticleBridge {
     public static final int MAX_DEVICES = 6;
 
     //Login details
-    public static final String EMAIL = "umar.bhutta@hotmail.com";
-    public static final String PASSWORD = "ballislife2016";
-    public static final String DEVICE_ID = "30003e001547343339383037";
+    public static final String EMAIL = "sunbaoshi1975@gmail.com";
+    public static final String PASSWORD = "1qazxsw2";
+    public static final String DEVICE_ID = "2d0027001647343432313031";
+
     //Particle vars
     public static ParticleDevice currDevice;
     private static int resultCode;
@@ -59,7 +60,7 @@ public class ParticleBridge {
     public static final int STATE_ON = 1;
     //default alarm/filter id
     public static final int DEFAULT_ALARM_ID = 255;
-    public static final int DEFAULT_FILTER_ID = 255;
+    public static final int DEFAULT_FILTER_ID = 0;
 
     //constants for testing lists
     public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
@@ -181,7 +182,7 @@ public class ParticleBridge {
             @Override
             public void run() {
                 int scenarioId = ScenarioFragment.name.size() + 1;
-                boolean x[] = {false};
+                boolean x[] = {false, false, false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"s" + scenarioId + "\",\"ring1\":" + " '}";
@@ -189,7 +190,7 @@ public class ParticleBridge {
                 message.add(json);
                 //send in first part of string
                 try {
-                    Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                    Log.e(TAG, "JSONConfigScenario " + message.get(0));
                     resultCode = currDevice.callFunction("JSONConfig", message);
                     x[0] = true;
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
@@ -203,7 +204,7 @@ public class ParticleBridge {
                     message.add(json);
                     //send in second part of string
                     try {
-                        Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                        Log.e(TAG, "JSONConfigScenario " + message.get(0));
                         resultCode = currDevice.callFunction("JSONConfig", message);
                         x[1] = true;
                     } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
@@ -214,11 +215,12 @@ public class ParticleBridge {
 
                 if (x[1]) {
                     //construct last part of string input, store in arraylist
-                    json = "\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
+                    //json = "\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
+                    json = "{'x2':'\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}'}";
                     message.add(json);
                     //send in last part of string
                     try {
-                        Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                        Log.e(TAG, "JSONConfigScenario " + message.get(0));
                         resultCode = currDevice.callFunction("JSONConfig", message);
                     } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                         e.printStackTrace();
@@ -236,7 +238,7 @@ public class ParticleBridge {
             public void run() {
                 int scheduleId = ScheduleFragment.name.size();
                 int repeat = isRepeat ? 1 : 0;
-                boolean x[] = {false};
+                boolean x[] = {false, false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"a" + scheduleId + "\",\"isRepeat\":" + repeat + ", '}";
@@ -244,7 +246,7 @@ public class ParticleBridge {
                 message.add(json);
                 //send in first part of string
                 try {
-                    Log.e(TAG, "JSONConfigSchedule" + message.get(0));
+                    Log.e(TAG, "JSONConfigSchedule " + message.get(0));
                     resultCode = currDevice.callFunction("JSONConfig", message);
                     x[0] = true;
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
@@ -258,7 +260,7 @@ public class ParticleBridge {
                     message.add(json);
                     //send in second part of string
                     try {
-                        Log.e(TAG, "JSONConfigSchedule" + message.get(0));
+                        Log.e(TAG, "JSONConfigSchedule " + message.get(0));
                         resultCode = currDevice.callFunction("JSONConfig", message);
                         x[1] = true;
                     } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
@@ -282,7 +284,7 @@ public class ParticleBridge {
                         scenarioId = i + 1;
                     }
                 }
-                boolean x[] = {false};
+                boolean x[] = {false, false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"r" + rule_schedule_notif_Id + "\",\"node_id\":" + nodeId + ", '}";
