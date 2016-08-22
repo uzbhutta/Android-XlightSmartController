@@ -17,7 +17,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
@@ -80,7 +79,7 @@ public class ControlFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //check if on or off
                 state = isChecked;
-                ParticleBridge.CldJsonCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
+                ParticleBridge.JSONCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
             }
         });
 
@@ -112,34 +111,34 @@ public class ControlFragment extends Fragment {
                                 //send message to Particle based on which rings have been selected
                                 if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3))
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, cw, ww, r, g, b);
                                 }
                                 else if (ring1 && ring2)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
                                 }
                                 else if (ring2 && ring3)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
                                 }
                                 else if (ring1 && ring3)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
                                 }
                                 else if (ring1)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, cw, ww, r, g, b);
                                 }
                                 else if (ring2)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, cw, ww, r, g, b);
                                 }
                                 else if (ring3)
                                 {
-                                    ParticleBridge.CldJsonCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
+                                    ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, cw, ww, r, g, b);
                                 }
                                 else
                                 {
@@ -164,7 +163,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.e(TAG, "The brightness value is " + seekBar.getProgress());
-                ParticleBridge.CldJsonCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress());
+                ParticleBridge.JSONCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress());
             }
         });
 
@@ -177,7 +176,7 @@ public class ControlFragment extends Fragment {
                     //if anything but "None" is selected, fade scenarioNoneLL out
                     scenarioNoneLL.animate().alpha(0).setDuration(500).start();
 
-                    ParticleBridge.CldJsonCommandScenario(ParticleBridge.DEFAULT_DEVICE_ID, position);
+                    ParticleBridge.JSONCommandScenario(ParticleBridge.DEFAULT_DEVICE_ID, position);
                     //position passed into above function corresponds to the scenarioId i.e. s1, s2, s3 to trigger
                 }
             }
@@ -191,36 +190,21 @@ public class ControlFragment extends Fragment {
         ring1Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    ring1 = true;
-                    Toast.makeText(getContext(), "Ring 1 chosen", Toast.LENGTH_SHORT).show();
-                } else {
-                    ring1 = false;
-                }
+                ring1 = isChecked;
                 updateDeviceRingLabel();
             }
         });
         ring2Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    ring2 = true;
-                    Toast.makeText(getContext(), "Ring 2 chosen", Toast.LENGTH_SHORT).show();
-                } else {
-                    ring2 = false;
-                }
+                ring2 = isChecked;
                 updateDeviceRingLabel();
             }
         });
         ring3Button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    ring3 = true;
-                    Toast.makeText(getContext(), "Ring 3 chosen", Toast.LENGTH_SHORT).show();
-                } else {
-                    ring3 = false;
-                }
+                ring3 = isChecked;
                 updateDeviceRingLabel();
             }
         });

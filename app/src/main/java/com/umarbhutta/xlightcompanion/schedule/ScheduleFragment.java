@@ -29,7 +29,7 @@ public class ScheduleFragment extends Fragment {
     public static String SCHEDULE_MINUTE = "SCHEDULE_MINUTE";
     public static String SCHEDULE_AMPM = "SCHEDULE_AMPM";
     public static String SCHEDULE_ISREPEAT = "SCHEDULE_ISREPEAT";
-    public static String SCHEDULE_DAYS = "SCHEDULE_DAYS";
+    public static String SCHEDULE_WEEKDAYS = "SCHEDULE_WEEKDAYS";
 
     public static ArrayList<String> name = new ArrayList<>();
     public static ArrayList<String> time = new ArrayList<>();
@@ -84,11 +84,11 @@ public class ScheduleFragment extends Fragment {
                 String incomingMinute = data.getStringExtra(SCHEDULE_MINUTE);
                 String incomingAMPM = data.getStringExtra(SCHEDULE_AMPM);
                 boolean incomingIsRepeat = data.getBooleanExtra(SCHEDULE_ISREPEAT, false);
-                String incomingDays = data.getStringExtra(SCHEDULE_ISREPEAT);
+                String incomingWeekdays = data.getStringExtra(SCHEDULE_WEEKDAYS);
 
                 name.add(incomingName);
                 time.add(incomingHour + ":" + incomingMinute + " " + incomingAMPM);
-                days.add("Mo We Th Fr Su");
+                days.add(incomingWeekdays);
 
                 scheduleListAdapter.notifyDataSetChanged();
                 Toast.makeText(getActivity(), "The schedule has been successfully added", Toast.LENGTH_SHORT).show();

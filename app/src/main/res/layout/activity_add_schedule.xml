@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent">
-
+    android:background="@color/colorAccent"
+    android:orientation="vertical">
 
 
     <TimePicker
+        android:id="@+id/timePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/timePicker"
         android:layout_below="@+id/backImageView" />
 
     <ImageView
+        android:id="@+id/backImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/backImageView"
-        android:scaleX=".8"
-        android:scaleY=".8"
-        android:src="@drawable/go_back"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
-        />
+        android:scaleX=".8"
+        android:scaleY=".8"
+        android:src="@drawable/go_back" />
 
 
     <View
@@ -39,7 +38,6 @@
         android:background="@color/dividerColorWhite" />
 
 
-
     <LinearLayout
         android:id="@+id/repeatLL"
         android:layout_width="match_parent"
@@ -51,24 +49,65 @@
         android:paddingRight="30dp"
         android:paddingTop="22dp">
 
-    <CheckBox
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:text="Repeat"
-        android:id="@+id/isRepeatCheckbox"
-        android:textColor="@android:color/white"
-        style="@style/CustomCheckBox" />
-
-        <TextView
+        <CheckBox
+            android:id="@+id/isRepeatCheckbox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="S       M       T       W       T       F       S"
-            android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            />
+            android:layout_weight="1"
+            style="@style/CustomCheckBox"
+            android:text="Repeat"
+            android:textColor="@android:color/white" />
+
+
+
+
+        <CheckBox
+            android:id="@+id/checkboxMonday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+
+        <CheckBox
+            android:id="@+id/checkboxTuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+
+        <CheckBox
+            android:id="@+id/checkboxWednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+
+        <CheckBox
+            android:id="@+id/checkboxThursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+
+        <CheckBox
+            android:id="@+id/checkboxFriday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+
+        <CheckBox
+            android:id="@+id/checkboxSaturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
+        <CheckBox
+            android:id="@+id/checkboxSunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CustomCheckBox"
+            android:textColor="@android:color/white" />
 
 
     </LinearLayout>
@@ -83,48 +122,47 @@
         android:background="@color/dividerColorWhite" />
 
     <LinearLayout
-    android:id="@+id/scheduleLL"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/line_2"
-    android:orientation="horizontal"
-    android:gravity="center_horizontal"
-    android:paddingBottom="22dp"
-    android:paddingLeft="30dp"
-    android:paddingRight="30dp"
-    android:paddingTop="22dp">
+        android:id="@+id/scheduleLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line_2"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="22dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="22dp">
 
         <Spinner
+            android:id="@+id/deviceSpinner"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:id="@+id/deviceSpinner" />
+            android:layout_weight="1" />
 
-    <Spinner
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:id="@+id/scenarioSpinner"
-        />
+        <Spinner
+            android:id="@+id/scenarioSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-</LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
-        android:paddingBottom="20dp" >
+        android:orientation="horizontal"
+        android:paddingBottom="20dp">
 
 
         <Button
+            android:id="@+id/addButton"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:text="ADD"
-            android:id="@+id/addButton"
-            android:textColor="@color/textDarkGrey"/>
+            android:textColor="@color/textDarkGrey" />
 
     </LinearLayout>
 

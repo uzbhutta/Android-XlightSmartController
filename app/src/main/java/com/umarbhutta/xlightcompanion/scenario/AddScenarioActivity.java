@@ -12,12 +12,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
@@ -126,7 +124,7 @@ public class AddScenarioActivity extends AppCompatActivity {
                 scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
-                ParticleBridge.CldJSONConfigScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
+                ParticleBridge.JSONConfigScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
@@ -24,15 +25,18 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private TimePicker timePicker;
     private CheckBox isRepeatCheckbox;
+    private CheckBox checkboxMonday, checkboxTuesday, checkboxWednesday, checkboxThursday, checkboxFriday, checkboxSaturday, checkboxSunday;
     private Spinner scenarioSpinner;
     private Spinner deviceSpinner;
     private Button addButton;
     private ImageView backImageView;
 
-    private int nodeId = ParticleBridge.DEFAULT_DEVICE_ID;
-    private boolean isRepeat;
-    private int hour, minute, daysInt = 0;
-    private String  am_pm, days, scenarioName, scenarioDevice;
+    private int defeaultNodeId = ParticleBridge.DEFAULT_DEVICE_ID;
+    private boolean isRepeat = false;
+    private int hour, minute, nodeId;
+    private String  am_pm, weekdays, outgoingWeekdays, scenarioName;
+    //a boolean of which day of week has been selected in active (0-6, 0 =  Monday)
+    private boolean[] weekdaySelected = {false, false, false, false, false, false, false};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,15 @@ public class AddScheduleActivity extends AppCompatActivity {
         addButton = (Button) findViewById(R.id.addButton);
         backImageView = (ImageView) findViewById(R.id.backImageView);
 
+        checkboxSunday = (CheckBox) findViewById(R.id.checkboxSunday);
+        checkboxMonday = (CheckBox) findViewById(R.id.checkboxMonday);
+        checkboxTuesday = (CheckBox) findViewById(R.id.checkboxTuesday);
+        checkboxWednesday = (CheckBox) findViewById(R.id.checkboxWednesday);
+        checkboxThursday = (CheckBox) findViewById(R.id.checkboxThursday);
+        checkboxFriday = (CheckBox) findViewById(R.id.checkboxFriday);
+        checkboxSaturday = (CheckBox) findViewById(R.id.checkboxSaturday);
+
+
         //initialize scenario spinner
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -75,6 +88,60 @@ public class AddScheduleActivity extends AppCompatActivity {
         deviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
         deviceSpinner.setAdapter(deviceAdapter);
+
+        //repeat checkbox
+        isRepeatCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isRepeat = isChecked;
+            }
+        });
+
+        //weekdays checkbox
+
+        checkboxMonday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[0] = isChecked;
+            }
+        });
+        checkboxTuesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[1] = isChecked;
+            }
+        });
+        checkboxWednesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[2] = isChecked;
+            }
+        });
+        checkboxThursday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[3] = isChecked;
+            }
+        });
+        checkboxFriday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[4] = isChecked;
+            }
+        });
+        checkboxSaturday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[5] = isChecked;
+            }
+        });
+        checkboxSunday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                weekdaySelected[6] = isChecked;
+            }
+        });
+
 
         //on click for add button
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -112,19 +179,71 @@ public class AddScheduleActivity extends AppCompatActivity {
                     minuteString = "0" + String.valueOf(minute);
                 }
 
-                //get value of isRepeat
-                isRepeat = isRepeatCheckbox.isChecked();
-
                 //get value of device spinner
-                scenarioDevice = scenarioSpinner.getSelectedItem().toString();
+                nodeId = (int) scenarioSpinner.getSelectedItemId();
 
                 //get value of scenario spinner
                 scenarioName = scenarioSpinner.getSelectedItem().toString();
 
-                //TODO: get value of days
+                //get value of days and value of display
+                weekdays = "";
+                outgoingWeekdays = "";
 
-                ParticleBridge.CldJSONConfigSchedule(isRepeat, daysInt, hour, minute);
-                ParticleBridge.CldJSONConfigRule(nodeId, scenarioName);
+                if (weekdaySelected[0]) { //Monday
+                    weekdays += "1";
+                    outgoingWeekdays += "Mo ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[1]) {
+                    weekdays += "1";
+                    outgoingWeekdays += "Tu ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[2]) {
+                    weekdays += "1";
+                    outgoingWeekdays += "We ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[3]) {
+                    weekdays += "1";
+                    outgoingWeekdays += "Th ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[4]) {
+                    weekdays += "1";
+                    outgoingWeekdays += "Fr ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[5]) {
+                    weekdays += "1";
+                    outgoingWeekdays += "Sa ";
+                } else {
+                    weekdays += "0";
+                }
+
+                if (weekdaySelected[6]) { //Sunday
+                    weekdays += "1";
+                    outgoingWeekdays += "Su ";
+                } else {
+                    weekdays += "0";
+                }
+
+                //call JSONConfigSchedule to send a schedule row
+                int addScheduleReturn = ParticleBridge.JSONConfigSchedule(isRepeat, weekdays, hour, minute);
+                //add Rule row when schedule row has been added
+                if (addScheduleReturn == 1) {
+                    ParticleBridge.JSONConfigRule(defeaultNodeId, scenarioName);
+                }
 
                 //send data to update the list
                 Intent returnIntent = getIntent();
@@ -133,7 +252,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 returnIntent.putExtra(ScheduleFragment.SCHEDULE_MINUTE, minuteString);
                 returnIntent.putExtra(ScheduleFragment.SCHEDULE_AMPM, am_pm);
                 returnIntent.putExtra(ScheduleFragment.SCHEDULE_ISREPEAT, isRepeat);
-                returnIntent.putExtra(ScheduleFragment.SCHEDULE_DAYS, days);
+                returnIntent.putExtra(ScheduleFragment.SCHEDULE_WEEKDAYS, outgoingWeekdays);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }

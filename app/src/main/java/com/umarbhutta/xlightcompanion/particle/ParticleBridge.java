@@ -19,7 +19,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
  * Created by Umar Bhutta.
  */
 public class ParticleBridge {
-    //Misc
+    //misc
     private static final String TAG = ParticleBridge.class.getSimpleName();
 
     //Max num constants
@@ -27,10 +27,9 @@ public class ParticleBridge {
     public static final int MAX_DEVICES = 6;
 
     //Login details
-    public static final String EMAIL = "sunbaoshi1975@gmail.com";
-    public static final String PASSWORD = "1qazxsw2";
-    public static final String DEVICE_ID = "2d0027001647343432313031";
-
+    public static final String EMAIL = "umar.bhutta@hotmail.com";
+    public static final String PASSWORD = "ballislife2016";
+    public static final String DEVICE_ID = "30003e001547343339383037";
     //Particle vars
     public static ParticleDevice currDevice;
     private static int resultCode;
@@ -88,7 +87,7 @@ public class ParticleBridge {
         }).start();
     }
 
-    public static int CldJsonCommandPower(final int nodeId, final boolean state) {
+    public static int JSONCommandPower(final int nodeId, final boolean state) {
         new Thread() {
             @Override
             public void run() {
@@ -96,11 +95,12 @@ public class ParticleBridge {
 
                 // Make the Particle call here
                 String json = "{\"cmd\":" + VALUE_POWER + ",\"node_id\":" + nodeId + ",\"state\":" + power + "}";
+                //String json = "{'cmd':" + VALUE_POWER + ",'node_id':" + nodeId + ",'state':" + power + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJsonCommand", message);
+                    Log.e(TAG, "JSONCommandPower" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
@@ -110,7 +110,7 @@ public class ParticleBridge {
         return resultCode;
     }
 
-    public static int CldJsonCommandBrightness(final int nodeId, final int value) {
+    public static int JSONCommandBrightness(final int nodeId, final int value) {
         new Thread() {
             @Override
             public void run() {
@@ -119,8 +119,8 @@ public class ParticleBridge {
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJsonCommand", message);
+                    Log.e(TAG, "JSONCommandBrightness" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
@@ -130,7 +130,7 @@ public class ParticleBridge {
         return resultCode;
     }
 
-    public static int CldJsonCommandColor(final int nodeId, final int ring, final boolean state, final int cw, final int ww, final int r, final int g, final int b) {
+    public static int JSONCommandColor(final int nodeId, final int ring, final boolean state, final int cw, final int ww, final int r, final int g, final int b) {
         new Thread() {
             @Override
             public void run() {
@@ -141,8 +141,8 @@ public class ParticleBridge {
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJsonCommand", message);
+                    Log.e(TAG, "JSONCommandColor " + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
@@ -153,7 +153,7 @@ public class ParticleBridge {
     }
 
 
-    public static int CldJsonCommandScenario(final int nodeId, final int position) {
+    public static int JSONCommandScenario(final int nodeId, final int position) {
         new Thread() {
             @Override
             public void run() {
@@ -165,8 +165,8 @@ public class ParticleBridge {
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJsonCommand", message);
+                    Log.e(TAG, "JSONCommandScenario " + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
@@ -176,11 +176,12 @@ public class ParticleBridge {
         return resultCode;
     }
 
-    public static int CldJSONConfigScenario(final int brightness, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
+    public static int JSONConfigScenario(final int brightness, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
         new Thread() {
             @Override
             public void run() {
                 int scenarioId = ScenarioFragment.name.size() + 1;
+                boolean x[] = {false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"s" + scenarioId + "\",\"ring1\":" + " '}";
@@ -188,47 +189,54 @@ public class ParticleBridge {
                 message.add(json);
                 //send in first part of string
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
+                    Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONConfig", message);
+                    x[0] = true;
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
                 message.clear();
 
-                //construct second part of string input, store in arraylist
-                json = "{'x1': '[" + STATE_ON + "," + cw +"," + ww + "," + r + "," + g + "," + b + "],\"ring2\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "], '}";
-                message.add(json);
-                //send in second part of string
-                try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
-                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                    e.printStackTrace();
+                if (x[0]) {
+                    //construct second part of string input, store in arraylist
+                    json = "{'x1': '[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"ring2\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "], '}";
+                    message.add(json);
+                    //send in second part of string
+                    try {
+                        Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                        resultCode = currDevice.callFunction("JSONConfig", message);
+                        x[1] = true;
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    message.clear();
                 }
-                message.clear();
 
-                //construct last part of string input, store in arraylist
-                json = "\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
-                message.add(json);
-                //send in last part of string
-                try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
-                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                    e.printStackTrace();
+                if (x[1]) {
+                    //construct last part of string input, store in arraylist
+                    json = "\"ring3\":[" + STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
+                    message.add(json);
+                    //send in last part of string
+                    try {
+                        Log.e(TAG, "JSONConfigScenario" + message.get(0));
+                        resultCode = currDevice.callFunction("JSONConfig", message);
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    message.clear();
                 }
-                message.clear();
             }
         }.start();
         return resultCode;
     }
 
-    public static int CldJSONConfigSchedule(final boolean isRepeat, final int weekdays, final int hour,  final int minute) {
+    public static int JSONConfigSchedule(final boolean isRepeat, final String weekdays, final int hour, final int minute) {
         new Thread() {
             @Override
             public void run() {
-                int scheduleId = ScheduleFragment.name.size() + 1;
+                int scheduleId = ScheduleFragment.name.size();
                 int repeat = isRepeat ? 1 : 0;
+                boolean x[] = {false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"a" + scheduleId + "\",\"isRepeat\":" + repeat + ", '}";
@@ -236,30 +244,34 @@ public class ParticleBridge {
                 message.add(json);
                 //send in first part of string
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
+                    Log.e(TAG, "JSONConfigSchedule" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONConfig", message);
+                    x[0] = true;
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
                 message.clear();
 
-                //construct second part of string input, store in arraylist
-                json = "{'x1': '\"weekdays\":" +  weekdays + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + DEFAULT_ALARM_ID + "} '}";
-                message.add(json);
-                //send in second part of string
-                try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
-                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                    e.printStackTrace();
+                if (x[0]) {
+                    //construct second part of string input, store in arraylist
+                    json = "{\"weekdays\":\"" + weekdays + "\",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + DEFAULT_ALARM_ID + "}";
+                    message.add(json);
+                    //send in second part of string
+                    try {
+                        Log.e(TAG, "JSONConfigSchedule" + message.get(0));
+                        resultCode = currDevice.callFunction("JSONConfig", message);
+                        x[1] = true;
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    message.clear();
                 }
-                message.clear();
             }
         }.start();
-        return resultCode;
+        return 1;
     }
 
-    public static int CldJSONConfigRule(final int nodeId, final String scenarioName) {
+    public static int JSONConfigRule(final int nodeId, final String scenarioName) {
         new Thread() {
             @Override
             public void run() {
@@ -270,6 +282,7 @@ public class ParticleBridge {
                         scenarioId = i + 1;
                     }
                 }
+                boolean x[] = {false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
                 String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"r" + rule_schedule_notif_Id + "\",\"node_id\":" + nodeId + ", '}";
@@ -277,24 +290,28 @@ public class ParticleBridge {
                 message.add(json);
                 //send in first part of string
                 try {
-                    Log.e(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
+                    Log.e(TAG, "JSONConfigRule" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONConfig", message);
+                    x[0] = true;
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
                 }
                 message.clear();
 
-                //construct second part of string input, store in arraylist
-                json = "{'x1': '\"SCT_uid\":\"a" +  rule_schedule_notif_Id + "\",\"SNT_uid\":\"s" + scenarioId + "\",\"notif_uid\":\"n" + rule_schedule_notif_Id + "\"} '}";
-                message.add(json);
-                //send in second part of string
-                try {
-                    Log.i(TAG, message.get(0));
-                    resultCode = currDevice.callFunction("CldJSONConfig", message);
-                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                    e.printStackTrace();
+                if (x[0]) {
+                    //construct second part of string input, store in arraylist
+                    json = "{'x1': '\"SCT_uid\":\"a" + rule_schedule_notif_Id + "\",\"SNT_uid\":\"s" + scenarioId + "\",\"notif_uid\":\"n" + rule_schedule_notif_Id + "\"} '}";
+                    message.add(json);
+                    //send in second part of string
+                    try {
+                        Log.i(TAG, "JSONConfigRule" + message.get(0));
+                        resultCode = currDevice.callFunction("JSONConfig", message);
+                        x[1] = true;
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    message.clear();
                 }
-                message.clear();
             }
         }.start();
         return resultCode;
