@@ -27,9 +27,13 @@ public class ParticleBridge {
     public static final int MAX_DEVICES = 6;
 
     //Login details
-    public static final String EMAIL = "umar.bhutta@hotmail.com";
-    public static final String PASSWORD = "ballislife2016";
-    public static final String DEVICE_ID = "30003e001547343339383037";
+    public static final String EMAIL = "sunbaoshi1975@gmail.com";
+    public static final String PASSWORD = "1qazxsw2";
+    public static final String DEVICE_ID = "2d0027001647343432313031";
+
+//    public static final String EMAIL = "umar.bhutta@hotmail.com";
+//    public static final String PASSWORD = "ballislife2016";
+//    public static final String DEVICE_ID = "30003e001547343339383037";
 
     //Particle vars
     public static ParticleDevice currDevice;
@@ -245,7 +249,7 @@ public class ParticleBridge {
                 int repeat = isRepeat ? 1 : 0;
 
                 //construct first part of string input, and store it in arraylist (of size 1)
-                String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"a" + scheduleId + "\",\"isRepeat\":" + repeat + ", '}";
+                String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"a" + scheduleId + "\",\"isRepeat\":" + "1" + ", '}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 //send in first part of string
@@ -260,7 +264,7 @@ public class ParticleBridge {
 
                 if (x[0]) {
                     //construct second part of string input, store in arraylist
-                    json = "\"weekdays\":" + "2" + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + DEFAULT_ALARM_ID + "}";
+                    json = "\"weekdays\":" + "0" + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + DEFAULT_ALARM_ID + "}";
                     message.add(json);
                     //send in second part of string
                     try {

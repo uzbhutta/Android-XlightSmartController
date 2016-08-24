@@ -59,13 +59,19 @@
             android:textColor="@android:color/white" />
 
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:text="M      T       W      T      F      S      S"/>
 
         <CheckBox
             android:id="@+id/checkboxMonday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
         <CheckBox
@@ -73,6 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
         <CheckBox
@@ -80,6 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
         <CheckBox
@@ -87,6 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
         <CheckBox
@@ -94,6 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
         <CheckBox
@@ -101,12 +111,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
         <CheckBox
             android:id="@+id/checkboxSunday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/CustomCheckBox"
+            android:visibility="gone"
             android:textColor="@android:color/white" />
 
 
