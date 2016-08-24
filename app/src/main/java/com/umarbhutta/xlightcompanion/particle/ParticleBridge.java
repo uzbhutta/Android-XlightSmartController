@@ -27,13 +27,10 @@ public class ParticleBridge {
     public static final int MAX_DEVICES = 6;
 
     //Login details
-    public static final String EMAIL = "sunbaoshi1975@gmail.com";
-    public static final String PASSWORD = "1qazxsw2";
-    public static final String DEVICE_ID = "2d0027001647343432313031";
 
-//    public static final String EMAIL = "umar.bhutta@hotmail.com";
-//    public static final String PASSWORD = "ballislife2016";
-//    public static final String DEVICE_ID = "30003e001547343339383037";
+    public static final String EMAIL = "umar.bhutta@hotmail.com";
+    public static final String PASSWORD = "ballislife2016";
+    public static final String DEVICE_ID = "30003e001547343339383037";
 
     //Particle vars
     public static ParticleDevice currDevice;

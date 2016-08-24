@@ -111,7 +111,7 @@ public class GlanceFragment extends Fragment {
     }
 
     private void updateDisplay() {
-        outsideTemp.setText(" " + mWeatherDetails.getTemp());
+        outsideTemp.setText(" " + mWeatherDetails.getTemp("celsius"));
         degreeSymbol.setText("\u00B0");
     }
 
