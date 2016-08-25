@@ -238,12 +238,14 @@ public class AddScheduleActivity extends AppCompatActivity {
                     weekdays += "0";
                 }
 
-                //call JSONConfigSchedule to send a schedule row
-                int addScheduleReturn = ParticleBridge.JSONConfigSchedule(isRepeat, weekdays, hour, minute);
-                //add Rule row when schedule row has been added
-                if (addScheduleReturn == 1) {
-                    ParticleBridge.JSONConfigRule(defeaultNodeId, scenarioName);
+                if (outgoingWeekdays == "Mo Tu We Th Fr Sa Su ") {
+                    outgoingWeekdays = "Every day";
+                } else if (outgoingWeekdays == "") {
+                    outgoingWeekdays = "Today";
                 }
+
+                //call JSONConfigAlarm to send a schedule row
+                ParticleBridge.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

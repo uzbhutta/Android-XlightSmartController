@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -41,6 +42,7 @@ public class ControlFragment extends Fragment {
     private LinearLayout scenarioNoneLL;
     private ToggleButton ring1Button, ring2Button, ring3Button;
     private TextView deviceRingLabel, powerLabel, brightnessLabel, colorLabel;
+    private ImageView lightImageView;
 
     private ArrayList<String> scenarioDropdown;
 
@@ -68,6 +70,7 @@ public class ControlFragment extends Fragment {
         brightnessLabel = (TextView) view.findViewById(R.id.brightnessLabel);
         powerLabel = (TextView) view.findViewById(R.id.powerLabel);
         colorLabel = (TextView) view.findViewById(R.id.colorLabel);
+        lightImageView = (ImageView) view.findViewById(R.id.lightImageView);
 
         scenarioSpinner = (Spinner) view.findViewById(R.id.scenarioSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -228,22 +231,33 @@ public class ControlFragment extends Fragment {
     private void updateDeviceRingLabel() {
         String label = ParticleBridge.DEFAULT_LAMP_TEXT;
 
-        if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
+        if (ring1 && ring2 && ring3) {
             label += ": " + ParticleBridge.RINGALL_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring123);
+        } else if (!ring1 && !ring2 && !ring3) {
+            label += ": " + ParticleBridge.RINGALL_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_noring);
         } else if (ring1 && ring2) {
             label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING2_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring12);
         } else if (ring2 && ring3) {
             label += ": " + ParticleBridge.RING2_TEXT + " & " + ParticleBridge.RING3_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring23);
         } else if (ring1 && ring3) {
             label += ": " + ParticleBridge.RING1_TEXT + " & " + ParticleBridge.RING3_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring13);
         } else if (ring1) {
             label += ": " + ParticleBridge.RING1_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring1);
         } else if (ring2) {
             label += ": " + ParticleBridge.RING2_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring2);
         } else if (ring3) {
             label += ": " + ParticleBridge.RING3_TEXT;
+            lightImageView.setImageResource(R.drawable.aquabg_ring3);
         } else {
             label += "";
+            lightImageView.setImageResource(R.drawable.aquabg_noring);
         }
 
         deviceRingLabel.setText(label);

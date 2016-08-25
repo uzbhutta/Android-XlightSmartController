@@ -16,8 +16,13 @@ public class WeatherDetails {
         this.mIcon = mIcon;
     }
 
-    public int getTemp() {
-        return mTempC;
+    public int getTemp(String unit)
+    {
+        if (unit == "fahrenheit") {
+            return (int) mTempF;
+        } else {
+            return mTempC;
+        }
     }
 
     public void setTemp(double mTemp) {
