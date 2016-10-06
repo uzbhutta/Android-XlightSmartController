@@ -6,6 +6,7 @@ import android.util.Log;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
+import com.umarbhutta.xlightcompanion.particle.CloudAccount;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,12 +27,6 @@ public class ParticleBridge {
     public static final int MAX_SCHEDULES = 6;
     public static final int MAX_DEVICES = 6;
 
-    //Login details
-
-    public static final String EMAIL = "umar.bhutta@hotmail.com";
-    public static final String PASSWORD = "ballislife2016";
-    public static final String DEVICE_ID = "30003e001547343339383037";
-
     //Particle vars
     public static ParticleDevice currDevice;
     private static int resultCode;
@@ -42,6 +37,7 @@ public class ParticleBridge {
     public static final int VALUE_COLOR = 2;
     public static final int VALUE_BRIGHTNESS = 3;
     public static final int VALUE_SCENARIO = 4;
+    public static final int VALUE_CCT = 5;
     //device id
     public static final int DEFAULT_DEVICE_ID = 1;
     //ring values
@@ -81,8 +77,8 @@ public class ParticleBridge {
             @Override
             public void run() {
                 try {
-                    ParticleCloudSDK.getCloud().logIn(EMAIL, PASSWORD);
-                    currDevice = ParticleCloudSDK.getCloud().getDevice(DEVICE_ID);
+                    ParticleCloudSDK.getCloud().logIn(CloudAccount.EMAIL, CloudAccount.PASSWORD);
+                    currDevice = ParticleCloudSDK.getCloud().getDevice(CloudAccount.DEVICE_ID);
                 } catch (ParticleCloudException e) {
                     e.printStackTrace();
                 }
@@ -123,6 +119,26 @@ public class ParticleBridge {
                 message.add(json);
                 try {
                     Log.e(TAG, "JSONCommandBrightness" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
+    public static int JSONCommandCCT(final int nodeId, final int value) {
+        new Thread() {
+            @Override
+            public void run() {
+                // Make the Particle call here
+                String json = "{\"cmd\":" + VALUE_CCT + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                try {
+                    Log.d(TAG, "JSONCommandCCT" + message.get(0));
                     resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
@@ -365,4 +381,24 @@ public class ParticleBridge {
 //        return resultCode;
 //    }
 
+    public static int FastCallPowerSwitch(final int nodeId, final boolean state) {
+        new Thread() {
+            @Override
+            public void run() {
+                int power = state ? 1 : 0;
+
+                // Make the Particle call here
+                String strParam = String.format("%d:%d", nodeId, state ? 1 : 0);
+                ArrayList<String> message = new ArrayList<>();
+                message.add(strParam);
+                try {
+                    Log.d(TAG, "FastCallPowerSwitch: " + strParam);
+                    resultCode = currDevice.callFunction("PowerSwitch", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        return resultCode;
+    }
 }

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -40,6 +41,12 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             mDeviceSwitch = (Switch) itemView.findViewById(R.id.deviceSwitch);
 
             itemView.setOnClickListener(this);
+
+            mDeviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    ParticleBridge.FastCallPowerSwitch(ParticleBridge.DEFAULT_DEVICE_ID, isChecked);
+                }
+            });
         }
 
         public void bindView (int position) {
@@ -48,7 +55,6 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View v) {
-
         }
     }
 }
