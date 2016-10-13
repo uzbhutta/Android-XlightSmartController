@@ -2,6 +2,8 @@ package com.umarbhutta.xlightcompanion.control;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
@@ -83,6 +86,29 @@ public class ControlFragment extends Fragment {
         scenarioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
         scenarioSpinner.setAdapter(scenarioAdapter);
+
+        powerSwitch.setChecked(MainActivity.mainDevice_st > 0);
+        brightnessSeekBar.setProgress(MainActivity.mainDevice_br);
+        cctSeekBar.setProgress(MainActivity.mainDevice_cct - 2700);
+
+        MainActivity.handlerControl = new Handler() {
+            public void handleMessage(Message msg) {
+                int intValue =  msg.getData().getInt("State", -255);
+                if( intValue != -255 ) {
+                    powerSwitch.setChecked(intValue > 0);
+                }
+
+                intValue =  msg.getData().getInt("BR", -255);
+                if( intValue != -255 ) {
+                    brightnessSeekBar.setProgress(intValue);
+                }
+
+                intValue =  msg.getData().getInt("CCT", -255);
+                if( intValue != -255 ) {
+                    cctSeekBar.setProgress(intValue - 2700);
+                }
+            }
+        };
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,7 +37,7 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
-    TextView outsideTemp, degreeSymbol;
+    TextView outsideTemp, degreeSymbol, roomTemp;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     WeatherDetails mWeatherDetails;
@@ -48,6 +50,17 @@ public class GlanceFragment extends Fragment {
         fab = (com.github.clans.fab.FloatingActionButton) view.findViewById(R.id.fab);
         outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
         degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
+        roomTemp = (TextView) view.findViewById(R.id.valRoomTemp);
+        roomTemp.setText(MainActivity.mainRoomTemp + "\u00B0");
+
+        MainActivity.handlerGlance = new Handler() {
+            public void handleMessage(Message msg) {
+                int intValue =  msg.getData().getInt("DHTt", -255);
+                if( intValue != -255 ) {
+                    roomTemp.setText(intValue + "\u00B0");
+                }
+            }
+        };
 
         //setup recycler view
         RecyclerView devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
@@ -113,6 +126,7 @@ public class GlanceFragment extends Fragment {
     private void updateDisplay() {
         outsideTemp.setText(" " + mWeatherDetails.getTemp("celsius"));
         degreeSymbol.setText("\u00B0");
+        roomTemp.setText(MainActivity.mainRoomTemp + "\u00B0");
     }
 
     private WeatherDetails getWeatherDetails(String jsonData) throws JSONException {

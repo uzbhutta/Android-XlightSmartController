@@ -1,6 +1,7 @@
 package com.umarbhutta.xlightcompanion.main;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -21,6 +22,15 @@ import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static int mainDevice_st = 0;
+    public static int mainDevice_br = 50;
+    public static int mainDevice_cct = 2700;
+    public static int mainRoomTemp = 24;
+
+    public static Handler handlerGlance = null;
+    public static Handler handlerDeviceList = null;
+    public static Handler handlerControl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
