@@ -1,18 +1,28 @@
 package com.umarbhutta.xlightcompanion.particle;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
+import com.umarbhutta.xlightcompanion.particle.CloudAccount;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.ParticleDevice;
+import io.particle.android.sdk.cloud.ParticleEvent;
+import io.particle.android.sdk.cloud.ParticleEventHandler;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 
 /**
@@ -26,15 +36,10 @@ public class ParticleBridge {
     public static final int MAX_SCHEDULES = 6;
     public static final int MAX_DEVICES = 6;
 
-    //Login details
-
-    public static final String EMAIL = "umar.bhutta@hotmail.com";
-    public static final String PASSWORD = "ballislife2016";
-    public static final String DEVICE_ID = "30003e001547343339383037";
-
     //Particle vars
     public static ParticleDevice currDevice;
     private static int resultCode;
+    private static long subscriptionId = 0;
 
     //CLOUD FUNCTION CONSTS
     //cmd types
@@ -42,6 +47,8 @@ public class ParticleBridge {
     public static final int VALUE_COLOR = 2;
     public static final int VALUE_BRIGHTNESS = 3;
     public static final int VALUE_SCENARIO = 4;
+    public static final int VALUE_CCT = 5;
+    public static final int VALUE_QUERY = 6;
     //device id
     public static final int DEFAULT_DEVICE_ID = 1;
     //ring values
@@ -64,6 +71,10 @@ public class ParticleBridge {
     public static final int DEFAULT_ALARM_ID = 255;
     public static final int DEFAULT_FILTER_ID = 0;
 
+    // Event names
+    public static final String eventDeviceStatus = "xlc-status-device";
+    public static final String eventSensorData = "xlc-data-sensor";
+
     //constants for testing lists
     public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
@@ -81,8 +92,20 @@ public class ParticleBridge {
             @Override
             public void run() {
                 try {
-                    ParticleCloudSDK.getCloud().logIn(EMAIL, PASSWORD);
-                    currDevice = ParticleCloudSDK.getCloud().getDevice(DEVICE_ID);
+                    ParticleCloudSDK.getCloud().logIn(CloudAccount.EMAIL, CloudAccount.PASSWORD);
+                    currDevice = ParticleCloudSDK.getCloud().getDevice(CloudAccount.DEVICE_ID);
+                    SubscribeDeviceEvents();
+
+                    // Delay 2 seconds, then Query Main Device
+                    Handler myHandler = new Handler(Looper.getMainLooper());
+                    myHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            JSONCommandQueryDevice(1);
+                        }
+                    }, 2000);
+
                 } catch (ParticleCloudException e) {
                     e.printStackTrace();
                 }
@@ -133,6 +156,26 @@ public class ParticleBridge {
         return resultCode;
     }
 
+    public static int JSONCommandCCT(final int nodeId, final int value) {
+        new Thread() {
+            @Override
+            public void run() {
+                // Make the Particle call here
+                String json = "{\"cmd\":" + VALUE_CCT + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                try {
+                    Log.d(TAG, "JSONCommandCCT" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
     public static int JSONCommandColor(final int nodeId, final int ring, final boolean state, final int cw, final int ww, final int r, final int g, final int b) {
         new Thread() {
             @Override
@@ -169,6 +212,26 @@ public class ParticleBridge {
                 message.add(json);
                 try {
                     Log.e(TAG, "JSONCommandScenario " + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
+    public static int JSONCommandQueryDevice(final int nodeId) {
+        new Thread() {
+            @Override
+            public void run() {
+                // Make the Particle call here
+                String json = "{\"cmd\":" + VALUE_QUERY + ",\"node_id\":" + nodeId + "}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                try {
+                    Log.i(TAG, "JSONCommandQueryDevice" + message.get(0));
                     resultCode = currDevice.callFunction("JSONCommand", message);
                 } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
                     e.printStackTrace();
@@ -365,4 +428,142 @@ public class ParticleBridge {
 //        return resultCode;
 //    }
 
+    public static int JSONGetDeviceStatus(final int nodeId) {
+        new Thread() {
+            @Override
+            public void run() {
+                //construct first part of string input, and store it in arraylist (of size 1)
+                String json = "{\"op\":0,\"fl\":1,\"run\":0,\"uid\":\"h" + nodeId + "}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                //send in first part of string
+                try {
+                    Log.d(TAG, "JSONGetDeviceStatus " + message.get(0));
+                    resultCode = currDevice.callFunction("JSONConfig", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
+    public static int FastCallPowerSwitch(final int nodeId, final boolean state) {
+        new Thread() {
+            @Override
+            public void run() {
+                // Make the Particle call here
+                String strParam = String.format("%d:%d", nodeId, state ? 1 : 0);
+                ArrayList<String> message = new ArrayList<>();
+                message.add(strParam);
+                try {
+                    Log.d(TAG, "FastCallPowerSwitch: " + strParam);
+                    resultCode = currDevice.callFunction("PowerSwitch", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        return resultCode;
+    }
+
+    // Particle events publishing & subscribing
+    public static long SubscribeDeviceEvents() {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    subscriptionId = currDevice.subscribeToEvents(null, new ParticleEventHandler() {
+                        public void onEvent(String eventName, ParticleEvent event) {
+                            Log.i(TAG, "Received event: " + eventName + " with payload: " + event.dataPayload);
+                            try {
+                                JSONObject jObject = new JSONObject(event.dataPayload);
+                                //if (eventName.equalsIgnoreCase(eventDeviceStatus)) {
+                                    if (jObject.has("nd")) {
+                                        int nodeId = jObject.getInt("nd");
+                                        if (nodeId ==  1) {
+
+                                            Message msgControlObj = null;
+                                            Bundle bdlControl = null;
+                                            if( MainActivity.handlerControl != null ) {
+                                                msgControlObj = MainActivity.handlerControl.obtainMessage();
+                                                bdlControl = new Bundle();
+                                            }
+
+                                            if (jObject.has("State")) {
+                                                MainActivity.mainDevice_st = jObject.getInt("State");
+                                                if( MainActivity.handlerDeviceList != null ) {
+                                                    Message msgObj = MainActivity.handlerDeviceList.obtainMessage();
+                                                    Bundle b = new Bundle();
+                                                    b.putInt("State", MainActivity.mainDevice_st);
+                                                    msgObj.setData(b);
+                                                    MainActivity.handlerDeviceList.sendMessage(msgObj);
+                                                }
+                                                if( MainActivity.handlerControl != null ) {
+                                                    bdlControl.putInt("State", MainActivity.mainDevice_st);
+                                                }
+                                            }
+                                            if (jObject.has("BR")) {
+                                                MainActivity.mainDevice_br = jObject.getInt("BR");
+                                                if( MainActivity.handlerControl != null ) {
+                                                    bdlControl.putInt("BR", MainActivity.mainDevice_br);
+                                                }
+                                            }
+                                            if (jObject.has("CCT")) {
+                                                MainActivity.mainDevice_cct = jObject.getInt("CCT");
+                                                if( MainActivity.handlerControl != null ) {
+                                                    bdlControl.putInt("CCT", MainActivity.mainDevice_cct);
+                                                }
+                                            }
+
+                                            if( MainActivity.handlerControl != null && msgControlObj != null ) {
+                                                msgControlObj.setData(bdlControl);
+                                                MainActivity.handlerControl.sendMessage(msgControlObj);
+                                            }
+                                        }
+                                    }
+                                //} else if (eventName.equalsIgnoreCase(eventSensorData)) {
+                                    if (jObject.has("DHTt")) {
+                                        MainActivity.mainRoomTemp = jObject.getInt("DHTt");
+                                        if( MainActivity.handlerGlance != null ) {
+                                            Message msgObj = MainActivity.handlerGlance.obtainMessage();
+                                            Bundle b = new Bundle();
+                                            b.putInt("DHTt", MainActivity.mainRoomTemp);
+                                            msgObj.setData(b);
+                                            MainActivity.handlerGlance.sendMessage(msgObj);
+                                        }
+                                    }
+                                //}
+                            } catch (final JSONException e) {
+                                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                            }
+                        }
+
+                        public void onEventError(Exception e) {
+                            Log.e(TAG, "Event error: ", e);
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        return subscriptionId;
+    }
+
+    public static void UnsubscribeDeviceEvents() {
+        new Thread() {
+            @Override
+            public void run() {
+                if( subscriptionId > 0 ) {
+                    try {
+                        currDevice.unsubscribeFromEvents(subscriptionId);
+                    } catch (ParticleCloudException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+    }
 }

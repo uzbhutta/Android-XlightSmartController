@@ -2,6 +2,8 @@ package com.umarbhutta.xlightcompanion.control;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
@@ -37,11 +40,12 @@ public class ControlFragment extends Fragment {
     private static final String TAG = ControlFragment.class.getSimpleName();
     private Switch powerSwitch;
     private SeekBar brightnessSeekBar;
+    private SeekBar cctSeekBar;
     private TextView colorTextView;
     private Spinner scenarioSpinner;
     private LinearLayout scenarioNoneLL;
     private ToggleButton ring1Button, ring2Button, ring3Button;
-    private TextView deviceRingLabel, powerLabel, brightnessLabel, colorLabel;
+    private TextView deviceRingLabel, powerLabel, brightnessLabel, cctLabel, colorLabel;
     private ImageView lightImageView;
 
     private ArrayList<String> scenarioDropdown;
@@ -60,6 +64,8 @@ public class ControlFragment extends Fragment {
 
         powerSwitch = (Switch) view.findViewById(R.id.powerSwitch);
         brightnessSeekBar = (SeekBar) view.findViewById(R.id.brightnessSeekBar);
+        cctSeekBar = (SeekBar) view.findViewById(R.id.cctSeekBar);
+        cctSeekBar.setMax(6500-2700);
         colorTextView = (TextView) view.findViewById(R.id.colorTextView);
         scenarioNoneLL = (LinearLayout) view.findViewById(R.id.scenarioNoneLL);
         scenarioNoneLL.setAlpha(1);
@@ -68,6 +74,7 @@ public class ControlFragment extends Fragment {
         ring3Button = (ToggleButton) view.findViewById(R.id.ring3Button);
         deviceRingLabel = (TextView) view.findViewById(R.id.deviceRingLabel);
         brightnessLabel = (TextView) view.findViewById(R.id.brightnessLabel);
+        cctLabel = (TextView) view.findViewById(R.id.cctLabel);
         powerLabel = (TextView) view.findViewById(R.id.powerLabel);
         colorLabel = (TextView) view.findViewById(R.id.colorLabel);
         lightImageView = (ImageView) view.findViewById(R.id.lightImageView);
@@ -80,12 +87,36 @@ public class ControlFragment extends Fragment {
         // Apply the scenarioAdapter to the spinner
         scenarioSpinner.setAdapter(scenarioAdapter);
 
+        powerSwitch.setChecked(MainActivity.mainDevice_st > 0);
+        brightnessSeekBar.setProgress(MainActivity.mainDevice_br);
+        cctSeekBar.setProgress(MainActivity.mainDevice_cct - 2700);
+
+        MainActivity.handlerControl = new Handler() {
+            public void handleMessage(Message msg) {
+                int intValue =  msg.getData().getInt("State", -255);
+                if( intValue != -255 ) {
+                    powerSwitch.setChecked(intValue > 0);
+                }
+
+                intValue =  msg.getData().getInt("BR", -255);
+                if( intValue != -255 ) {
+                    brightnessSeekBar.setProgress(intValue);
+                }
+
+                intValue =  msg.getData().getInt("CCT", -255);
+                if( intValue != -255 ) {
+                    cctSeekBar.setProgress(intValue - 2700);
+                }
+            }
+        };
+
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //check if on or off
                 state = isChecked;
-                ParticleBridge.JSONCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
+                //ParticleBridge.JSONCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
+                ParticleBridge.FastCallPowerSwitch(ParticleBridge.DEFAULT_DEVICE_ID, state);
             }
         });
 
@@ -158,6 +189,22 @@ public class ControlFragment extends Fragment {
             }
         });
 
+        cctSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d(TAG, "The CCT value is " + seekBar.getProgress()+2700);
+                ParticleBridge.JSONCommandCCT(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress()+2700);
+            }
+        });
+
         scenarioSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -213,6 +260,7 @@ public class ControlFragment extends Fragment {
         powerSwitch.setEnabled(isEnabled);
         colorTextView.setEnabled(isEnabled);
         brightnessSeekBar.setEnabled(isEnabled);
+        cctSeekBar.setEnabled(isEnabled);
 
         int selectColor = R.color.colorAccent, allLabels = R.color.textColorPrimary;
         if (isEnabled) {
@@ -225,6 +273,7 @@ public class ControlFragment extends Fragment {
         colorTextView.setTextColor(ContextCompat.getColor(getActivity(), selectColor));
         powerLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
         brightnessLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
+        cctLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
         colorLabel.setTextColor(ContextCompat.getColor(getActivity(), allLabels));
     }
 
