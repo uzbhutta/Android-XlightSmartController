@@ -18,8 +18,9 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.SDK.ParticleBridge;
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.main.MainActivity;
 
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
@@ -64,7 +65,7 @@ public class AddScenarioActivity extends AppCompatActivity {
 
         filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(this, R.layout.control_scenario_spinner_item, ParticleBridge.filterNames);
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(this, R.layout.control_scenario_spinner_item, MainActivity.filterNames);
         // Specify the layout to use when the list of choices appears
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner

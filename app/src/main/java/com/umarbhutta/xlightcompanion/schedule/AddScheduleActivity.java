@@ -15,8 +15,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
-import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.SDK.xltDevice;
+import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
 import java.util.Calendar;
@@ -31,7 +32,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     private Button addButton;
     private ImageView backImageView;
 
-    private int defeaultNodeId = ParticleBridge.DEFAULT_DEVICE_ID;
+    private int defeaultNodeId = xltDevice.DEFAULT_DEVICE_ID;
     private boolean isRepeat = false;
     private int hour, minute, nodeId;
     private String  am_pm, weekdays, outgoingWeekdays, scenarioName;
@@ -83,7 +84,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         //initialize device spinner
         deviceSpinner = (Spinner) findViewById(R.id.deviceSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> deviceAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_spinner_item, ParticleBridge.deviceNames);
+        ArrayAdapter<String> deviceAdapter = new ArrayAdapter<>(this, R.layout.add_schedule_spinner_item, MainActivity.deviceNames);
         // Specify the layout to use when the list of choices appears
         deviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
@@ -245,7 +246,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                 }
 
                 //call JSONConfigAlarm to send a schedule row
-                ParticleBridge.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
+                // DMI
+                //ParticleBridge.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

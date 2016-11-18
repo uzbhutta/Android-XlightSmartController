@@ -51,7 +51,7 @@ public class GlanceFragment extends Fragment {
         outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
         degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
         roomTemp = (TextView) view.findViewById(R.id.valRoomTemp);
-        roomTemp.setText(MainActivity.mainRoomTemp + "\u00B0");
+        roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
 
         MainActivity.handlerGlance = new Handler() {
             public void handleMessage(Message msg) {
@@ -126,7 +126,7 @@ public class GlanceFragment extends Fragment {
     private void updateDisplay() {
         outsideTemp.setText(" " + mWeatherDetails.getTemp("celsius"));
         degreeSymbol.setText("\u00B0");
-        roomTemp.setText(MainActivity.mainRoomTemp + "\u00B0");
+        roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
     }
 
     private WeatherDetails getWeatherDetails(String jsonData) throws JSONException {

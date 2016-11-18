@@ -16,17 +16,22 @@ import android.view.MenuItem;
 import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.control.ControlFragment;
 import com.umarbhutta.xlightcompanion.glance.GlanceFragment;
-import com.umarbhutta.xlightcompanion.particle.ParticleBridge;
+import com.umarbhutta.xlightcompanion.SDK.xltDevice;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static int mainDevice_st = 0;
-    public static int mainDevice_br = 50;
-    public static int mainDevice_cct = 2700;
-    public static int mainRoomTemp = 24;
+    //constants for testing lists
+    public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
+    public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
+    public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
+    public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
+    public static final String[] scenarioDescriptions = {"A red color at 52% brightness", "A blue-green color at 100% brightness", "An amber color at 50% brightness", "Turn off", "A warm-white color at 100% brightness", "A green color at 52% brightness"};
+    public static final String[] filterNames = {"Breathe", "Music Match", "Flash"};
+
+    public static xltDevice m_mainDevice;
 
     public static Handler handlerGlance = null;
     public static Handler handlerDeviceList = null;
@@ -39,8 +44,9 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //login to Particle cloud
-        ParticleBridge.authenticate(this);
+        // Initialize SmartDevice SDK
+        m_mainDevice = new xltDevice();
+        m_mainDevice.Init(this);
 
         //setup drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

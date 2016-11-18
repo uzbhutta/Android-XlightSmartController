@@ -1,4 +1,4 @@
-package com.umarbhutta.xlightcompanion.particle;
+package com.umarbhutta.xlightcompanion.SDK;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.util.Log;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
-import com.umarbhutta.xlightcompanion.particle.CloudAccount;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 /**
  * Created by Umar Bhutta.
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public class ParticleBridge {
     //misc
     private static final String TAG = ParticleBridge.class.getSimpleName();
@@ -41,29 +41,6 @@ public class ParticleBridge {
     private static int resultCode;
     private static long subscriptionId = 0;
 
-    //CLOUD FUNCTION CONSTS
-    //cmd types
-    public static final int VALUE_POWER = 1;
-    public static final int VALUE_COLOR = 2;
-    public static final int VALUE_BRIGHTNESS = 3;
-    public static final int VALUE_SCENARIO = 4;
-    public static final int VALUE_CCT = 5;
-    public static final int VALUE_QUERY = 6;
-    //device id
-    public static final int DEFAULT_DEVICE_ID = 1;
-    //ring values
-    public static final int RING_ALL = 0;
-    public static final int RING_1 = 1;
-
-    public static final int RING_2 = 2;
-    public static final int RING_3 = 3;
-    //ring text
-    public static final String DEFAULT_LAMP_TEXT = "LIVING ROOM";
-    public static final String RINGALL_TEXT = "ALL RINGS";
-    public static final String RING1_TEXT = "RING 1";
-    public static final String RING2_TEXT = "RING 2";
-    public static final String RING3_TEXT = "RING 3";
-
     //on/off values
     public static final int STATE_OFF = 0;
     public static final int STATE_ON = 1;
@@ -74,15 +51,6 @@ public class ParticleBridge {
     // Event names
     public static final String eventDeviceStatus = "xlc-status-device";
     public static final String eventSensorData = "xlc-data-sensor";
-
-    //constants for testing lists
-    public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
-    public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
-    public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
-    public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
-    public static final String[] scenarioDescriptions = {"A red color at 52% brightness", "A blue-green color at 100% brightness", "An amber color at 50% brightness", "Turn off", "A warm-white color at 100% brightness", "A green color at 52% brightness"};
-    public static final String[] filterNames = {"Breathe", "Music Match", "Flash"};
-
 
     //Particle functions
     public static void authenticate(Context context) {
@@ -120,7 +88,7 @@ public class ParticleBridge {
                 int power = state ? 1 : 0;
 
                 // Make the Particle call here
-                String json = "{\"cmd\":" + VALUE_POWER + ",\"node_id\":" + nodeId + ",\"state\":" + power + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_POWER + ",\"node_id\":" + nodeId + ",\"state\":" + power + "}";
                 //String json = "{'cmd':" + VALUE_POWER + ",'node_id':" + nodeId + ",'state':" + power + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
@@ -141,7 +109,7 @@ public class ParticleBridge {
             @Override
             public void run() {
                 // Make the Particle call here
-                String json = "{\"cmd\":" + VALUE_BRIGHTNESS + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_BRIGHTNESS + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -161,7 +129,7 @@ public class ParticleBridge {
             @Override
             public void run() {
                 // Make the Particle call here
-                String json = "{\"cmd\":" + VALUE_CCT + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_CCT + ",\"node_id\":" + nodeId + ",\"value\":" + value + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -176,14 +144,14 @@ public class ParticleBridge {
         return resultCode;
     }
 
-    public static int JSONCommandColor(final int nodeId, final int ring, final boolean state, final int cw, final int ww, final int r, final int g, final int b) {
+    public static int JSONCommandColor(final int nodeId, final int ring, final boolean state, final int br, final int ww, final int r, final int g, final int b) {
         new Thread() {
             @Override
             public void run() {
                 // Make the Particle call here
                 int power = state ? 1 : 0;
 
-                String json = "{\"cmd\":" + VALUE_COLOR + ",\"node_id\":" + nodeId + ",\"ring\":" + ring + ",\"color\":[" + power + "," + cw + "," + ww + "," + r + "," + g + "," + b + "]}";
+                String json = "{\"cmd\":" + xltDevice.CMD_COLOR + ",\"node_id\":" + nodeId + ",\"ring\":[" + ring + "," + power + "," + br + "," + ww + "," + r + "," + g + "," + b + "]}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -199,7 +167,7 @@ public class ParticleBridge {
     }
 
 
-    public static int JSONCommandScenario(final int nodeId, final int position) {
+    public static int JSONCommandScenario(final int nodeId, final int scenario) {
         new Thread() {
             @Override
             public void run() {
@@ -207,7 +175,7 @@ public class ParticleBridge {
                 //hence the parameter of position is good to go in this function as is - doesn't need to be incremented by 1 for the uid for scenario
 
                 // Make the Particle call here
-                String json = "{\"cmd\":" + VALUE_SCENARIO + ",\"node_id\":" + nodeId + ",\"SNT_id\":" + position + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_SCENARIO + ",\"node_id\":" + nodeId + ",\"SNT_id\":" + scenario + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -227,7 +195,7 @@ public class ParticleBridge {
             @Override
             public void run() {
                 // Make the Particle call here
-                String json = "{\"cmd\":" + VALUE_QUERY + ",\"node_id\":" + nodeId + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_QUERY + ",\"node_id\":" + nodeId + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {
@@ -482,7 +450,7 @@ public class ParticleBridge {
                                 //if (eventName.equalsIgnoreCase(eventDeviceStatus)) {
                                     if (jObject.has("nd")) {
                                         int nodeId = jObject.getInt("nd");
-                                        if (nodeId ==  1) {
+                                        if (nodeId ==  MainActivity.m_mainDevice.getDeviceID()) {
 
                                             Message msgControlObj = null;
                                             Bundle bdlControl = null;
@@ -492,28 +460,28 @@ public class ParticleBridge {
                                             }
 
                                             if (jObject.has("State")) {
-                                                MainActivity.mainDevice_st = jObject.getInt("State");
+                                                MainActivity.m_mainDevice.setState(jObject.getInt("State"));
                                                 if( MainActivity.handlerDeviceList != null ) {
                                                     Message msgObj = MainActivity.handlerDeviceList.obtainMessage();
                                                     Bundle b = new Bundle();
-                                                    b.putInt("State", MainActivity.mainDevice_st);
+                                                    b.putInt("State", MainActivity.m_mainDevice.getState());
                                                     msgObj.setData(b);
                                                     MainActivity.handlerDeviceList.sendMessage(msgObj);
                                                 }
                                                 if( MainActivity.handlerControl != null ) {
-                                                    bdlControl.putInt("State", MainActivity.mainDevice_st);
+                                                    bdlControl.putInt("State", MainActivity.m_mainDevice.getState());
                                                 }
                                             }
                                             if (jObject.has("BR")) {
-                                                MainActivity.mainDevice_br = jObject.getInt("BR");
+                                                MainActivity.m_mainDevice.setBrightness(jObject.getInt("BR"));
                                                 if( MainActivity.handlerControl != null ) {
-                                                    bdlControl.putInt("BR", MainActivity.mainDevice_br);
+                                                    bdlControl.putInt("BR", MainActivity.m_mainDevice.getBrightness());
                                                 }
                                             }
                                             if (jObject.has("CCT")) {
-                                                MainActivity.mainDevice_cct = jObject.getInt("CCT");
+                                                MainActivity.m_mainDevice.setCCT(jObject.getInt("CCT"));
                                                 if( MainActivity.handlerControl != null ) {
-                                                    bdlControl.putInt("CCT", MainActivity.mainDevice_cct);
+                                                    bdlControl.putInt("CCT", MainActivity.m_mainDevice.getCCT());
                                                 }
                                             }
 
@@ -525,11 +493,11 @@ public class ParticleBridge {
                                     }
                                 //} else if (eventName.equalsIgnoreCase(eventSensorData)) {
                                     if (jObject.has("DHTt")) {
-                                        MainActivity.mainRoomTemp = jObject.getInt("DHTt");
+                                        MainActivity.m_mainDevice.m_Data.m_RoomTemp = jObject.getInt("DHTt");
                                         if( MainActivity.handlerGlance != null ) {
                                             Message msgObj = MainActivity.handlerGlance.obtainMessage();
                                             Bundle b = new Bundle();
-                                            b.putInt("DHTt", MainActivity.mainRoomTemp);
+                                            b.putInt("DHTt", (int)MainActivity.m_mainDevice.m_Data.m_RoomTemp);
                                             msgObj.setData(b);
                                             MainActivity.handlerGlance.sendMessage(msgObj);
                                         }
