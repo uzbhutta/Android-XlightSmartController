@@ -125,7 +125,7 @@ public class AddScenarioActivity extends AppCompatActivity {
                 scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
-                ParticleBridge.JSONConfigScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
+                MainActivity.m_mainDevice.sceAddScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

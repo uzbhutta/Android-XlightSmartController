@@ -1,6 +1,7 @@
 package com.umarbhutta.xlightcompanion.SDK;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 /**
  * Created by sunboss on 2016-11-15.
@@ -21,6 +22,25 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     private static final String TAG = xltDevice.class.getSimpleName();
     public static final int DEFAULT_DEVICE_ID = 1;
+
+    // on/off values
+    public static final int STATE_OFF = 0;
+    public static final int STATE_ON = 1;
+
+    // default alarm/filter id
+    public static final int DEFAULT_ALARM_ID = 255;
+    public static final int DEFAULT_FILTER_ID = 0;
+
+    // Event Names
+    public static final String eventDeviceStatus = "xlc-status-device";
+    public static final String eventSensorData = "xlc-data-sensor";
+
+    // Broadcast Intent
+    public static final String bciDeviceStatus = "ca.xlight.SDK." + eventDeviceStatus;
+    public static final String bciSensorData = "ca.xlight.SDK." + eventSensorData;
+
+    // Timeout constants
+    private static final int TIMEOUT_CLOUD_LOGIN = 15;
 
     //-------------------------------------------------------------------------
     // Constants
@@ -110,11 +130,14 @@ public class xltDevice {
     // Variables
     //-------------------------------------------------------------------------
     // Profile
+    private static boolean m_bInitialized = false;
+    private String m_ControllerID;
     private int m_DevID = DEFAULT_DEVICE_ID;
     private String m_DevName = "Main xlight";
     private int m_DevType = devtypWRing3;
 
     // Bridge Objects
+    private CloudBridge cldBridge;
     private BLEBridge bleBridge;
     private LANBridge lanBridge;
 
@@ -140,25 +163,71 @@ public class xltDevice {
             m_Ring[i] = new xltRing();
         }
 
+        cldBridge = new CloudBridge();
         bleBridge = new BLEBridge();
         lanBridge = new LANBridge();
     }
 
-    // Initialize object and connect to message bridges
-    public boolean Init(Context context) {
-        // ToDo: get login credential or access token from DMI
+    // Initialize objects
+    public void Init(Context context) {
+        // Ensure we do it only once
+        if( !m_bInitialized ) {
+            ParticleBridge.init(context);
+            // ToDo: get login credential or access token from DMI
+            // make sure we logged onto IoT cloud
+            ParticleBridge.authenticate();
+            m_bInitialized = true;
+        }
+    }
 
-        // login to IoT cloud
-        ParticleBridge.authenticate(context);
+    // Connect to message bridges
+    public boolean Connect(final String controllerID) {
+        // ToDo: get devID & devName by controllerID from DMI
+        m_ControllerID = controllerID;
+        setDeviceID(DEFAULT_DEVICE_ID);
+        //setDeviceName();
 
-        // Open BLE
-        bleBridge.connectController("8888");
+        // Connect to Cloud
+        ConnectCloud();
 
-        // Open LAN
-        // ToDo: get IP & Port from Cloud or BLE (SmartController told it)
-        lanBridge.connectController("192.168.0.114", 5555);
+        // Connect to BLE
+        ConnectBLE();
+
+        // Connect to LAN
+        ConnectLAN();
 
         return true;
+    }
+
+    public boolean ConnectCloud() {
+        if( !m_bInitialized ) return false;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Check ControllerID
+                int timeout = TIMEOUT_CLOUD_LOGIN;
+                while( !ParticleBridge.isAuthenticated() && timeout-- > 0 ) {
+                    SystemClock.sleep(1000);
+                }
+                if( ParticleBridge.isAuthenticated() ) {
+                    if (ParticleBridge.checkDeviceID(m_ControllerID)) {
+                        // Connect Cloud Instance
+                        cldBridge.connectCloud(m_ControllerID);
+                    }
+                }
+            }
+        }).start();
+        return true;
+    }
+
+    public boolean ConnectBLE() {
+        return(bleBridge.connectController("8888"));
+    }
+
+    public boolean ConnectLAN() {
+        // ToDo: get IP & Port from Cloud or BLE (SmartController told it)
+        return(lanBridge.connectController("192.168.0.114", 5555));
     }
 
     public boolean isSunny(final int DevType) {
@@ -180,12 +249,25 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     // Property Access Interfaces
     //-------------------------------------------------------------------------
+    public String getControllerID() {
+        return m_ControllerID;
+    }
+
     public int getDeviceID() {
         return m_DevID;
     }
 
     public void setDeviceID(final int devID) {
         m_DevID = devID;
+        cldBridge.setNodeID(devID);
+        bleBridge.setNodeID(devID);
+        lanBridge.setNodeID(devID);
+    }
+
+    private void setParentContext(Context context) {
+        cldBridge.setParentContext(context);
+        bleBridge.setParentContext(context);
+        lanBridge.setParentContext(context);
     }
 
     public int getDeviceType() {
@@ -396,7 +478,7 @@ public class xltDevice {
     }
 
     public boolean isCloudOK() {
-        return(ParticleBridge.currDevice.isConnected());
+        return(cldBridge.isConnected());
     }
 
     public boolean isBLEOK() {
@@ -483,7 +565,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.JSONCommandQueryDevice(m_DevID);
+                    rc = cldBridge.JSONCommandQueryDevice();
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -505,7 +587,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.FastCallPowerSwitch(m_DevID, state);
+                    rc = cldBridge.FastCallPowerSwitch(state);
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -527,7 +609,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.JSONCommandBrightness(m_DevID, value);
+                    rc = cldBridge.JSONCommandBrightness(value);
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -549,7 +631,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.JSONCommandCCT(m_DevID, value);
+                    rc = cldBridge.JSONCommandCCT(value);
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -571,7 +653,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.JSONCommandColor(m_DevID, ring, state, br, ww, r, g, b);
+                    rc = cldBridge.JSONCommandColor(ring, state, br, ww, r, g, b);
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -593,7 +675,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = ParticleBridge.JSONCommandScenario(m_DevID, scenario);
+                    rc = cldBridge.JSONCommandScenario(scenario);
                     break;
                 case BLE:
                     // ToDo: call BLE API
@@ -602,6 +684,19 @@ public class xltDevice {
                     // ToDo: call LAN API
                     break;
             }
+        }
+        return rc;
+    }
+
+    //-------------------------------------------------------------------------
+    // Device Manipulate Interfaces (DMI)
+    //-------------------------------------------------------------------------
+    public int sceAddScenario(final int br, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
+        int rc = -1;
+
+        // Can only use Cloud Bridge
+        if( isCloudOK() ) {
+            rc = cldBridge.JSONConfigScenario(br, cw, ww, r, g, b, filter);
         }
         return rc;
     }

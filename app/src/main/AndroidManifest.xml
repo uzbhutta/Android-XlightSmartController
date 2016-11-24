@@ -24,10 +24,19 @@
         </activity>
         <activity
             android:name=".schedule.AddScheduleActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".scenario.AddScenarioActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".Tools.DataReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".Tools.StatusReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

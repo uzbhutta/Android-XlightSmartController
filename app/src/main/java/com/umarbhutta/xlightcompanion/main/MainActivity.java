@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
+import com.umarbhutta.xlightcompanion.SDK.ParticleBridge;
 import com.umarbhutta.xlightcompanion.control.ControlFragment;
 import com.umarbhutta.xlightcompanion.glance.GlanceFragment;
 import com.umarbhutta.xlightcompanion.SDK.xltDevice;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity
         // Initialize SmartDevice SDK
         m_mainDevice = new xltDevice();
         m_mainDevice.Init(this);
+        m_mainDevice.Connect(CloudAccount.DEVICE_ID);
 
         //setup drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
