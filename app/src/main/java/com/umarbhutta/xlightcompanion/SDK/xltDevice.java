@@ -26,6 +26,7 @@ public class xltDevice {
     // on/off values
     public static final int STATE_OFF = 0;
     public static final int STATE_ON = 1;
+    public static final int STATE_TOGGLE = 2;
 
     // default alarm/filter id
     public static final int DEFAULT_ALARM_ID = 255;
