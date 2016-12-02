@@ -40,7 +40,17 @@ public class GlanceFragment extends Fragment {
     TextView outsideTemp, degreeSymbol, roomTemp;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private RecyclerView devicesRecyclerView;
     WeatherDetails mWeatherDetails;
+
+    private Handler m_handlerGlance;
+
+    @Override
+    public void onDestroyView() {
+        devicesRecyclerView.setAdapter(null);
+        MainActivity.m_mainDevice.removeDataEventHandler(m_handlerGlance);
+        super.onDestroyView();
+    }
 
     @Nullable
     @Override
@@ -53,7 +63,7 @@ public class GlanceFragment extends Fragment {
         roomTemp = (TextView) view.findViewById(R.id.valRoomTemp);
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
 
-        MainActivity.handlerGlance = new Handler() {
+        m_handlerGlance = new Handler() {
             public void handleMessage(Message msg) {
                 int intValue =  msg.getData().getInt("DHTt", -255);
                 if( intValue != -255 ) {
@@ -61,9 +71,10 @@ public class GlanceFragment extends Fragment {
                 }
             }
         };
+        MainActivity.m_mainDevice.addDataEventHandler(m_handlerGlance);
 
         //setup recycler view
-        RecyclerView devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
+        devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
         //create list adapter
         DevicesListAdapter devicesListAdapter = new DevicesListAdapter();
         //attach adapter to recycler view

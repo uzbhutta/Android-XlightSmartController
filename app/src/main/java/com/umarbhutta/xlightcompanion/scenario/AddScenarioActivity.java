@@ -18,8 +18,8 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.umarbhutta.xlightcompanion.SDK.ParticleBridge;
 import com.umarbhutta.xlightcompanion.R;
+import com.umarbhutta.xlightcompanion.SDK.xltDevice;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 
 import me.priyesh.chroma.ChromaDialog;
@@ -125,7 +125,7 @@ public class AddScenarioActivity extends AppCompatActivity {
                 scenarioInfo = "A " + colorHex + " color with " + scenarioBrightness + "% brightness";
 
                 //SEND TO PARTICLE CLOUD FOR ALL RINGS
-                MainActivity.m_mainDevice.sceAddScenario(scenarioBrightness, cw, ww, r, g, b, scenarioFilter);
+                MainActivity.m_mainDevice.sceAddScenario(ScenarioFragment.name.size(), scenarioBrightness, cw, ww, r, g, b, xltDevice.DEFAULT_FILTER_ID);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

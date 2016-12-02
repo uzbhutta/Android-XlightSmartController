@@ -78,8 +78,7 @@ public class ScenarioFragment extends Fragment {
 
                 scenarioListAdapter.notifyDataSetChanged();
                 Toast.makeText(getActivity(), "The scenario has been successfully added", Toast.LENGTH_SHORT).show();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
+            } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(getActivity(), "No new scenarios were added to the list", Toast.LENGTH_SHORT).show();
             }
         }

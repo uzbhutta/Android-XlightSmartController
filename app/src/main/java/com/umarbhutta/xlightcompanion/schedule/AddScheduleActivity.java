@@ -32,9 +32,8 @@ public class AddScheduleActivity extends AppCompatActivity {
     private Button addButton;
     private ImageView backImageView;
 
-    private int defeaultNodeId = xltDevice.DEFAULT_DEVICE_ID;
     private boolean isRepeat = false;
-    private int hour, minute, nodeId;
+    private int hour, minute;
     private String  am_pm, weekdays, outgoingWeekdays, scenarioName;
     //a boolean of which day of week has been selected in active (0-6, 0 =  Monday)
     private boolean[] weekdaySelected = {false, false, false, false, false, false, false};
@@ -181,7 +180,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 }
 
                 //get value of device spinner
-                nodeId = (int) scenarioSpinner.getSelectedItemId();
+                //nodeId = (int) scenarioSpinner.getSelectedItemId();
 
                 //get value of scenario spinner
                 scenarioName = scenarioSpinner.getSelectedItem().toString();
@@ -248,6 +247,16 @@ public class AddScheduleActivity extends AppCompatActivity {
                 //call JSONConfigAlarm to send a schedule row
                 // DMI
                 //ParticleBridge.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
+                int scheduleId = ScheduleFragment.name.size();
+                MainActivity.m_mainDevice.sceAddSchedule(scheduleId, isRepeat, weekdays, hour, minute, xltDevice.DEFAULT_ALARM_ID);
+                // Get scenarioId from name
+                int scenarioId = 1;
+                for (int i = 0; i < ScenarioFragment.name.size(); i++) {
+                    if (scenarioName == ScenarioFragment.name.get(i)) {
+                        scenarioId = i;
+                    }
+                }
+                MainActivity.m_mainDevice.sceAddRule(scheduleId, scheduleId, scenarioId);
 
                 //send data to update the list
                 Intent returnIntent = getIntent();

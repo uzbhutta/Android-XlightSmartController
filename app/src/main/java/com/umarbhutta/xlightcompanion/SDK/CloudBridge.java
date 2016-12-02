@@ -7,10 +7,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.umarbhutta.xlightcompanion.main.MainActivity;
-import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
-import com.umarbhutta.xlightcompanion.schedule.ScheduleFragment;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -197,11 +193,10 @@ public class CloudBridge extends BaseBridge {
         return resultCode;
     }
 
-    public int JSONConfigScenario(final int brightness, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
+    public int JSONConfigScenario(final int scenarioId, final int brightness, final int cw, final int ww, final int r, final int g, final int b, final int filter) {
         new Thread() {
             @Override
             public void run() {
-                int scenarioId = ScenarioFragment.name.size();
                 boolean x[] = {false, false, false};
 
                 //construct first part of string input, and store it in arraylist (of size 1)
@@ -236,7 +231,7 @@ public class CloudBridge extends BaseBridge {
                 if (x[1]) {
                     //construct last part of string input, store in arraylist
                     //json = "\"ring3\":[" + xltDevice.STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + DEFAULT_FILTER_ID + "}";
-                    json = "\"ring3\":[" + xltDevice.STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + xltDevice.DEFAULT_FILTER_ID + "}";
+                    json = "\"ring3\":[" + xltDevice.STATE_ON + "," + cw + "," + ww + "," + r + "," + g + "," + b + "],\"brightness\":" + brightness + ",\"filter\":" + filter + "}";
                     message.add(json);
                     //send in last part of string
                     try {
@@ -252,15 +247,14 @@ public class CloudBridge extends BaseBridge {
         return resultCode;
     }
 
-    public int JSONConfigAlarm(final boolean isRepeat, final String weekdays, final int hour, final int minute, final String scenarioName) {
+    public int JSONConfigSchudle(final int scheduleId, final boolean isRepeat, final String weekdays, final int hour, final int minute, final int alarmId) {
         final int[] doneSending = {0};
         new Thread() {
             @Override
             public void run() {
-                boolean x[] = {false, false, false, false};
+                boolean x[] = {false, false};
 
                 //SCHEDULE
-                int scheduleId = ScheduleFragment.name.size();
                 int repeat = isRepeat ? 1 : 0;
 
                 //construct first part of string input, and store it in arraylist (of size 1)
@@ -279,7 +273,7 @@ public class CloudBridge extends BaseBridge {
 
                 if (x[0]) {
                     //construct second part of string input, store in arraylist
-                    json = "\"weekdays\":" + "0" + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + xltDevice.DEFAULT_ALARM_ID + "}";
+                    json = "\"weekdays\":" + "0" + ",\"hour\":" + hour + ",\"min\":" + minute + ",\"alarm_id\":" + alarmId + "}";
                     message.add(json);
                     //send in second part of string
                     try {
@@ -291,95 +285,50 @@ public class CloudBridge extends BaseBridge {
                         e.printStackTrace();
                     }
                     message.clear();
-
-                    //RULE
-                    int rule_schedule_notif_Id = ScheduleFragment.name.size() - 1;
-                    int scenarioId = 1;
-                    for (int i = 0; i < ScenarioFragment.name.size(); i++) {
-                        if (scenarioName == ScenarioFragment.name.get(i)) {
-                            scenarioId = i;
-                        }
-                    }
-
-                    //construct first part of string input, and store it in arraylist (of size 1)
-                    String json2 = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"r" + rule_schedule_notif_Id + "\",\"node_id\":" + getNodeID() + ", '}";
-                    ArrayList<String> message2 = new ArrayList<>();
-                    message2.add(json2);
-                    //send in first part of string
-                    try {
-                        Log.e(TAG, "JSONConfigRule " + message2.get(0));
-                        resultCode = currDevice.callFunction("JSONConfig", message2);
-                        x[2] = true;
-                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                        e.printStackTrace();
-                    }
-                    message2.clear();
-
-                    if (x[2]) {
-                        //construct second part of string input, store in arraylist
-                        json2 = "\"SCT_uid\":" + rule_schedule_notif_Id + ",\"SNT_uid\":" + scenarioId + ",\"notif_uid\":" + rule_schedule_notif_Id + "}";
-                        message2.add(json2);
-                        //send in second part of string
-                        try {
-                            Log.i(TAG, "JSONConfigRule " + message2.get(0));
-                            resultCode = currDevice.callFunction("JSONConfig", message2);
-                            x[3] = true;
-                        } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-                            e.printStackTrace();
-                        }
-                        message2.clear();
-                    }
                 }
             }
         }.start();
         return resultCode;
     }
 
-//    public int JSONConfigRule(final String scenarioName) {
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                int rule_schedule_notif_Id = ScheduleFragment.name.size() + 1;
-//                int scenarioId = 1;
-//                for (int i = 0; i < ScenarioFragment.name.size(); i++) {
-//                    if (scenarioName == ScenarioFragment.name.get(i)) {
-//                        scenarioId = i + 1;
-//                    }
-//                }
-//                boolean x[] = {false, false};
-//
-//                //construct first part of string input, and store it in arraylist (of size 1)
-//                String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"r" + rule_schedule_notif_Id + "\",\"node_id\":" + nodeId + ", '}";
-//                ArrayList<String> message = new ArrayList<>();
-//                message.add(json);
-//                //send in first part of string
-//                try {
-//                    Log.e(TAG, "JSONConfigRule" + message.get(0));
-//                    resultCode = currDevice.callFunction("JSONConfig", message);
-//                    x[0] = true;
-//                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-//                    e.printStackTrace();
-//                }
-//                message.clear();
-//
-//                if (x[0]) {
-//                    //construct second part of string input, store in arraylist
-//                    json = "\"SCT_uid\":\"a" + rule_schedule_notif_Id + "\",\"SNT_uid\":\"s" + scenarioId + "\",\"notif_uid\":\"n" + rule_schedule_notif_Id + "\"}";
-//                    message.add(json);
-//                    //send in second part of string
-//                    try {
-//                        Log.i(TAG, "JSONConfigRule" + message.get(0));
-//                        resultCode = currDevice.callFunction("JSONConfig", message);
-//                        x[1] = true;
-//                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    message.clear();
-//                }
-//            }
-//        }.start();
-//        return resultCode;
-//    }
+    public int JSONConfigRule(final int ruleId, final int scheduleId, final int scenarioId) {
+        new Thread() {
+            @Override
+            public void run() {
+                boolean x[] = {false, false};
+
+                //construct first part of string input, and store it in arraylist (of size 1)
+                String json = "{'x0': '{\"op\":1,\"fl\":0,\"run\":0,\"uid\":\"r" + ruleId + "\",\"node_id\":" + getNodeID() + ", '}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                //send in first part of string
+                try {
+                    Log.e(TAG, "JSONConfigRule" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONConfig", message);
+                    x[0] = true;
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+
+                if (x[0]) {
+                    //construct second part of string input, store in arraylist
+                    json = "\"SCT_uid\":\"a" + scheduleId + "\",\"SNT_uid\":\"s" + scenarioId + "\",\"notif_uid\":\"n" + ruleId + "\"}";
+                    message.add(json);
+                    //send in second part of string
+                    try {
+                        Log.i(TAG, "JSONConfigRule" + message.get(0));
+                        resultCode = currDevice.callFunction("JSONConfig", message);
+                        x[1] = true;
+                    } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    message.clear();
+                }
+            }
+        }.start();
+        return resultCode;
+    }
 
     public int JSONGetDeviceStatus() {
         new Thread() {
@@ -430,6 +379,14 @@ public class CloudBridge extends BaseBridge {
                     subscriptionId = currDevice.subscribeToEvents(null, new ParticleEventHandler() {
                         public void onEvent(String eventName, ParticleEvent event) {
                             Log.i(TAG, "Received event: " + eventName + " with payload: " + event.dataPayload);
+                            // Notes: due to bug of SDK 0.3.4, the eventName is not correct
+                            /// We work around by specifying eventName
+                            if( event.dataPayload.contains("DHTt") ) {
+                                eventName = xltDevice.eventSensorData;
+                            } else {
+                                eventName = xltDevice.eventDeviceStatus;
+                            }
+
                             // Demo option: use handler & sendMessage to inform activities
                             InformActivities(eventName, event.dataPayload);
 
@@ -466,67 +423,41 @@ public class CloudBridge extends BaseBridge {
 
     // Use handler & sendMessage to inform activities
     private void InformActivities(final String eventName, final String dataPayload) {
+        if (m_parentDevice == null) return;
         try {
             JSONObject jObject = new JSONObject(dataPayload);
-            //if (eventName.equalsIgnoreCase(xltDevice.eventDeviceStatus)) {
-            if (jObject.has("nd")) {
-                int nodeId = jObject.getInt("nd");
-                if (nodeId ==  MainActivity.m_mainDevice.getDeviceID()) {
-
-                    Message msgControlObj = null;
-                    Bundle bdlControl = null;
-                    if( MainActivity.handlerControl != null ) {
-                        msgControlObj = MainActivity.handlerControl.obtainMessage();
-                        bdlControl = new Bundle();
-                    }
-
-                    if (jObject.has("State")) {
-                        MainActivity.m_mainDevice.setState(jObject.getInt("State"));
-                        if( MainActivity.handlerDeviceList != null ) {
-                            Message msgObj = MainActivity.handlerDeviceList.obtainMessage();
-                            Bundle b = new Bundle();
-                            b.putInt("State", MainActivity.m_mainDevice.getState());
-                            msgObj.setData(b);
-                            MainActivity.handlerDeviceList.sendMessage(msgObj);
+            if (eventName.equalsIgnoreCase(xltDevice.eventDeviceStatus)) {
+                if (jObject.has("nd")) {
+                    int nodeId = jObject.getInt("nd");
+                    if (nodeId ==  m_parentDevice.getDeviceID()) {
+                        Bundle bdlControl = new Bundle();
+                        if (jObject.has("State")) {
+                            m_parentDevice.setState(jObject.getInt("State"));
+                            bdlControl.putInt("State", m_parentDevice.getState());
                         }
-                        if( MainActivity.handlerControl != null ) {
-                            bdlControl.putInt("State", MainActivity.m_mainDevice.getState());
+                        if (jObject.has("BR")) {
+                            m_parentDevice.setBrightness(jObject.getInt("BR"));
+                            bdlControl.putInt("BR", m_parentDevice.getBrightness());
                         }
-                    }
-                    if (jObject.has("BR")) {
-                        MainActivity.m_mainDevice.setBrightness(jObject.getInt("BR"));
-                        if( MainActivity.handlerControl != null ) {
-                            bdlControl.putInt("BR", MainActivity.m_mainDevice.getBrightness());
+                        if (jObject.has("CCT")) {
+                            m_parentDevice.setCCT(jObject.getInt("CCT"));
+                            bdlControl.putInt("CCT", m_parentDevice.getCCT());
                         }
-                    }
-                    if (jObject.has("CCT")) {
-                        MainActivity.m_mainDevice.setCCT(jObject.getInt("CCT"));
-                        if( MainActivity.handlerControl != null ) {
-                            bdlControl.putInt("CCT", MainActivity.m_mainDevice.getCCT());
-                        }
-                    }
-
-                    if( MainActivity.handlerControl != null && msgControlObj != null ) {
-                        msgControlObj.setData(bdlControl);
-                        MainActivity.handlerControl.sendMessage(msgControlObj);
+                        m_parentDevice.sendDeviceStatusMessage(bdlControl);
                     }
                 }
-            }
-            //} else if (eventName.equalsIgnoreCase(xltDevice.eventSensorData)) {
-            if (jObject.has("DHTt")) {
-                MainActivity.m_mainDevice.m_Data.m_RoomTemp = jObject.getInt("DHTt");
-                if( MainActivity.handlerGlance != null ) {
-                    Message msgObj = MainActivity.handlerGlance.obtainMessage();
-                    Bundle b = new Bundle();
-                    b.putInt("DHTt", (int)MainActivity.m_mainDevice.m_Data.m_RoomTemp);
-                    msgObj.setData(b);
-                    MainActivity.handlerGlance.sendMessage(msgObj);
+            } else if (eventName.equalsIgnoreCase(xltDevice.eventSensorData)) {
+                Bundle bdlData = new Bundle();
+                if (jObject.has("DHTt")) {
+                    m_parentDevice.m_Data.m_RoomTemp = jObject.getInt("DHTt");
+                    bdlData.putInt("DHTt", (int)m_parentDevice.m_Data.m_RoomTemp);
                 }
+                if (jObject.has("DHTh")) {
+                    m_parentDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
+                    bdlData.putInt("DHTh", m_parentDevice.m_Data.m_RoomHumidity);
+                }
+                m_parentDevice.sendSensorDataMessage(bdlData);
             }
-            if (jObject.has("DHTh")) {
-                MainActivity.m_mainDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
-            }
-            //}
         } catch (final JSONException e) {
             Log.e(TAG, "Json parsing error: " + e.getMessage());
         }
@@ -539,23 +470,23 @@ public class CloudBridge extends BaseBridge {
             if (jObject.has("nd")) {
                 int nodeId = jObject.getInt("nd");
                 // ToDO: search device
-                if (nodeId ==  MainActivity.m_mainDevice.getDeviceID()) {
+                if (nodeId ==  m_parentDevice.getDeviceID()) {
                     if (jObject.has("State")) {
-                        MainActivity.m_mainDevice.setState(jObject.getInt("State"));
+                        m_parentDevice.setState(jObject.getInt("State"));
                     }
                     if (jObject.has("BR")) {
-                        MainActivity.m_mainDevice.setBrightness(jObject.getInt("BR"));
+                        m_parentDevice.setBrightness(jObject.getInt("BR"));
                     }
                     if (jObject.has("CCT")) {
-                        MainActivity.m_mainDevice.setCCT(jObject.getInt("CCT"));
+                        m_parentDevice.setCCT(jObject.getInt("CCT"));
                     }
                 }
             }
             if (jObject.has("DHTt")) {
-                MainActivity.m_mainDevice.m_Data.m_RoomTemp = jObject.getInt("DHTt");
+                m_parentDevice.m_Data.m_RoomTemp = jObject.getInt("DHTt");
             }
             if (jObject.has("DHTh")) {
-                MainActivity.m_mainDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
+                m_parentDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
             }
             //}
         } catch (final JSONException e) {

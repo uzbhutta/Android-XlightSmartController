@@ -15,7 +15,6 @@ import android.view.MenuItem;
 
 import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
-import com.umarbhutta.xlightcompanion.SDK.ParticleBridge;
 import com.umarbhutta.xlightcompanion.control.ControlFragment;
 import com.umarbhutta.xlightcompanion.glance.GlanceFragment;
 import com.umarbhutta.xlightcompanion.SDK.xltDevice;
@@ -34,10 +33,6 @@ public class MainActivity extends AppCompatActivity
     public static final String[] filterNames = {"Breathe", "Music Match", "Flash"};
 
     public static xltDevice m_mainDevice;
-
-    public static Handler handlerGlance = null;
-    public static Handler handlerDeviceList = null;
-    public static Handler handlerControl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

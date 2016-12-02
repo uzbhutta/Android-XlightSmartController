@@ -14,6 +14,7 @@ public class BaseBridge {
     private String m_Name = "Unknown bridge";
     private int m_priority = 5;
     protected Context m_parentContext = null;
+    protected xltDevice m_parentDevice = null;
 
     public boolean isConnected() {
         return m_bConnected;
@@ -49,5 +50,9 @@ public class BaseBridge {
 
     public void setParentContext(Context context) {
         m_parentContext = context;
+    }
+
+    public void setParentDevice(xltDevice device) {
+        m_parentDevice = device;
     }
 }

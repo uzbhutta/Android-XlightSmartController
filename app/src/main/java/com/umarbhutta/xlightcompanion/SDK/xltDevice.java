@@ -1,7 +1,12 @@
 package com.umarbhutta.xlightcompanion.SDK;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
+
+import java.util.ArrayList;
 
 /**
  * Created by sunboss on 2016-11-15.
@@ -152,6 +157,10 @@ public class xltDevice {
     // Sensor Data
     public SensorData m_Data;
 
+    // Event Handler List
+    private ArrayList<Handler> m_lstEH_DevST = new ArrayList<>();
+    private ArrayList<Handler> m_lstEH_SenDT = new ArrayList<>();
+
     //-------------------------------------------------------------------------
     // Regular Interfaces
     //-------------------------------------------------------------------------
@@ -171,6 +180,10 @@ public class xltDevice {
 
     // Initialize objects
     public void Init(Context context) {
+        // Clear event handler lists
+        clearDeviceEventHandlerList();
+        clearDataEventHandlerList();
+
         // Ensure we do it only once
         if( !m_bInitialized ) {
             ParticleBridge.init(context);
@@ -179,6 +192,12 @@ public class xltDevice {
             ParticleBridge.authenticate();
             m_bInitialized = true;
         }
+
+        // Update parent context
+        setParentContext(context);
+
+        // Set me as the parent device
+        setParentDevice();
     }
 
     // Connect to message bridges
@@ -269,6 +288,12 @@ public class xltDevice {
         cldBridge.setParentContext(context);
         bleBridge.setParentContext(context);
         lanBridge.setParentContext(context);
+    }
+
+    private void setParentDevice() {
+        cldBridge.setParentDevice(this);
+        bleBridge.setParentDevice(this);
+        lanBridge.setParentDevice(this);
     }
 
     public int getDeviceType() {
@@ -690,14 +715,95 @@ public class xltDevice {
     }
 
     //-------------------------------------------------------------------------
+    // Event Handler Interfaces
+    //-------------------------------------------------------------------------
+    public int addDeviceEventHandler(final Handler handler) {
+        m_lstEH_DevST.add(handler);
+        return m_lstEH_DevST.size();
+    }
+
+    public int addDataEventHandler(final Handler handler) {
+        m_lstEH_SenDT.add(handler);
+        return m_lstEH_SenDT.size();
+    }
+
+    public boolean removeDeviceEventHandler(final Handler handler) {
+        return m_lstEH_DevST.remove(handler);
+    }
+
+    public boolean removeDataEventHandler(final Handler handler) {
+        return m_lstEH_SenDT.remove(handler);
+    }
+
+    public void clearDeviceEventHandlerList() {
+        m_lstEH_DevST.clear();
+    }
+
+    public void clearDataEventHandlerList() {
+        m_lstEH_SenDT.clear();
+    }
+
+    // Send device status message to each handler
+    public void sendDeviceStatusMessage(final Bundle data) {
+        Handler handler;
+        Message msg;
+        for (int i = 0; i < m_lstEH_DevST.size(); i++) {
+            handler = m_lstEH_DevST.get(i);
+            if( handler != null ) {
+                msg = handler.obtainMessage();
+                if( msg != null ) {
+                    msg.setData(data);
+                    handler.sendMessage(msg);
+                }
+            }
+        }
+    }
+
+    // Send sensor data message to each handler
+    public void sendSensorDataMessage(final Bundle data) {
+        Handler handler;
+        Message msg;
+        for (int i = 0; i < m_lstEH_SenDT.size(); i++) {
+            handler = m_lstEH_SenDT.get(i);
+            if( handler != null ) {
+                msg = handler.obtainMessage();
+                if( msg != null ) {
+                    msg.setData(data);
+                    handler.sendMessage(msg);
+                }
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------
     // Device Manipulate Interfaces (DMI)
     //-------------------------------------------------------------------------
-    public int sceAddScenario(final int br, final int cw, final int ww, final int r, final int g, final int b, final String filter) {
+    public int sceAddScenario(final int scenarioId, final int br, final int cw, final int ww, final int r, final int g, final int b, final int filter) {
         int rc = -1;
 
         // Can only use Cloud Bridge
         if( isCloudOK() ) {
-            rc = cldBridge.JSONConfigScenario(br, cw, ww, r, g, b, filter);
+            rc = cldBridge.JSONConfigScenario(scenarioId, br, cw, ww, r, g, b, filter);
+        }
+        return rc;
+    }
+
+    public int sceAddSchedule(final int scheduleId, final boolean isRepeat, final String weekdays, final int hour, final int minute, final int alarmId) {
+        int rc = -1;
+
+        // Can only use Cloud Bridge
+        if( isCloudOK() ) {
+            rc = cldBridge.JSONConfigSchudle(scheduleId, isRepeat, weekdays, hour, minute, alarmId);
+        }
+        return rc;
+    }
+
+    public int sceAddRule(final int ruleId, final int scheduleId, final int scenarioId) {
+        int rc = -1;
+
+        // Can only use Cloud Bridge
+        if( isCloudOK() ) {
+            rc = cldBridge.JSONConfigRule(ruleId, scheduleId, scenarioId);
         }
         return rc;
     }

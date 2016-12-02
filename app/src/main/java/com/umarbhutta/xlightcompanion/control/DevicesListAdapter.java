@@ -19,10 +19,25 @@ import com.umarbhutta.xlightcompanion.R;
  */
 public class DevicesListAdapter extends RecyclerView.Adapter {
 
+    private Handler m_handlerDeviceList;
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.devices_list_item, parent, false);
         return new DevicesListViewHolder(view);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        if( m_handlerDeviceList != null ) {
+            MainActivity.m_mainDevice.removeDeviceEventHandler(m_handlerDeviceList);
+        }
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
     }
 
     @Override
@@ -59,7 +74,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             if (position == 0) {
                 // Main device
                 mDeviceSwitch.setChecked(MainActivity.m_mainDevice.getState() > 0);
-                MainActivity.handlerDeviceList = new Handler() {
+                m_handlerDeviceList = new Handler() {
                     public void handleMessage(Message msg) {
                         int intValue =  msg.getData().getInt("State", -255);
                         if( intValue != -255 ) {
@@ -67,6 +82,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
                         }
                     }
                 };
+                MainActivity.m_mainDevice.addDeviceEventHandler(m_handlerDeviceList);
             }
         }
 

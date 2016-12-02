@@ -61,6 +61,14 @@ public class ControlFragment extends Fragment {
     private boolean state = false;
     boolean ring1 = false, ring2 = false, ring3 = false;
 
+    private Handler m_handlerControl;
+
+    @Override
+    public void onDestroyView() {
+        MainActivity.m_mainDevice.removeDeviceEventHandler(m_handlerControl);
+        super.onDestroyView();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,7 +109,7 @@ public class ControlFragment extends Fragment {
         brightnessSeekBar.setProgress(MainActivity.m_mainDevice.getBrightness());
         cctSeekBar.setProgress(MainActivity.m_mainDevice.getCCT() - 2700);
 
-        MainActivity.handlerControl = new Handler() {
+        m_handlerControl = new Handler() {
             public void handleMessage(Message msg) {
                 int intValue =  msg.getData().getInt("State", -255);
                 if( intValue != -255 ) {
@@ -119,6 +127,7 @@ public class ControlFragment extends Fragment {
                 }
             }
         };
+        MainActivity.m_mainDevice.addDeviceEventHandler(m_handlerControl);
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
