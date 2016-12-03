@@ -1,6 +1,10 @@
 package com.umarbhutta.xlightcompanion.glance;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,9 +15,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +28,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.main.SimpleDividerItemDecoration;
@@ -37,13 +44,19 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
-    TextView outsideTemp, degreeSymbol, roomTemp;
+    TextView outsideTemp, degreeSymbol, roomTemp, roomHumidity, outsideHumidity, apparentTemp;
+    ImageView imgWeather;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView devicesRecyclerView;
     WeatherDetails mWeatherDetails;
 
     private Handler m_handlerGlance;
+
+    private Bitmap icoDefault, icoClearDay, icoClearNight, icoRain, icoSnow, icoSleet, icoWind, icoFog;
+    private Bitmap icoCloudy, icoPartlyCloudyDay, icoPartlyCloudyNight;
+    private static int ICON_WIDTH = 70;
+    private static int ICON_HEIGHT = 75;
 
     @Override
     public void onDestroyView() {
@@ -60,14 +73,37 @@ public class GlanceFragment extends Fragment {
         fab = (com.github.clans.fab.FloatingActionButton) view.findViewById(R.id.fab);
         outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
         degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
+        outsideHumidity = (TextView) view.findViewById(R.id.valLocalHumidity);
+        apparentTemp = (TextView) view.findViewById(R.id.valApparentTemp);
         roomTemp = (TextView) view.findViewById(R.id.valRoomTemp);
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
+        roomHumidity = (TextView) view.findViewById(R.id.valRoomHumidity);
+        roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
+        imgWeather = (ImageView) view.findViewById(R.id.weatherIcon);
+
+        Resources res = getResources();
+        Bitmap weatherIcons = decodeResource(res, R.drawable.weather_icons_1, 420, 600);
+        icoDefault = Bitmap.createBitmap(weatherIcons, 0, 0, ICON_WIDTH, ICON_HEIGHT);
+        icoClearDay = Bitmap.createBitmap(weatherIcons, ICON_WIDTH, 0, ICON_WIDTH, ICON_HEIGHT);
+        icoClearNight = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 2, 0, ICON_WIDTH, ICON_HEIGHT);
+        icoRain = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 5, ICON_HEIGHT * 2, ICON_WIDTH, ICON_HEIGHT);
+        icoSnow = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 4, ICON_HEIGHT * 3, ICON_WIDTH, ICON_HEIGHT);
+        icoSleet = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 5, ICON_HEIGHT * 3, ICON_WIDTH, ICON_HEIGHT);
+        icoWind = Bitmap.createBitmap(weatherIcons, 0, ICON_HEIGHT * 3, ICON_WIDTH, ICON_HEIGHT);
+        icoFog = Bitmap.createBitmap(weatherIcons, 0, ICON_HEIGHT * 2, ICON_WIDTH, ICON_HEIGHT);
+        icoCloudy = Bitmap.createBitmap(weatherIcons, ICON_WIDTH , ICON_HEIGHT * 5, ICON_WIDTH, ICON_HEIGHT);
+        icoPartlyCloudyDay = Bitmap.createBitmap(weatherIcons, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
+        icoPartlyCloudyNight = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 2, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
 
         m_handlerGlance = new Handler() {
             public void handleMessage(Message msg) {
                 int intValue =  msg.getData().getInt("DHTt", -255);
                 if( intValue != -255 ) {
                     roomTemp.setText(intValue + "\u00B0");
+                }
+                intValue =  msg.getData().getInt("DHTh", -255);
+                if( intValue != -255 ) {
+                    roomHumidity.setText(intValue + "\u0025");
                 }
             }
         };
@@ -86,10 +122,9 @@ public class GlanceFragment extends Fragment {
         //divider lines
         devicesRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
-        String apiKey = "b6756abd11c020e6e9914c9fb4730169";
         double latitude = 43.4643;
         double longitude = -80.5204;
-        String forecastUrl = "https://api.forecast.io/forecast/" + apiKey + "/" + latitude + "," + longitude;
+        String forecastUrl = "https://api.forecast.io/forecast/" + CloudAccount.DarkSky_apiKey + "/" + latitude + "," + longitude;
 
         if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
@@ -135,9 +170,14 @@ public class GlanceFragment extends Fragment {
     }
 
     private void updateDisplay() {
+        imgWeather.setImageBitmap(getWeatherIcon(mWeatherDetails.getIcon()));
         outsideTemp.setText(" " + mWeatherDetails.getTemp("celsius"));
         degreeSymbol.setText("\u00B0");
+        outsideHumidity.setText(mWeatherDetails.getmHumidity() + "\u0025");
+        apparentTemp.setText(mWeatherDetails.getApparentTemp("celsius") + "\u00B0");
+
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
+        roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
     }
 
     private WeatherDetails getWeatherDetails(String jsonData) throws JSONException {
@@ -151,6 +191,8 @@ public class GlanceFragment extends Fragment {
 
         weatherDetails.setTemp(currently.getDouble("temperature"));
         weatherDetails.setIcon(currently.getString("icon"));
+        weatherDetails.setApparentTemp(currently.getDouble("apparentTemperature"));
+        weatherDetails.setHumidity((int)(currently.getDouble("humidity") * 100 + 0.5));
 
         return weatherDetails;
     }
@@ -170,5 +212,51 @@ public class GlanceFragment extends Fragment {
         }
 
         return isAvailable;
+    }
+
+    private Bitmap decodeResource(Resources resources, final int id, final int newWidth, final int newHeight) {
+        TypedValue value = new TypedValue();
+        resources.openRawResource(id, value);
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inTargetDensity = value.density;
+        Bitmap loadBmp = BitmapFactory.decodeResource(resources, id, opts);
+
+        int width = loadBmp.getWidth();
+        int height = loadBmp.getHeight();
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        Bitmap newBmp = Bitmap.createBitmap(loadBmp, 0, 0, width, height, matrix, true);
+        return newBmp;
+    }
+
+    public Bitmap getWeatherIcon(final String iconName) {
+        if( iconName.equalsIgnoreCase("clear-day") ) {
+            return icoClearDay;
+        } else if( iconName.equalsIgnoreCase("clear-night") ) {
+            return icoClearNight;
+        } else if( iconName.equalsIgnoreCase("rain") ) {
+            return icoRain;
+        } else if( iconName.equalsIgnoreCase("snow") ) {
+            return icoSnow;
+        } else if( iconName.equalsIgnoreCase("sleet") ) {
+            return icoSleet;
+        } else if( iconName.equalsIgnoreCase("wind") ) {
+            return icoWind;
+        } else if( iconName.equalsIgnoreCase("fog") ) {
+            return icoFog;
+        } else if( iconName.equalsIgnoreCase("cloudy") ) {
+            return icoCloudy;
+        } else if( iconName.equalsIgnoreCase("partly-cloudy-day") ) {
+            return icoPartlyCloudyDay;
+        } else if( iconName.equalsIgnoreCase("partly-cloudy-night") ) {
+            return icoPartlyCloudyNight;
+        } else {
+            return icoDefault;
+        }
     }
 }

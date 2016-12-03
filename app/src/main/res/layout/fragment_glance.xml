@@ -27,6 +27,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="75dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/weather_icons_1"
+                android:id="@+id/weatherIcon"
+                android:layout_marginTop="-15dp"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:id="@+id/outsideTemp"
                 android:layout_width="wrap_content"
@@ -42,6 +52,69 @@
                 android:layout_marginTop="-28dp"
                 android:textSize="80sp"
                 android:text="\u00B0"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/localApparentLL"
+                android:layout_marginTop="2dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingLeft="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/localHumidityLL"
+                    android:layout_marginTop="1dp"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingLeft="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lblLocalHumidity"
+                        android:textAlignment="center"
+                        android:text="Humidity"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/valLocalHumidity"
+                        android:layout_marginTop="-2dp"
+                        android:textSize="28sp"
+                        android:text="__\u0025"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/apparentTempLL"
+                    android:layout_marginTop="1dp"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingLeft="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lblApparentTemp"
+                        android:textAlignment="center"
+                        android:text="Feels like"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/valApparentTemp"
+                        android:layout_marginTop="-2dp"
+                        android:textSize="28sp"
+                        android:text="__\u00B0"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -81,10 +154,34 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/roomHumidity"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lblRoomHumidity"
+                    android:textAlignment="center"
+                    android:text="Room \nHumidity"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/valRoomHumidity"
+                    android:textSize="28sp"
+                    android:text=" 40\u0025"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/roomBrightnessLL"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:paddingLeft="30dp">
+                android:paddingLeft="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
