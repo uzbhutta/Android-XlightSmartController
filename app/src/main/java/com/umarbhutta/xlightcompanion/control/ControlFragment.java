@@ -1,5 +1,8 @@
 package com.umarbhutta.xlightcompanion.control;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +27,7 @@ import android.widget.ToggleButton;
 
 import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.SDK.xltDevice;
+import com.umarbhutta.xlightcompanion.Tools.StatusReceiver;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
@@ -63,9 +67,22 @@ public class ControlFragment extends Fragment {
 
     private Handler m_handlerControl;
 
+    private class MyStatusReceiver extends StatusReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            powerSwitch.setChecked(MainActivity.m_mainDevice.getState() > 0);
+            brightnessSeekBar.setProgress(MainActivity.m_mainDevice.getBrightness());
+            cctSeekBar.setProgress(MainActivity.m_mainDevice.getCCT() - 2700);
+        }
+    }
+    private final MyStatusReceiver m_StatusReceiver = new MyStatusReceiver();
+
     @Override
     public void onDestroyView() {
         MainActivity.m_mainDevice.removeDeviceEventHandler(m_handlerControl);
+        if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
+            getContext().unregisterReceiver(m_StatusReceiver);
+        }
         super.onDestroyView();
     }
 
@@ -109,25 +126,33 @@ public class ControlFragment extends Fragment {
         brightnessSeekBar.setProgress(MainActivity.m_mainDevice.getBrightness());
         cctSeekBar.setProgress(MainActivity.m_mainDevice.getCCT() - 2700);
 
-        m_handlerControl = new Handler() {
-            public void handleMessage(Message msg) {
-                int intValue =  msg.getData().getInt("State", -255);
-                if( intValue != -255 ) {
-                    powerSwitch.setChecked(intValue > 0);
-                }
+        if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
+            IntentFilter intentFilter = new IntentFilter(xltDevice.bciDeviceStatus);
+            intentFilter.setPriority(3);
+            getContext().registerReceiver(m_StatusReceiver, intentFilter);
+        }
 
-                intValue =  msg.getData().getInt("BR", -255);
-                if( intValue != -255 ) {
-                    brightnessSeekBar.setProgress(intValue);
-                }
+        if( MainActivity.m_mainDevice.getEnableEventSendMessage() ) {
+            m_handlerControl = new Handler() {
+                public void handleMessage(Message msg) {
+                    int intValue = msg.getData().getInt("State", -255);
+                    if (intValue != -255) {
+                        powerSwitch.setChecked(intValue > 0);
+                    }
 
-                intValue =  msg.getData().getInt("CCT", -255);
-                if( intValue != -255 ) {
-                    cctSeekBar.setProgress(intValue - 2700);
+                    intValue = msg.getData().getInt("BR", -255);
+                    if (intValue != -255) {
+                        brightnessSeekBar.setProgress(intValue);
+                    }
+
+                    intValue = msg.getData().getInt("CCT", -255);
+                    if (intValue != -255) {
+                        cctSeekBar.setProgress(intValue - 2700);
+                    }
                 }
-            }
-        };
-        MainActivity.m_mainDevice.addDeviceEventHandler(m_handlerControl);
+            };
+            MainActivity.m_mainDevice.addDeviceEventHandler(m_handlerControl);
+        }
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

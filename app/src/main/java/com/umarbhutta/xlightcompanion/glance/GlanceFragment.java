@@ -1,6 +1,8 @@
 package com.umarbhutta.xlightcompanion.glance;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +31,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
+import com.umarbhutta.xlightcompanion.SDK.xltDevice;
+import com.umarbhutta.xlightcompanion.Tools.DataReceiver;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.R;
 import com.umarbhutta.xlightcompanion.main.SimpleDividerItemDecoration;
@@ -58,10 +62,22 @@ public class GlanceFragment extends Fragment {
     private static int ICON_WIDTH = 70;
     private static int ICON_HEIGHT = 75;
 
+    private class MyDataReceiver extends DataReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
+            roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
+        }
+    }
+    private final MyDataReceiver m_DataReceiver = new MyDataReceiver();
+
     @Override
     public void onDestroyView() {
         devicesRecyclerView.setAdapter(null);
         MainActivity.m_mainDevice.removeDataEventHandler(m_handlerGlance);
+        if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
+            getContext().unregisterReceiver(m_DataReceiver);
+        }
         super.onDestroyView();
     }
 
@@ -95,19 +111,27 @@ public class GlanceFragment extends Fragment {
         icoPartlyCloudyDay = Bitmap.createBitmap(weatherIcons, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
         icoPartlyCloudyNight = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 2, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
 
-        m_handlerGlance = new Handler() {
-            public void handleMessage(Message msg) {
-                int intValue =  msg.getData().getInt("DHTt", -255);
-                if( intValue != -255 ) {
-                    roomTemp.setText(intValue + "\u00B0");
+        if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
+            IntentFilter intentFilter = new IntentFilter(xltDevice.bciSensorData);
+            intentFilter.setPriority(3);
+            getContext().registerReceiver(m_DataReceiver, intentFilter);
+        }
+
+        if( MainActivity.m_mainDevice.getEnableEventSendMessage() ) {
+            m_handlerGlance = new Handler() {
+                public void handleMessage(Message msg) {
+                    int intValue = msg.getData().getInt("DHTt", -255);
+                    if (intValue != -255) {
+                        roomTemp.setText(intValue + "\u00B0");
+                    }
+                    intValue = msg.getData().getInt("DHTh", -255);
+                    if (intValue != -255) {
+                        roomHumidity.setText(intValue + "\u0025");
+                    }
                 }
-                intValue =  msg.getData().getInt("DHTh", -255);
-                if( intValue != -255 ) {
-                    roomHumidity.setText(intValue + "\u0025");
-                }
-            }
-        };
-        MainActivity.m_mainDevice.addDataEventHandler(m_handlerGlance);
+            };
+            MainActivity.m_mainDevice.addDataEventHandler(m_handlerGlance);
+        }
 
         //setup recycler view
         devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);

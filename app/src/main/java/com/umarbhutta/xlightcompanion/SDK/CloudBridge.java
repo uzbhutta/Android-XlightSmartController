@@ -387,11 +387,17 @@ public class CloudBridge extends BaseBridge {
                                 eventName = xltDevice.eventDeviceStatus;
                             }
 
-                            // Demo option: use handler & sendMessage to inform activities
-                            InformActivities(eventName, event.dataPayload);
+                            if( m_parentDevice != null ) {
+                                // Demo option: use handler & sendMessage to inform activities
+                                if( m_parentDevice.getEnableEventSendMessage() ) {
+                                    InformActivities(eventName, event.dataPayload);
+                                }
 
-                            // Demo Option: use broadcast & receivers to publish events
-                            //BroadcastEvent(eventName, event.dataPayload);
+                                // Demo Option: use broadcast & receivers to publish events
+                                if( m_parentDevice.getEnableEventBroadcast() ) {
+                                    BroadcastEvent(eventName, event.dataPayload);
+                                }
+                            }
                         }
 
                         public void onEventError(Exception e) {

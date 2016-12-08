@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity
         m_mainDevice.Init(this);
         m_mainDevice.Connect(CloudAccount.DEVICE_ID);
 
+        // Set SmartDevice Event Notification Flag
+        //m_mainDevice.setEnableEventSendMessage(false);
+        //m_mainDevice.setEnableEventBroadcast(true);
+
         //setup drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

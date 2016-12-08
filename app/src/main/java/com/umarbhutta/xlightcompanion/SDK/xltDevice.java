@@ -157,6 +157,10 @@ public class xltDevice {
     // Sensor Data
     public SensorData m_Data;
 
+    // Event Notification
+    private boolean m_enableEventBroadcast = false;
+    private boolean m_enableEventSendMessage = true;
+
     // Event Handler List
     private ArrayList<Handler> m_lstEH_DevST = new ArrayList<>();
     private ArrayList<Handler> m_lstEH_SenDT = new ArrayList<>();
@@ -717,6 +721,22 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     // Event Handler Interfaces
     //-------------------------------------------------------------------------
+    public boolean getEnableEventBroadcast() {
+        return m_enableEventBroadcast;
+    }
+
+    public boolean getEnableEventSendMessage() {
+        return m_enableEventSendMessage;
+    }
+
+    public void setEnableEventBroadcast(final boolean flag) {
+        m_enableEventBroadcast = flag;
+    }
+
+    public void setEnableEventSendMessage(final boolean flag) {
+        m_enableEventSendMessage = flag;
+    }
+
     public int addDeviceEventHandler(final Handler handler) {
         m_lstEH_DevST.add(handler);
         return m_lstEH_DevST.size();
