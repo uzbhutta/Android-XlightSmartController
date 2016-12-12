@@ -190,10 +190,19 @@ public class xltDevice {
 
         // Ensure we do it only once
         if( !m_bInitialized ) {
-            ParticleBridge.init(context);
-            // ToDo: get login credential or access token from DMI
-            // make sure we logged onto IoT cloud
-            ParticleBridge.authenticate();
+            // Init BLE Adapter
+            if( !BLEAdapter.initialized() ) {
+                BLEAdapter.init(context);
+            }
+
+            // Init Particle Adapter
+            if( !ParticleAdapter.initialized() ) {
+                ParticleAdapter.init(context);
+                // ToDo: get login credential or access token from DMI
+                // make sure we logged onto IoT cloud
+                ParticleAdapter.authenticate();
+            }
+
             m_bInitialized = true;
         }
 
@@ -231,11 +240,11 @@ public class xltDevice {
             public void run() {
                 // Check ControllerID
                 int timeout = TIMEOUT_CLOUD_LOGIN;
-                while( !ParticleBridge.isAuthenticated() && timeout-- > 0 ) {
+                while( !ParticleAdapter.isAuthenticated() && timeout-- > 0 ) {
                     SystemClock.sleep(1000);
                 }
-                if( ParticleBridge.isAuthenticated() ) {
-                    if (ParticleBridge.checkDeviceID(m_ControllerID)) {
+                if( ParticleAdapter.isAuthenticated() ) {
+                    if (ParticleAdapter.checkDeviceID(m_ControllerID)) {
                         // Connect Cloud Instance
                         cldBridge.connectCloud(m_ControllerID);
                     }

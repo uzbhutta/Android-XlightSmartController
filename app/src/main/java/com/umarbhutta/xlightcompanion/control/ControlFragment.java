@@ -159,8 +159,8 @@ public class ControlFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //check if on or off
                 state = isChecked;
-                //ParticleBridge.JSONCommandPower(ParticleBridge.DEFAULT_DEVICE_ID, state);
-                //ParticleBridge.FastCallPowerSwitch(ParticleBridge.DEFAULT_DEVICE_ID, state);
+                //ParticleAdapter.JSONCommandPower(ParticleAdapter.DEFAULT_DEVICE_ID, state);
+                //ParticleAdapter.FastCallPowerSwitch(ParticleAdapter.DEFAULT_DEVICE_ID, state);
                 MainActivity.m_mainDevice.PowerSwitch(state);
             }
         });
@@ -192,31 +192,31 @@ public class ControlFragment extends Fragment {
 
                                 //send message to Particle based on which rings have been selected
                                 if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_ALL, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_ALL, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, state, br, ww, r, g, b);
                                 } else if (ring1 && ring2) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, br, ww, r, g, b);
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
                                 } else if (ring2 && ring3) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, br, ww, r, g, b);
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
                                 } else if (ring1 && ring3) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, br, ww, r, g, b);
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
                                 } else if (ring1) {
-                                   //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_1, state, br, ww, r, g, b);
+                                   //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                 } else if (ring2) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_2, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
                                 } else if (ring3) {
-                                    //ParticleBridge.JSONCommandColor(ParticleBridge.DEFAULT_DEVICE_ID, ParticleBridge.RING_3, state, br, ww, r, g, b);
+                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
                                 } else {
                                     //do nothing
@@ -240,7 +240,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.e(TAG, "The brightness value is " + seekBar.getProgress());
-                //ParticleBridge.JSONCommandBrightness(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress());
+                //ParticleAdapter.JSONCommandBrightness(ParticleAdapter.DEFAULT_DEVICE_ID, seekBar.getProgress());
                 MainActivity.m_mainDevice.ChangeBrightness(seekBar.getProgress());
             }
         });
@@ -257,7 +257,7 @@ public class ControlFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.d(TAG, "The CCT value is " + seekBar.getProgress()+2700);
-                //ParticleBridge.JSONCommandCCT(ParticleBridge.DEFAULT_DEVICE_ID, seekBar.getProgress()+2700);
+                //ParticleAdapter.JSONCommandCCT(ParticleAdapter.DEFAULT_DEVICE_ID, seekBar.getProgress()+2700);
                 MainActivity.m_mainDevice.ChangeCCT(seekBar.getProgress()+2700);
             }
         });
@@ -277,7 +277,7 @@ public class ControlFragment extends Fragment {
                     //disable all views below spinner
                     disableEnableControls(false);
 
-                    //ParticleBridge.JSONCommandScenario(ParticleBridge.DEFAULT_DEVICE_ID, position);
+                    //ParticleAdapter.JSONCommandScenario(ParticleAdapter.DEFAULT_DEVICE_ID, position);
                     //position passed into above function corresponds to the scenarioId i.e. s1, s2, s3 to trigger
                     MainActivity.m_mainDevice.ChangeScenario(position);
                 }

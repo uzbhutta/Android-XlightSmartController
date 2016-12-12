@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.umarbhutta.xlightcompanion.SDK.xltDevice;
 import com.umarbhutta.xlightcompanion.Tools.StatusReceiver;
 import com.umarbhutta.xlightcompanion.main.MainActivity;
-import com.umarbhutta.xlightcompanion.SDK.ParticleBridge;
 import com.umarbhutta.xlightcompanion.R;
 
 /**
@@ -93,7 +92,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
             mDeviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    //ParticleBridge.FastCallPowerSwitch(ParticleBridge.DEFAULT_DEVICE_ID, isChecked);
+                    //ParticleAdapter.FastCallPowerSwitch(ParticleAdapter.DEFAULT_DEVICE_ID, isChecked);
                     MainActivity.m_mainDevice.PowerSwitch(isChecked);
                 }
             });

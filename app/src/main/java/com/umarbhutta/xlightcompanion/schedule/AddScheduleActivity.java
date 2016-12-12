@@ -246,7 +246,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
                 //call JSONConfigAlarm to send a schedule row
                 // DMI
-                //ParticleBridge.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
+                //ParticleAdapter.JSONConfigAlarm(defeaultNodeId, isRepeat, weekdays, hour, minute, scenarioName);
                 int scheduleId = ScheduleFragment.name.size();
                 MainActivity.m_mainDevice.sceAddSchedule(scheduleId, isRepeat, weekdays, hour, minute, xltDevice.DEFAULT_ALARM_ID);
                 // Get scenarioId from name

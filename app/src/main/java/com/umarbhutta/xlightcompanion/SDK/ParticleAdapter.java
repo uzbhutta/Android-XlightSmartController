@@ -13,10 +13,11 @@ import io.particle.android.sdk.cloud.ParticleDevice;
  * Created by Umar Bhutta.
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public class ParticleBridge {
+public class ParticleAdapter {
     // misc
-    private static final String TAG = ParticleBridge.class.getSimpleName();
+    private static final String TAG = ParticleAdapter.class.getSimpleName();
 
+    private static boolean m_bInitialized = false;
     private static int resultCode;
     private static boolean m_bLoggedIn = false;
     private static List<ParticleDevice> m_devices;
@@ -25,6 +26,11 @@ public class ParticleBridge {
     // Particle functions
     public static void init(Context context) {
         ParticleCloudSDK.init(context);
+        m_bInitialized = true;
+    }
+
+    public static boolean initialized() {
+        return m_bInitialized;
     }
 
     public static boolean isAuthenticated() {
