@@ -6,6 +6,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 
+import com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter;
+import com.umarbhutta.xlightcompanion.SDK.BLE.BLEBridge;
+import com.umarbhutta.xlightcompanion.SDK.Cloud.CloudBridge;
+import com.umarbhutta.xlightcompanion.SDK.Cloud.ParticleAdapter;
+import com.umarbhutta.xlightcompanion.SDK.LAN.LANBridge;
+
 import java.util.ArrayList;
 
 /**
@@ -215,10 +221,11 @@ public class xltDevice {
 
     // Connect to message bridges
     public boolean Connect(final String controllerID) {
-        // ToDo: get devID & devName by controllerID from DMI
+        // ToDo: get devID, devName & devBLEName by controllerID from DMI
         m_ControllerID = controllerID;
         setDeviceID(DEFAULT_DEVICE_ID);
-        //setDeviceName();
+        //setDeviceName(devName);
+        //bleBridge.setName(devBLEName);
 
         // Connect to Cloud
         ConnectCloud();
@@ -255,7 +262,7 @@ public class xltDevice {
     }
 
     public boolean ConnectBLE() {
-        return(bleBridge.connectController("8888"));
+        return(bleBridge.connectController());
     }
 
     public boolean ConnectLAN() {

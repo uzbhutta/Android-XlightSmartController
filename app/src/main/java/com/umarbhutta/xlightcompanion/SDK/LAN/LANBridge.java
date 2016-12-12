@@ -1,4 +1,6 @@
-package com.umarbhutta.xlightcompanion.SDK;
+package com.umarbhutta.xlightcompanion.SDK.LAN;
+
+import com.umarbhutta.xlightcompanion.SDK.BaseBridge;
 
 /**
  * Created by sunboss on 2016-11-16.

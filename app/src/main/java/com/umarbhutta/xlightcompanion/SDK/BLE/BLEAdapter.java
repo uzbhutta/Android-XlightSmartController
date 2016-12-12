@@ -1,9 +1,8 @@
-package com.umarbhutta.xlightcompanion.SDK;
+package com.umarbhutta.xlightcompanion.SDK.BLE;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
@@ -71,5 +70,14 @@ public class BLEAdapter {
                 }
             }
         }
+    }
+
+    public static BluetoothDevice SearchDeviceName(final String devName) {
+        for (BluetoothDevice device : mPairedDevices) {
+            if (device.getName().equalsIgnoreCase(devName)) {
+                return device;
+            }
+        }
+        return null;
     }
 }

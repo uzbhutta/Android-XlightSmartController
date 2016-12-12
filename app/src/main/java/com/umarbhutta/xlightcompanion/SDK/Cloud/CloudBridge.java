@@ -1,11 +1,13 @@
-package com.umarbhutta.xlightcompanion.SDK;
+package com.umarbhutta.xlightcompanion.SDK.Cloud;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
+
+import com.umarbhutta.xlightcompanion.SDK.BaseBridge;
+import com.umarbhutta.xlightcompanion.SDK.xltDevice;
 
 import java.io.IOException;
 import java.util.ArrayList;

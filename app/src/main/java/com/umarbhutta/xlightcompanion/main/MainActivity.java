@@ -3,7 +3,6 @@ package com.umarbhutta.xlightcompanion.main;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -16,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.umarbhutta.xlightcompanion.R;
-import com.umarbhutta.xlightcompanion.SDK.BLEAdapter;
+import com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter;
 import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
 import com.umarbhutta.xlightcompanion.control.ControlFragment;
 import com.umarbhutta.xlightcompanion.glance.GlanceFragment;

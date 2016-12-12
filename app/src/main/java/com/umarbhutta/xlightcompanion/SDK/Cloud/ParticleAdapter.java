@@ -1,6 +1,8 @@
-package com.umarbhutta.xlightcompanion.SDK;
+package com.umarbhutta.xlightcompanion.SDK.Cloud;
 
 import android.content.Context;
+
+import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
 
 import java.util.ArrayList;
 import java.util.List;
