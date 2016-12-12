@@ -9,6 +9,8 @@ import android.util.Log;
 import com.umarbhutta.xlightcompanion.SDK.BaseBridge;
 
 
+import java.lang.reflect.Method;
+
 import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 
 /**
@@ -20,10 +22,11 @@ public class BLEBridge extends BaseBridge {
     private static final String TAG = BLEBridge.class.getSimpleName();
 
     public static final int STATE_DISCONNECTED = 0;
-    public static final int STATE_SCANNING = 1;
-    public static final int STATE_CONNECTING = 2;
-    public static final int STATE_CONNECTED = 3;
-    public static final int STATE_SERVICES_DISCOVERED = 4;
+    public static final int STATE_CONNECTING = 1;
+    public static final int STATE_CONNECTED = 2;
+    public static final int STATE_DISCONNECTING = 3;
+    public static final int STATE_SCANNING = 5;
+    public static final int STATE_SERVICES_DISCOVERED = 6;
 
     private boolean m_bPaired = false;
     private BluetoothDevice m_bleDevice;
@@ -54,6 +57,35 @@ public class BLEBridge extends BaseBridge {
             return true;
         }
         return false;
+    }
+
+    public boolean refreshDeviceCache() {
+        try {
+            final Method refresh = BluetoothGatt.class.getMethod("refresh");
+            if (refresh != null) {
+                final boolean success = (Boolean) refresh.invoke(m_bleGatt);
+                Log.i(TAG, "Refreshing result: " + success);
+                return success;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "An exception occured while refreshing device", e);
+        }
+        return false;
+    }
+
+    public void closeBluetoothGatt() {
+        if (m_bleGatt != null) {
+            m_bleGatt.disconnect();
+        }
+
+        if (m_bleGatt != null) {
+            refreshDeviceCache();
+        }
+
+        if (m_bleGatt != null) {
+            m_bleGatt.close();
+            m_bleGatt = null;
+        }
     }
 
     @Override
@@ -92,6 +124,18 @@ public class BLEBridge extends BaseBridge {
         return connectionState == STATE_SERVICES_DISCOVERED;
     }
 
+    /**
+     * return
+     * {@link #STATE_DISCONNECTED}
+     * {@link #STATE_SCANNING}
+     * {@link #STATE_CONNECTING}
+     * {@link #STATE_CONNECTED}
+     * {@link #STATE_SERVICES_DISCOVERED}
+     */
+    public int getConnectionState() {
+        return connectionState;
+    }
+
     private BleGattCallback coreGattCallback = new BleGattCallback() {
 
         @Override
@@ -117,7 +161,7 @@ public class BLEBridge extends BaseBridge {
                     + '\n' + "newState: " + newState
                     + '\n' + "thread: " + Thread.currentThread().getId());
 
-            if (newState == STATE_CONNECTED) {
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
                 connectionState = STATE_CONNECTED;
                 onConnectSuccess(gatt, status);
 
@@ -125,7 +169,7 @@ public class BLEBridge extends BaseBridge {
                 connectionState = STATE_DISCONNECTED;
                 onConnectFailure(new ConnectException(gatt, status));
 
-            } else if (newState == STATE_CONNECTING) {
+            } else if (newState == BluetoothGatt.STATE_CONNECTING) {
                 connectionState = STATE_CONNECTING;
             }
         }
