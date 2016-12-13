@@ -625,7 +625,7 @@ public class xltDevice {
     }
 
     // Turn On / Off
-    public int PowerSwitch(final boolean state) {
+    public int PowerSwitch(final int state) {
         int rc = -1;
 
         // Select Bridge

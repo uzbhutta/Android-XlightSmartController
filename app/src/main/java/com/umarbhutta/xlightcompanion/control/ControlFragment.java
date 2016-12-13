@@ -161,7 +161,7 @@ public class ControlFragment extends Fragment {
                 state = isChecked;
                 //ParticleAdapter.JSONCommandPower(ParticleAdapter.DEFAULT_DEVICE_ID, state);
                 //ParticleAdapter.FastCallPowerSwitch(ParticleAdapter.DEFAULT_DEVICE_ID, state);
-                MainActivity.m_mainDevice.PowerSwitch(state);
+                MainActivity.m_mainDevice.PowerSwitch(state ? xltDevice.STATE_ON : xltDevice.STATE_OFF);
             }
         });
 

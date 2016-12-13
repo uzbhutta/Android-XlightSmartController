@@ -353,12 +353,12 @@ public class CloudBridge extends BaseBridge {
         return resultCode;
     }
 
-    public int FastCallPowerSwitch(final boolean state) {
+    public int FastCallPowerSwitch(final int state) {
         new Thread() {
             @Override
             public void run() {
                 // Make the Particle call here
-                String strParam = String.format("%d:%d", getNodeID(), state ? xltDevice.STATE_ON : xltDevice.STATE_OFF);
+                String strParam = String.format("%d:%d", getNodeID(), state);
                 ArrayList<String> message = new ArrayList<>();
                 message.add(strParam);
                 try {

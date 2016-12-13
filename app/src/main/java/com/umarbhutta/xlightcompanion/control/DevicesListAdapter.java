@@ -93,7 +93,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             mDeviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     //ParticleAdapter.FastCallPowerSwitch(ParticleAdapter.DEFAULT_DEVICE_ID, isChecked);
-                    MainActivity.m_mainDevice.PowerSwitch(isChecked);
+                    MainActivity.m_mainDevice.PowerSwitch(isChecked ? xltDevice.STATE_ON : xltDevice.STATE_OFF);
                 }
             });
         }
