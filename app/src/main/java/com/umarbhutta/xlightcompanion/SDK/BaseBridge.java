@@ -12,7 +12,7 @@ public class BaseBridge {
     private boolean m_bConnected = false;
     private int m_nodeID;
     private String m_Name = "Unknown bridge";
-    private int m_priority = 5;
+    private int m_priority = 5; // the bigger, the higher
     protected Context m_parentContext = null;
     protected xltDevice m_parentDevice = null;
 

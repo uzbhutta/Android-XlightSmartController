@@ -217,6 +217,11 @@ public class xltDevice {
 
         // Set me as the parent device
         setParentDevice();
+
+        // Set priority for each bridge - the bigger, the higher
+        cldBridge.setPriority(6);
+        bleBridge.setPriority(9);
+        lanBridge.setPriority(3);
     }
 
     // Connect to message bridges
@@ -560,18 +565,27 @@ public class xltDevice {
     }
 
     private BridgeType selectBridge() {
-        // ToDo: develop an algorithm to select proper bridge
         /// Use current bridge as long as available
         if( isBridgeOK(m_currentBridge) ) return m_currentBridge;
 
         if( getAutoBridge() ) {
-            if (isCloudOK()) {
+            int maxPri = 0;
+            if (isCloudOK() && cldBridge.getPriority() > maxPri) {
                 m_currentBridge = BridgeType.Cloud;
-            } else if (isBLEOK()) {
+                maxPri = cldBridge.getPriority();
+            }
+
+            if (isBLEOK() && bleBridge.getPriority() > maxPri) {
                 m_currentBridge = BridgeType.BLE;
-            } else if (isLANOK()) {
+                maxPri = bleBridge.getPriority();
+            }
+
+            if (isLANOK() && lanBridge.getPriority() > maxPri) {
                 m_currentBridge = BridgeType.LAN;
-            } else {
+                maxPri = lanBridge.getPriority();
+            }
+
+            if (maxPri == 0) {
                 m_currentBridge = BridgeType.NONE;
             }
         }
