@@ -32,6 +32,9 @@ import com.umarbhutta.xlightcompanion.main.MainActivity;
 import com.umarbhutta.xlightcompanion.scenario.ScenarioFragment;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.priyesh.chroma.ChromaDialog;
 import me.priyesh.chroma.ColorMode;
@@ -67,6 +70,13 @@ public class ControlFragment extends Fragment {
 
     private Handler m_handlerControl;
 
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private static int count = 0;
+    private boolean isPause = false;
+    private boolean isStop = true;
+    private int ran_r = 125, ran_g = 50, ran_b = 0;
+
     private class MyStatusReceiver extends StatusReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -79,6 +89,10 @@ public class ControlFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        if (!isStop) {
+            stopTimer();
+        }
+
         MainActivity.m_mainDevice.removeDeviceEventHandler(m_handlerControl);
         if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
             getContext().unregisterReceiver(m_StatusReceiver);
@@ -119,9 +133,6 @@ public class ControlFragment extends Fragment {
         // Apply the scenarioAdapter to the spinner
         scenarioSpinner.setAdapter(scenarioAdapter);
 
-        // Just for demo. In real world, should get from DMI
-        MainActivity.m_mainDevice.setDeviceName(DEFAULT_LAMP_TEXT);
-
         powerSwitch.setChecked(MainActivity.m_mainDevice.getState() > 0);
         brightnessSeekBar.setProgress(MainActivity.m_mainDevice.getBrightness());
         cctSeekBar.setProgress(MainActivity.m_mainDevice.getCCT() - 2700);
@@ -152,6 +163,7 @@ public class ControlFragment extends Fragment {
                 }
             };
             MainActivity.m_mainDevice.addDeviceEventHandler(m_handlerControl);
+            updateDeviceRingLabel();
         }
 
         powerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -168,22 +180,33 @@ public class ControlFragment extends Fragment {
         colorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int initColor;
+                int ringID = xltDevice.RING_ID_ALL;
+                if( ring1 && !ring2 && !ring3 ) ringID = xltDevice.RING_ID_1;
+                if( ring2 && !ring1 && !ring3 ) ringID = xltDevice.RING_ID_2;
+                if( ring3 && !ring1 && !ring2 ) ringID = xltDevice.RING_ID_3;
+                if( MainActivity.m_mainDevice.getRed(ringID) == 0 && MainActivity.m_mainDevice.getGreen(ringID) == 0 && MainActivity.m_mainDevice.getBlue(ringID) == 0) {
+                    initColor = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                } else {
+                    initColor = Color.argb(0xff, MainActivity.m_mainDevice.getRed(ringID), MainActivity.m_mainDevice.getGreen(ringID), MainActivity.m_mainDevice.getBlue(ringID));
+                }
+                Log.e(TAG, "int: " + initColor + " HEX: #" + String.format("%06X", (0xFFFFFF & initColor)));
                 new ChromaDialog.Builder()
-                        .initialColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
+                        .initialColor(initColor)
                         .colorMode(ColorMode.RGB) // There's also ARGB and HSV
                         .onColorSelected(new ColorSelectListener() {
                             @Override
                             public void onColorSelected(int color) {
-                                Log.e(TAG, "int: " + color);
                                 colorHex = String.format("%06X", (0xFFFFFF & color));
-                                Log.e(TAG, "HEX: #" + colorHex);
+                                Log.e(TAG, "int: " + color + " HEX: #" + colorHex);
 
-                                int br = 65;
+                                state = powerSwitch.isChecked();
+                                int br = brightnessSeekBar.getProgress();
+                                //int ww = (cctSeekBar.getProgress() / ((6500 - 2700) * 255));
                                 int ww = 0;
-                                int c = (int) Long.parseLong(colorHex, 16);
-                                int r = (c >> 16) & 0xFF;
-                                int g = (c >> 8) & 0xFF;
-                                int b = (c >> 0) & 0xFF;
+                                int r = (color >> 16) & 0xFF;
+                                int g = (color >> 8) & 0xFF;
+                                int b = (color >> 0) & 0xFF;
                                 Log.e(TAG, "RGB: " + r + "," + g + "," + b);
 
                                 colorHex = "#" + colorHex;
@@ -194,30 +217,71 @@ public class ControlFragment extends Fragment {
                                 if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_ALL, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_ALL, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_ALL, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_ALL, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_ALL, b);
                                 } else if (ring1 && ring2) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
                                 } else if (ring2 && ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
+
                                 } else if (ring1 && ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
                                 } else if (ring1) {
                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
                                 } else if (ring2) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
                                 } else if (ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
+                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
                                 } else {
                                     //do nothing
                                 }
@@ -258,13 +322,18 @@ public class ControlFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.d(TAG, "The CCT value is " + seekBar.getProgress()+2700);
                 //ParticleAdapter.JSONCommandCCT(ParticleAdapter.DEFAULT_DEVICE_ID, seekBar.getProgress()+2700);
-                MainActivity.m_mainDevice.ChangeCCT(seekBar.getProgress()+2700);
+                MainActivity.m_mainDevice.ChangeCCT(seekBar.getProgress() + 2700);
             }
         });
 
         scenarioSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (!isStop) {
+                    stopTimer();
+                }
+
                 if (parent.getItemAtPosition(position).toString() == "None") {
                     //scenarioNoneLL.animate().alpha(1).setDuration(600).start();
 
@@ -279,7 +348,18 @@ public class ControlFragment extends Fragment {
 
                     //ParticleAdapter.JSONCommandScenario(ParticleAdapter.DEFAULT_DEVICE_ID, position);
                     //position passed into above function corresponds to the scenarioId i.e. s1, s2, s3 to trigger
-                    MainActivity.m_mainDevice.ChangeScenario(position);
+                    //MainActivity.m_mainDevice.ChangeScenario(position);
+
+                    // For demonstration
+                    if (parent.getItemAtPosition(position).toString() == "Dinner") {
+                        MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 70, 197, 136, 33, 0);
+                    } else if (parent.getItemAtPosition(position).toString() == "Sleep") {
+                        MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 10, 26, 254, 52, 0);
+                    } else if (parent.getItemAtPosition(position).toString() == "Dance") {
+                        if (isStop) {
+                            startTimer();
+                        }
+                    }
                 }
             }
 
@@ -368,5 +448,64 @@ public class ControlFragment extends Fragment {
         }
 
         deviceRingLabel.setText(label);
+    }
+
+    private void startTimer(){
+        isStop = false;
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "count: "+String.valueOf(count));
+
+                    int which;
+                    Random random = new Random();
+                    do {
+                        try {
+                            which = random.nextInt(3);
+                            if( which == 0 ) {
+                                //r = random.nextInt(256);
+                                ran_r += random.nextInt(60);
+                                ran_r %= 255;
+                            } else if( which == 1 ) {
+                                //g = random.nextInt(256);
+                                ran_g += random.nextInt(45);
+                                ran_g %= 255;
+                            } else {
+                                //b = random.nextInt(256);
+                                ran_b += random.nextInt(36);
+                                ran_b %= 255;
+                            }
+                            MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 10, 0, ran_r, ran_g, ran_b);
+                            Thread.sleep(2500);
+                        } catch (InterruptedException e) {
+                        }
+                    } while (isPause);
+
+                    count ++;
+                }
+            };
+        }
+
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask, 1000, 1000);
+
+    }
+
+    private void stopTimer(){
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+        isStop = true;
     }
 }

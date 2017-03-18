@@ -18,7 +18,7 @@ public class BLEAdapter {
     // misc
     private static final String TAG = BLEAdapter.class.getSimpleName();
     public static final int REQUEST_ENABLE_BT = 1010;
-    private static final String XLIGHT_BLE_NAME_PREFIX = "Xlight";
+    public static final String XLIGHT_BLE_NAME_PREFIX = "Xlight";
     //private static final int XLIGHT_BLE_CLASS = 0x9A050C;   // default value for HC-06 is 0x1F00
     private static final int XLIGHT_BLE_CLASS = 0x1F00;   // default value for HC-06 is 0x1F00
 

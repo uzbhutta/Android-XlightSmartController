@@ -10,7 +10,6 @@ import android.content.Context;
 // Base Class for Bridges
 public class BaseBridge {
     private boolean m_bConnected = false;
-    private int m_nodeID;
     private String m_Name = "Unknown bridge";
     private int m_priority = 5; // the bigger, the higher
     protected Context m_parentContext = null;
@@ -24,12 +23,12 @@ public class BaseBridge {
         m_bConnected = connected;
     }
 
-    public void setNodeID(final int nodeID) {
-        m_nodeID = nodeID;
-    }
-
     public int getNodeID() {
-        return m_nodeID;
+        if( m_parentDevice != null ) {
+            return m_parentDevice.getDeviceID();
+        } else {
+            return xltDevice.DEFAULT_DEVICE_ID;
+        }
     }
 
     public String getName() {

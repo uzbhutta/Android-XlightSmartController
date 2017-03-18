@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
  * Created by Umar Bhutta.
  */
 public class WeatherDetails {
+    private String mLocation;
     private String mIcon;
     private double mTempF;
     private int mTempC;
@@ -15,6 +16,14 @@ public class WeatherDetails {
 
     public WeatherDetails() {
         super();
+    }
+
+    public String getLocation() {
+        return mLocation;
+    }
+
+    public void setLocation(final String location) {
+        mLocation = location;
     }
 
     public String getIcon() {

@@ -14,6 +14,8 @@ import com.umarbhutta.xlightcompanion.SDK.LAN.LANBridge;
 
 import java.util.ArrayList;
 
+import static com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter.XLIGHT_BLE_NAME_PREFIX;
+
 /**
  * Created by sunboss on 2016-11-15.
  *
@@ -33,6 +35,9 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     private static final String TAG = xltDevice.class.getSimpleName();
     public static final int DEFAULT_DEVICE_ID = 1;
+    public static final String DEFAULT_DEVICE_NAME = "";
+    public static final String DEFAULT_DEVICE_BLENAME = XLIGHT_BLE_NAME_PREFIX + DEFAULT_DEVICE_NAME;
+
 
     // on/off values
     public static final int STATE_OFF = 0;
@@ -91,6 +96,8 @@ public class xltDevice {
     public static final int devtypMRing1 = 10;
     public static final int devtypDummy = 255;
 
+    public static final int DEFAULT_DEVICE_TYPE = devtypWRing3;
+
     public enum BridgeType {
         NONE,
         Cloud,
@@ -106,9 +113,12 @@ public class xltDevice {
         public int m_State = 0;
         public int m_Brightness = 50;
         public int m_CCT = CT_MIN_VALUE;
-        public int m_R = 128;
-        public int m_G = 128;
+        public int m_R = 0;
+        public int m_G = 0;
         public int m_B = 0;
+        public int m_String1 = 50;
+        public int m_String2 = 50;
+        public int m_String3 = 50;
 
         public boolean isSameColor(final xltRing that) {
             if( this.m_State != that.m_State ) return false;
@@ -133,9 +143,21 @@ public class xltDevice {
     public class SensorData {
         public float m_RoomTemp = 24;               // Room temperature
         public int m_RoomHumidity = 40;             // Room humidity
+        public int m_RoomBrightness = 0;            // ALS value
 
         public float m_OutsideTemp = 23;            // Local outside temperature
         public int m_OutsideHumidity = 30;          // Local outside humidity
+    }
+
+    //-------------------------------------------------------------------------
+    // Device / Node under the Controller
+    //-------------------------------------------------------------------------
+    public class xltNodeInfo {
+        public int m_ID = 0;
+        public int m_Type;
+        public String m_Name;
+        // Rings
+        public xltRing[] m_Ring = new xltRing[MAX_RING_NUM];
     }
 
     //-------------------------------------------------------------------------
@@ -145,8 +167,6 @@ public class xltDevice {
     private static boolean m_bInitialized = false;
     private String m_ControllerID;
     private int m_DevID = DEFAULT_DEVICE_ID;
-    private String m_DevName = "Main xlight";
-    private int m_DevType = devtypWRing3;
 
     // Bridge Objects
     private CloudBridge cldBridge;
@@ -157,8 +177,9 @@ public class xltDevice {
     private BridgeType m_currentBridge = BridgeType.Cloud;
     private boolean m_autoBridge = true;
 
-    // Rings
-    private xltRing[] m_Ring = new xltRing[MAX_RING_NUM];
+    // Device/Node List
+    private ArrayList<xltNodeInfo> m_lstNodes = new ArrayList<>();
+    xltNodeInfo m_currentNode = null;
 
     // Sensor Data
     public SensorData m_Data;
@@ -179,10 +200,6 @@ public class xltDevice {
 
         // Create member objects
         m_Data= new SensorData();
-        for(int i = 0; i < MAX_RING_NUM; i++) {
-            m_Ring[i] = new xltRing();
-        }
-
         cldBridge = new CloudBridge();
         bleBridge = new BLEBridge();
         lanBridge = new LANBridge();
@@ -193,6 +210,7 @@ public class xltDevice {
         // Clear event handler lists
         clearDeviceEventHandlerList();
         clearDataEventHandlerList();
+        clearDeviceList();
 
         // Ensure we do it only once
         if( !m_bInitialized ) {
@@ -226,11 +244,18 @@ public class xltDevice {
 
     // Connect to message bridges
     public boolean Connect(final String controllerID) {
-        // ToDo: get devID, devName & devBLEName by controllerID from DMI
+        // ToDo: get device (node) list: devID, devType, devName & devBLEName by controllerID from DMI
+        // If DMI cannot communicate to the Cloud, return the most recent values in cookie,
+        // If there is no cookie, return default values.
         m_ControllerID = controllerID;
-        setDeviceID(DEFAULT_DEVICE_ID);
-        //setDeviceName(devName);
+        // ToDo: Add device/node list
+        if( m_lstNodes.size() <= 0 ) {
+            // Easy for testing
+            addNodeToDeviceList(DEFAULT_DEVICE_ID, DEFAULT_DEVICE_TYPE, DEFAULT_DEVICE_NAME);
+        }
+        //...
         //bleBridge.setName(devBLEName);
+        bleBridge.setName(DEFAULT_DEVICE_BLENAME);
 
         // Connect to Cloud
         ConnectCloud();
@@ -275,6 +300,18 @@ public class xltDevice {
         return(lanBridge.connectController("192.168.0.114", 5555));
     }
 
+    public boolean isSunny() {
+        return(m_currentNode != null ? isSunny(m_currentNode.m_Type) : false);
+    }
+
+    public boolean isRainbow() {
+        return(m_currentNode != null ? isRainbow(m_currentNode.m_Type) : false);
+    }
+
+    public boolean isMirage() {
+        return(m_currentNode != null ? isMirage(m_currentNode.m_Type) : false);
+    }
+
     public boolean isSunny(final int DevType) {
         return(DevType >= devtypWRing3 && DevType <= devtypWRing1);
     }
@@ -298,15 +335,59 @@ public class xltDevice {
         return m_ControllerID;
     }
 
+    public int addNodeToDeviceList(final int devID, final int devType, final String devName) {
+        xltNodeInfo lv_node = new xltNodeInfo();
+        lv_node.m_ID = devID;
+        lv_node.m_Type = devType;
+        lv_node.m_Name = devName;
+        for(int i = 0; i < MAX_RING_NUM; i++) {
+            lv_node.m_Ring[i] = new xltRing();
+        }
+        m_lstNodes.add(lv_node);
+        if( m_currentNode == null ) {
+            m_currentNode = lv_node;
+            m_DevID = devID;
+        }
+        return m_lstNodes.size();
+    }
+
+    public int findNodeFromDeviceList(final int devID) {
+        for (xltNodeInfo lv_node : m_lstNodes) {
+            if( lv_node.m_ID == devID ) {
+                return m_lstNodes.indexOf(lv_node);
+            }
+        }
+        return -1;
+    }
+
+    public boolean removeNodeFromDeviceList(final int devID) {
+        int lv_index = findNodeFromDeviceList(devID);
+        if( lv_index >= 0 ) {
+            if( m_currentNode != null ) {
+                if( m_currentNode.m_ID == devID ) m_currentNode = null;
+            }
+            m_lstNodes.remove(lv_index);
+            return true;
+        }
+        return false;
+    }
+
+    public void clearDeviceList() {
+        m_currentNode = null;
+        m_lstNodes.clear();
+    }
+
     public int getDeviceID() {
         return m_DevID;
     }
 
+    // Change current device / node
     public void setDeviceID(final int devID) {
         m_DevID = devID;
-        cldBridge.setNodeID(devID);
-        bleBridge.setNodeID(devID);
-        lanBridge.setNodeID(devID);
+        int lv_index = findNodeFromDeviceList(devID);
+        if( lv_index >= 0 ) {
+            m_currentNode = m_lstNodes.get(lv_index);
+        }
     }
 
     private void setParentContext(Context context) {
@@ -322,186 +403,283 @@ public class xltDevice {
     }
 
     public int getDeviceType() {
-        return m_DevType;
-    }
-
-    public void setDeviceType(final int devType) {
-        m_DevType = devType;
+        return(m_currentNode != null ? m_currentNode.m_Type : devtypDummy);
     }
 
     public String getDeviceName() {
-        return m_DevName;
-    }
-
-    public void setDeviceName(final String devName) {
-        m_DevName = devName;
+        return(m_currentNode != null ? m_currentNode.m_Name : "");
     }
 
     public int getState() {
-        return(getState(RING_ID_ALL));
+        return(getState(m_DevID));
     }
 
-    public int getState(final int ringID) {
+    public int getState(final int nodeID) {
+        return(getState(nodeID, RING_ID_ALL));
+    }
+
+    public int getState(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_State);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_Ring[index].m_State;
+        }
+        return(-1);
     }
 
     public void setState(final int state) {
-        setState(RING_ID_ALL, state);
+        setState(m_DevID, state);
     }
 
-    public void setState(final int ringID, final int state) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_State = state;
-            m_Ring[1].m_State = state;
-            m_Ring[2].m_State = state;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_State = state;
+    public void setState(final int nodeID, final int state) {
+        setState(nodeID, RING_ID_ALL, state);
+    }
+
+    public void setState(final int nodeID, final int ringID, final int state) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_State = state;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_State = state;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_State = state;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_State = state;
+            }
         }
     }
 
     public int getBrightness() {
-        return(getBrightness(RING_ID_ALL));
+        return(getBrightness(m_DevID));
     }
 
-    public int getBrightness(final int ringID) {
+    public int getBrightness(final int nodeID) {
+        return(getBrightness(nodeID, RING_ID_ALL));
+    }
+
+    public int getBrightness(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_Brightness);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_Ring[index].m_Brightness;
+        }
+        return(-1);
     }
 
     public void setBrightness(final int brightness) {
-        setBrightness(RING_ID_ALL, brightness);
+        setBrightness(m_DevID, brightness);
     }
 
-    public void setBrightness(final int ringID, final int brightness) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_Brightness = brightness;
-            m_Ring[1].m_Brightness = brightness;
-            m_Ring[2].m_Brightness = brightness;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_Brightness = brightness;
+    public void setBrightness(final int nodeID, final int brightness) {
+        setBrightness(nodeID, RING_ID_ALL, brightness);
+    }
+
+    public void setBrightness(final int nodeID, final int ringID, final int brightness) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_Brightness = brightness;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_Brightness = brightness;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_Brightness = brightness;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_Brightness = brightness;
+            }
         }
     }
 
     public int getCCT() {
-        return(getCCT(RING_ID_ALL));
+        return(getCCT(m_DevID));
     }
 
-    public int getCCT(final int ringID) {
+    public int getCCT(final int nodeID) {
+        return(getCCT(nodeID, RING_ID_ALL));
+    }
+
+    public int getCCT(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_CCT);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_Ring[index].m_CCT;
+        }
+        return(-1);
+    }
+
+    public void setCCT(final int nodeID, final int cct) {
+        setCCT(nodeID, RING_ID_ALL, cct);
     }
 
     public void setCCT(final int cct) {
-        setCCT(RING_ID_ALL, cct);
+        setCCT(m_DevID, cct);
     }
 
-    public void setCCT(final int ringID, final int cct) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_CCT = cct;
-            m_Ring[1].m_CCT = cct;
-            m_Ring[2].m_CCT = cct;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_CCT = cct;
+    public void setCCT(final int nodeID, final int ringID, final int cct) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_CCT = cct;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_CCT = cct;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_CCT = cct;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_CCT = cct;
+            }
         }
     }
 
     public int getWhite() {
-        return(getWhite(RING_ID_ALL));
+        return(getWhite(m_DevID));
     }
 
-    public int getWhite(final int ringID) {
+    public int getWhite(final int nodeID) {
+        return(getWhite(nodeID, RING_ID_ALL));
+    }
+
+    public int getWhite(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_CCT % 256);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return(m_lstNodes.get(lv_dev).m_Ring[index].m_CCT % 256);
+        }
+        return(-1);
     }
 
     public void setWhite(final int white) {
-        setWhite(RING_ID_ALL, white);
+        setWhite(m_DevID, white);
     }
 
-    public void setWhite(final int ringID, final int white) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_CCT = white;
-            m_Ring[1].m_CCT = white;
-            m_Ring[2].m_CCT = white;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_CCT = white;
+    public void setWhite(final int nodeID, final int white) {
+        setWhite(nodeID, RING_ID_ALL, white);
+    }
+
+    public void setWhite(final int nodeID, final int ringID, final int white) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_CCT = white;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_CCT = white;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_CCT = white;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_CCT = white;
+            }
         }
     }
 
     public int getRed() {
-        return(getRed(RING_ID_ALL));
+        return(getRed(m_DevID));
     }
 
-    public int getRed(final int ringID) {
+    public int getRed(final int nodeID) {
+        return(getRed(nodeID, RING_ID_ALL));
+    }
+
+    public int getRed(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_R);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return(m_lstNodes.get(lv_dev).m_Ring[index].m_R);
+        }
+        return(-1);
     }
 
     public void setRed(final int red) {
-        setRed(RING_ID_ALL, red);
+        setRed(m_DevID, red);
     }
 
-    public void setRed(final int ringID, final int red) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_R = red;
-            m_Ring[1].m_R = red;
-            m_Ring[2].m_R = red;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_R = red;
+    public void setRed(final int nodeID, final int red) {
+        setRed(nodeID, RING_ID_ALL, red);
+    }
+
+    public void setRed(final int nodeID, final int ringID, final int red) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_R = red;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_R = red;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_R = red;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_R = red;
+            }
         }
     }
 
     public int getGreen() {
-        return(getGreen(RING_ID_ALL));
+        return(getGreen(m_DevID));
     }
 
-    public int getGreen(final int ringID) {
+    public int getGreen(final int nodeID) {
+        return(getGreen(nodeID, RING_ID_ALL));
+    }
+
+    public int getGreen(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_G);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return(m_lstNodes.get(lv_dev).m_Ring[index].m_G);
+        }
+        return(-1);
     }
 
     public void setGreen(final int green) {
-        setGreen(RING_ID_ALL, green);
+        setGreen(m_DevID, green);
     }
 
-    public void setGreen(final int ringID, final int green) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_G = green;
-            m_Ring[1].m_G = green;
-            m_Ring[2].m_G = green;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_G = green;
+    public void setGreen(final int nodeID, final int green) {
+        setGreen(nodeID, RING_ID_ALL, green);
+    }
+
+    public void setGreen(final int nodeID, final int ringID, final int green) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_G = green;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_G = green;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_G = green;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_G = green;
+            }
         }
     }
 
     public int getBlue() {
-        return(getBlue(RING_ID_ALL));
+        return(getBlue(m_DevID));
     }
 
-    public int getBlue(final int ringID) {
+    public int getBlue(final int nodeID) {
+        return(getBlue(nodeID, RING_ID_ALL));
+    }
+
+    public int getBlue(final int nodeID, final int ringID) {
         int index = getRingIndex(ringID);
-        return(m_Ring[index].m_B);
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return(m_lstNodes.get(lv_dev).m_Ring[index].m_B);
+        }
+        return(-1);
     }
 
     public void setBlue(final int blue) {
-        setBlue(RING_ID_ALL, blue);
+        setBlue(m_DevID, blue);
     }
 
-    public void setBlue(final int ringID, final int blue) {
-        if( ringID == RING_ID_ALL ) {
-            m_Ring[0].m_B = blue;
-            m_Ring[1].m_B = blue;
-            m_Ring[2].m_B = blue;
-        } else {
-            int index = getRingIndex(ringID);
-            m_Ring[index].m_B = blue;
+    public void setBlue(final int nodeID, final int blue) {
+        setBlue(nodeID, RING_ID_ALL, blue);
+    }
+
+    public void setBlue(final int nodeID, final int ringID, final int blue) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            if (ringID == RING_ID_ALL) {
+                m_lstNodes.get(lv_dev).m_Ring[0].m_B = blue;
+                m_lstNodes.get(lv_dev).m_Ring[1].m_B = blue;
+                m_lstNodes.get(lv_dev).m_Ring[2].m_B = blue;
+            } else {
+                int index = getRingIndex(ringID);
+                m_lstNodes.get(lv_dev).m_Ring[index].m_B = blue;
+            }
         }
     }
 

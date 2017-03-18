@@ -48,7 +48,7 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
-    TextView outsideTemp, degreeSymbol, roomTemp, roomHumidity, outsideHumidity, apparentTemp;
+    TextView txtLocation, outsideTemp, degreeSymbol, roomTemp, roomHumidity, outsideHumidity, apparentTemp;
     ImageView imgWeather;
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -87,6 +87,7 @@ public class GlanceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_glance, container, false);
 
         fab = (com.github.clans.fab.FloatingActionButton) view.findViewById(R.id.fab);
+        txtLocation = (TextView) view.findViewById(R.id.location);
         outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
         degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
         outsideHumidity = (TextView) view.findViewById(R.id.valLocalHumidity);
@@ -146,8 +147,15 @@ public class GlanceFragment extends Fragment {
         //divider lines
         devicesRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
-        double latitude = 43.4643;
-        double longitude = -80.5204;
+        // Waterloo
+        //String strLocation = "Waterloo, ON";
+        //double latitude = 43.4643;
+        //double longitude = -80.5204;
+        // Suzhou
+        final String strLocation = "Suzhou, China";
+        double latitude = 31.2989;
+        double longitude = 120.5852;
+
         String forecastUrl = "https://api.forecast.io/forecast/" + CloudAccount.DarkSky_apiKey + "/" + latitude + "," + longitude;
 
         if (isNetworkAvailable()) {
@@ -171,6 +179,7 @@ public class GlanceFragment extends Fragment {
                         String jsonData = response.body().string();
                         if (response.isSuccessful()) {
                             mWeatherDetails = getWeatherDetails(jsonData);
+                            mWeatherDetails.setLocation(strLocation);
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -195,6 +204,7 @@ public class GlanceFragment extends Fragment {
 
     private void updateDisplay() {
         imgWeather.setImageBitmap(getWeatherIcon(mWeatherDetails.getIcon()));
+        txtLocation.setText(mWeatherDetails.getLocation());
         outsideTemp.setText(" " + mWeatherDetails.getTemp("celsius"));
         degreeSymbol.setText("\u00B0");
         outsideHumidity.setText(mWeatherDetails.getmHumidity() + "\u0025");

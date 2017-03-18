@@ -3,6 +3,8 @@ package com.umarbhutta.xlightcompanion.main;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -27,7 +29,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //constants for testing lists
-    public static final String[] deviceNames = {"Living Room", "Bedroom", "Basement Kitchen"};
+    public static final String[] deviceNames = {"Living Room", "Bedroom", "Bar"};
+    public static final int[] deviceNodeIDs = {1, 10, 11};
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
     public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     public static final String[] filterNames = {"Breathe", "Music Match", "Flash"};
 
     public static xltDevice m_mainDevice;
+    public static Handler m_eventHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,14 @@ public class MainActivity extends AppCompatActivity
         // Initialize SmartDevice SDK
         m_mainDevice = new xltDevice();
         m_mainDevice.Init(this);
+
+        // Setup Device/Node List
+        for( int lv_idx = 0; lv_idx < 3; lv_idx++ ) {
+            m_mainDevice.addNodeToDeviceList(deviceNodeIDs[lv_idx], xltDevice.DEFAULT_DEVICE_TYPE, deviceNames[lv_idx]);
+        }
+        m_mainDevice.setDeviceID(deviceNodeIDs[0]);
+
+        // Connect to Controller
         m_mainDevice.Connect(CloudAccount.DEVICE_ID);
 
         // Set SmartDevice Event Notification Flag
@@ -71,6 +83,19 @@ public class MainActivity extends AppCompatActivity
 
         displayView(R.id.nav_glance);
         navigationView.getMenu().getItem(0).setChecked(true);
+
+        m_eventHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                int nCmd = msg.getData().getInt("cmd", -1);
+                if( nCmd == 1) {
+                    // Menu
+                    int nItem = msg.getData().getInt("item", -1);
+                    if( nItem >= 0 ) {
+                        displayView(nItem);
+                    }
+                }
+            }
+        };
     }
 
     @Override
