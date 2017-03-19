@@ -383,7 +383,7 @@ public class CloudBridge extends BaseBridge {
                             Log.i(TAG, "Received event: " + eventName + " with payload: " + event.dataPayload);
                             // Notes: due to bug of SDK 0.3.4, the eventName is not correct
                             /// We work around by specifying eventName
-                            if( event.dataPayload.contains("DHTt") ) {
+                            if( event.dataPayload.contains("DHTt") || event.dataPayload.contains("ALS") || event.dataPayload.contains("PIR") ) {
                                 eventName = xltDevice.eventSensorData;
                             } else {
                                 eventName = xltDevice.eventDeviceStatus;
@@ -486,6 +486,10 @@ public class CloudBridge extends BaseBridge {
                     m_parentDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
                     bdlData.putInt("DHTh", m_parentDevice.m_Data.m_RoomHumidity);
                 }
+                if (jObject.has("ALS")) {
+                    m_parentDevice.m_Data.m_RoomBrightness = jObject.getInt("ALS");
+                    bdlData.putInt("ALS", m_parentDevice.m_Data.m_RoomBrightness);
+                }
                 m_parentDevice.sendSensorDataMessage(bdlData);
             }
         } catch (final JSONException e) {
@@ -535,6 +539,9 @@ public class CloudBridge extends BaseBridge {
             }
             if (jObject.has("DHTh")) {
                 m_parentDevice.m_Data.m_RoomHumidity = jObject.getInt("DHTh");
+            }
+            if (jObject.has("ALS")) {
+                m_parentDevice.m_Data.m_RoomBrightness = jObject.getInt("ALS");
             }
             //}
         } catch (final JSONException e) {

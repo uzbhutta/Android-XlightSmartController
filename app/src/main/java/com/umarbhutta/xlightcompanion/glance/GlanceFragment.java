@@ -48,7 +48,7 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
-    TextView txtLocation, outsideTemp, degreeSymbol, roomTemp, roomHumidity, outsideHumidity, apparentTemp;
+    TextView txtLocation, outsideTemp, degreeSymbol, roomTemp, roomHumidity, roomBrightness, outsideHumidity, apparentTemp;
     ImageView imgWeather;
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -67,6 +67,7 @@ public class GlanceFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
             roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
+            roomBrightness.setText(MainActivity.m_mainDevice.m_Data.m_RoomBrightness + "\u0025");
         }
     }
     private final MyDataReceiver m_DataReceiver = new MyDataReceiver();
@@ -96,6 +97,8 @@ public class GlanceFragment extends Fragment {
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
         roomHumidity = (TextView) view.findViewById(R.id.valRoomHumidity);
         roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
+        roomBrightness = (TextView) view.findViewById(R.id.valRoomBrightness);
+        roomBrightness.setText(MainActivity.m_mainDevice.m_Data.m_RoomBrightness + "\u0025");
         imgWeather = (ImageView) view.findViewById(R.id.weatherIcon);
 
         Resources res = getResources();
@@ -128,6 +131,10 @@ public class GlanceFragment extends Fragment {
                     intValue = msg.getData().getInt("DHTh", -255);
                     if (intValue != -255) {
                         roomHumidity.setText(intValue + "\u0025");
+                    }
+                    intValue = msg.getData().getInt("ALS", -255);
+                    if (intValue != -255) {
+                        roomBrightness.setText(intValue + "\u0025");
                     }
                 }
             };
@@ -212,6 +219,7 @@ public class GlanceFragment extends Fragment {
 
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
         roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
+        roomBrightness.setText(MainActivity.m_mainDevice.m_Data.m_RoomBrightness + "\u0025");
     }
 
     private WeatherDetails getWeatherDetails(String jsonData) throws JSONException {
