@@ -1,6 +1,5 @@
 package com.umarbhutta.xlightcompanion.SDK.BLE;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,21 +13,21 @@ import java.util.Set;
  */
 
 @SuppressWarnings({"UnusedDeclaration"})
-public class BLEAdapter {
+public class BLEPairedDeviceList {
     // misc
-    private static final String TAG = BLEAdapter.class.getSimpleName();
+    private static final String TAG = BLEPairedDeviceList.class.getSimpleName();
+
     public static final int REQUEST_ENABLE_BT = 1010;
     public static final String XLIGHT_BLE_NAME_PREFIX = "Xlight";
     //private static final int XLIGHT_BLE_CLASS = 0x9A050C;   // default value for HC-06 is 0x1F00
     private static final int XLIGHT_BLE_CLASS = 0x1F00;   // default value for HC-06 is 0x1F00
 
+    private static BLEAdapterWrapper mBtAdapter = BLEAdapterFactory.getBluetoothAdapterWrapper();
+    private static ArrayList<BluetoothDevice> mPairedDevices = new ArrayList<>();
+
     private static boolean m_bInitialized = false;
-    private static BluetoothAdapter m_btAdapter;
     private static Context m_Context;
     private static boolean m_bSupported = false;
-    private static boolean m_bEnabled = false;
-
-    public static ArrayList<BluetoothDevice> mPairedDevices = new ArrayList<>();
 
     public static void init(Context context) {
         m_Context = context;
@@ -37,7 +36,7 @@ public class BLEAdapter {
             Log.e(TAG, "Bluetooth NOT supported!");
             return;
         }
-        m_btAdapter = BluetoothAdapter.getDefaultAdapter();
+
         CheckBluetoothState();
         m_bInitialized = true;
     }
@@ -51,23 +50,18 @@ public class BLEAdapter {
     }
 
     public static boolean IsEnabled() {
-        return m_bEnabled;
+        return mBtAdapter.isEnabled();
     }
 
     public static void CheckBluetoothState() {
-        if (m_btAdapter != null) {
-            m_bEnabled = m_btAdapter.isEnabled();
-        } else {
-            m_bEnabled = false;
-        }
-
-        if (m_bEnabled) {
+        if (IsEnabled()) {
             Log.d(TAG, "Bluetooth is enabled...");
-            mPairedDevices.clear();
-            Set<BluetoothDevice> devices = m_btAdapter.getBondedDevices();
-            for (BluetoothDevice device : devices) {
-                if (device.getBluetoothClass().hashCode() == XLIGHT_BLE_CLASS || device.getName().startsWith(XLIGHT_BLE_NAME_PREFIX)) {
-                    mPairedDevices.add(device);
+            Set<BluetoothDevice> devices = mBtAdapter.getBondedDevices();
+            if (devices != null && !devices.isEmpty()) {
+                for (BluetoothDevice device : devices) {
+                    if (device.getBluetoothClass().hashCode() == XLIGHT_BLE_CLASS && device.getName().startsWith(XLIGHT_BLE_NAME_PREFIX)) {
+                        mPairedDevices.add(device);
+                    }
                 }
             }
         }

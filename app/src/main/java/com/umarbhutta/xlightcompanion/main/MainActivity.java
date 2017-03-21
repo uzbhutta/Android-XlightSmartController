@@ -17,7 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.umarbhutta.xlightcompanion.R;
-import com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter;
+import com.umarbhutta.xlightcompanion.SDK.BLE.BLEPairedDeviceList;
 import com.umarbhutta.xlightcompanion.SDK.CloudAccount;
 import com.umarbhutta.xlightcompanion.control.ControlFragment;
 import com.umarbhutta.xlightcompanion.glance.GlanceFragment;
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Check Bluetooth
-        BLEAdapter.init(this);
-        if( BLEAdapter.IsSupported() && !BLEAdapter.IsEnabled() ) {
+        BLEPairedDeviceList.init(this);
+        if( BLEPairedDeviceList.IsSupported() && !BLEPairedDeviceList.IsEnabled() ) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, BLEAdapter.REQUEST_ENABLE_BT);
+            startActivityForResult(enableBtIntent, BLEPairedDeviceList.REQUEST_ENABLE_BT);
         }
 
         // Initialize SmartDevice SDK
@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BLEAdapter.REQUEST_ENABLE_BT) {
-            BLEAdapter.init(this);
+        if (requestCode == BLEPairedDeviceList.REQUEST_ENABLE_BT) {
+            BLEPairedDeviceList.init(this);
         }
     }
 

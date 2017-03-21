@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 
-import com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter;
+import com.umarbhutta.xlightcompanion.SDK.BLE.BLEPairedDeviceList;
 import com.umarbhutta.xlightcompanion.SDK.BLE.BLEBridge;
 import com.umarbhutta.xlightcompanion.SDK.Cloud.CloudBridge;
 import com.umarbhutta.xlightcompanion.SDK.Cloud.ParticleAdapter;
@@ -14,7 +14,7 @@ import com.umarbhutta.xlightcompanion.SDK.LAN.LANBridge;
 
 import java.util.ArrayList;
 
-import static com.umarbhutta.xlightcompanion.SDK.BLE.BLEAdapter.XLIGHT_BLE_NAME_PREFIX;
+import static com.umarbhutta.xlightcompanion.SDK.BLE.BLEPairedDeviceList.XLIGHT_BLE_NAME_PREFIX;
 
 /**
  * Created by sunboss on 2016-11-15.
@@ -215,8 +215,8 @@ public class xltDevice {
         // Ensure we do it only once
         if( !m_bInitialized ) {
             // Init BLE Adapter
-            if( !BLEAdapter.initialized() ) {
-                BLEAdapter.init(context);
+            if( !BLEPairedDeviceList.initialized() ) {
+                BLEPairedDeviceList.init(context);
             }
 
             // Init Particle Adapter
