@@ -49,12 +49,16 @@ public class xltDevice {
     public static final int DEFAULT_FILTER_ID = 0;
 
     // Event Names
+    public static final String eventAlarm = "xlc-event-alarm";
+    public static final String eventDeviceConfig = "xlc-config-device";
     public static final String eventDeviceStatus = "xlc-status-device";
     public static final String eventSensorData = "xlc-data-sensor";
 
     // Broadcast Intent
-    public static final String bciDeviceStatus = "ca.xlight.SDK." + eventDeviceStatus;
-    public static final String bciSensorData = "ca.xlight.SDK." + eventSensorData;
+    public static final String bciAlarm = "io.xlight.SDK." + eventAlarm;
+    public static final String bciDeviceConfig = "io.xlight.SDK." + eventDeviceConfig;
+    public static final String bciDeviceStatus = "io.xlight.SDK." + eventDeviceStatus;
+    public static final String bciSensorData = "io.xlight.SDK." + eventSensorData;
 
     // Timeout constants
     private static final int TIMEOUT_CLOUD_LOGIN = 15;
@@ -82,6 +86,7 @@ public class xltDevice {
     public static final int CMD_SCENARIO = 4;
     public static final int CMD_CCT = 5;
     public static final int CMD_QUERY = 6;
+    public static final int CMD_EFFECT = 7;
 
     // Device (lamp) type
     public static final int devtypUnknown = 0;
@@ -97,6 +102,13 @@ public class xltDevice {
     public static final int devtypDummy = 255;
 
     public static final int DEFAULT_DEVICE_TYPE = devtypWRing3;
+
+    // Filter (special effect)
+    public static final int FILTER_SP_EF_NONE = 0;              // Disable special effect
+    public static final int FILTER_SP_EF_BREATH = 1;            // Normal breathing light
+    public static final int FILTER_SP_EF_FAST_BREATH = 2;       // Fast breathing light
+    public static final int FILTER_SP_EF_FLORID = 3;            // Randomly altering color
+    public static final int FILTER_SP_EF_FAST_FLORID = 4;       // Fast randomly altering color
 
     public enum BridgeType {
         NONE,
@@ -144,6 +156,12 @@ public class xltDevice {
         public float m_RoomTemp = 24;               // Room temperature
         public int m_RoomHumidity = 40;             // Room humidity
         public int m_RoomBrightness = 0;            // ALS value
+        public int m_Mic = 0;                       // MIC value
+        public int m_PIR = 0;                       // PIR value
+        public int m_GAS = 0;                       // Gas value
+        public int m_Smoke = 0;                     // Smoke value
+        public int m_PM25 = 0;                      // PM2.5 value
+        public int m_Noise = 0;                     // Noise value
 
         public float m_OutsideTemp = 23;            // Local outside temperature
         public int m_OutsideHumidity = 30;          // Local outside humidity
@@ -155,6 +173,8 @@ public class xltDevice {
     public class xltNodeInfo {
         public int m_ID = 0;
         public int m_Type;
+        public boolean m_isUp;
+        public int m_filter;
         public String m_Name;
         // Rings
         public xltRing[] m_Ring = new xltRing[MAX_RING_NUM];
@@ -339,6 +359,8 @@ public class xltDevice {
         xltNodeInfo lv_node = new xltNodeInfo();
         lv_node.m_ID = devID;
         lv_node.m_Type = devType;
+        lv_node.m_isUp = false;
+        lv_node.m_filter = FILTER_SP_EF_NONE;
         lv_node.m_Name = devName;
         for(int i = 0; i < MAX_RING_NUM; i++) {
             lv_node.m_Ring[i] = new xltRing();
@@ -406,8 +428,81 @@ public class xltDevice {
         return(m_currentNode != null ? m_currentNode.m_Type : devtypDummy);
     }
 
+    public int getDeviceType(final int nodeID) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_Type;
+        }
+        return(devtypUnknown);
+    }
+
+    public void setDeviceType(final int type) {
+        setDeviceType(m_DevID, type);
+    }
+
+    public void setDeviceType(final int nodeID, final int type) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_Type = type;
+        }
+    }
+
     public String getDeviceName() {
         return(m_currentNode != null ? m_currentNode.m_Name : "");
+    }
+
+    public String getDeviceName(final int nodeID) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_Name;
+        }
+        return("");
+    }
+
+    public boolean getNodeAlive() {
+        return getNodeAlive(m_DevID);
+    }
+
+    public boolean getNodeAlive(final int nodeID) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_isUp;
+        }
+        return(false);
+    }
+
+    public void setNodeAlive(final boolean isUp) {
+        setNodeAlive(m_DevID, isUp);
+    }
+
+    public void setNodeAlive(final int nodeID, final boolean isUp) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_isUp = isUp;
+        }
+    }
+
+    public int getFilter() {
+        return getFilter(m_DevID);
+    }
+
+    public int getFilter(final int nodeID) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_filter;
+        }
+        return(FILTER_SP_EF_NONE);
+    }
+
+    public void setFilter(final int filter) {
+        setFilter(m_DevID, filter);
+    }
+
+    public void setFilter(final int nodeID, final int filter) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_filter = filter;
+        }
     }
 
     public int getState() {
@@ -914,6 +1009,28 @@ public class xltDevice {
             switch(m_currentBridge) {
                 case Cloud:
                     rc = cldBridge.JSONCommandScenario(scenario);
+                    break;
+                case BLE:
+                    // ToDo: call BLE API
+                    break;
+                case LAN:
+                    // ToDo: call LAN API
+                    break;
+            }
+        }
+        return rc;
+    }
+
+    // Set Special Effect
+    public int SetSpecialEffect(final int filter) {
+        int rc = -1;
+
+        // Select Bridge
+        selectBridge();
+        if( isBridgeOK(m_currentBridge) ) {
+            switch(m_currentBridge) {
+                case Cloud:
+                    rc = cldBridge.JSONCommandSpecialEffect(filter);
                     break;
                 case BLE:
                     // ToDo: call BLE API

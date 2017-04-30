@@ -28,8 +28,8 @@ public class ScenarioFragment extends Fragment {
     public static String SCENARIO_NAME = "SCENARIO_NAME";
     public static String SCENARIO_INFO = "SCENARIO_INFO";
 
-    public static ArrayList<String> name = new ArrayList<>(Arrays.asList("Dinner", "Sleep", "Dance"));
-    public static ArrayList<String> info = new ArrayList<>(Arrays.asList("A bright, party room preset", "A relaxed atmosphere with yellow tones", "Random breathing color"));
+    public static ArrayList<String> name = new ArrayList<>(Arrays.asList("Dinner", "Sleep", "Breathe", "Dance"));
+    public static ArrayList<String> info = new ArrayList<>(Arrays.asList("A bright, party room preset", "A relaxed atmosphere with yellow tones", "Breathing light", "Random breathing color"));
 
     ScenarioListAdapter scenarioListAdapter;
     RecyclerView scenarioRecyclerView;

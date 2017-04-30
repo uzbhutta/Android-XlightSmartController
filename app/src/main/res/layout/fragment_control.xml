@@ -106,7 +106,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-light"
             android:gravity="left|start"
-            android:text="Scenario"
+            android:text="Scenario and Effect"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/textColorPrimary" />
 

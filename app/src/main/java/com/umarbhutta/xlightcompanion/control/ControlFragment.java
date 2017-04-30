@@ -337,6 +337,9 @@ public class ControlFragment extends Fragment {
                 if (parent.getItemAtPosition(position).toString() == "None") {
                     //scenarioNoneLL.animate().alpha(1).setDuration(600).start();
 
+                    // Clear Special Effect
+                    MainActivity.m_mainDevice.SetSpecialEffect(xltDevice.FILTER_SP_EF_NONE);
+
                     //enable all views below spinner
                     disableEnableControls(true);
                 } else {
@@ -352,9 +355,19 @@ public class ControlFragment extends Fragment {
 
                     // For demonstration
                     if (parent.getItemAtPosition(position).toString() == "Dinner") {
-                        MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 70, 197, 136, 33, 0);
+                        if( MainActivity.m_mainDevice.isSunny() ) {
+                            MainActivity.m_mainDevice.ChangeScenario(1);
+                        } else {
+                            MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 70, 197, 136, 33, 0);
+                        }
                     } else if (parent.getItemAtPosition(position).toString() == "Sleep") {
-                        MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 10, 26, 254, 52, 0);
+                        if( MainActivity.m_mainDevice.isSunny() ) {
+                            MainActivity.m_mainDevice.ChangeScenario(2);
+                        } else {
+                            MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, true, 10, 26, 254, 52, 0);
+                        }
+                    } else if (parent.getItemAtPosition(position).toString() == "Breathe") {
+                        MainActivity.m_mainDevice.SetSpecialEffect(xltDevice.FILTER_SP_EF_BREATH);
                     } else if (parent.getItemAtPosition(position).toString() == "Dance") {
                         if (isStop) {
                             startTimer();
