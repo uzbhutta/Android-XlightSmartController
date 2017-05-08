@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
     private Handler m_handlerDeviceList;
     public Switch[] m_Switch = new Switch[MainActivity.deviceNodeIDs.length];
+    public ImageView[] m_Icon = new ImageView[MainActivity.deviceNodeIDs.length];
 
     public int findPositionByNodeID(final int _nodeID) {
         for (int iSw = 0; iSw < m_Switch.length; iSw++) {
@@ -36,10 +38,15 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
         return -1;
     }
 
-    public void setSwitchState(final int _nodeID, final int _state) {
+    public void setSwitchState(final int _nodeID, final int _state, final boolean _alive) {
         int nPos = findPositionByNodeID(_nodeID);
         if( nPos >= 0 ) {
             m_Switch[nPos].setChecked(_state > 0);
+            if( _alive ) {
+                m_Icon[nPos].setImageResource(_state > 0 ? R.drawable.ic_lightbulb_outline_green_24dp : R.drawable.ic_lightbulb_outline_black_24dp);
+            } else {
+                m_Icon[nPos].setImageResource(R.drawable.ic_lightbulb_outline_grey_24dp);
+            }
         }
     }
 
@@ -50,7 +57,8 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             int nNodeID = intent.getIntExtra("nd", -1);
             if( nNodeID >= 0 ) {
                 int nState = MainActivity.m_mainDevice.getState(nNodeID);
-                setSwitchState(nNodeID, nState);
+                boolean bAlive = MainActivity.m_mainDevice.getNodeAlive(nNodeID);
+                setSwitchState(nNodeID, nState, bAlive);
             }
         }
     }
@@ -64,7 +72,8 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
                     int nNodeID = msg.getData().getInt("nd", -1);
                     if( nNodeID >= 0 ) {
                         int nState = msg.getData().getInt("State", -255);
-                        setSwitchState(nNodeID, nState);
+                        boolean bAlive = msg.getData().getBoolean("up", true);
+                        setSwitchState(nNodeID, nState, bAlive);
                     }
                 }
             };
@@ -114,12 +123,14 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
     private class DevicesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mDeviceName;
         private Switch mDeviceSwitch;
+        private ImageView mStatusIcon;
         private int mDeviceID;
 
         public DevicesListViewHolder(View itemView) {
             super(itemView);
             mDeviceName = (TextView) itemView.findViewById(R.id.deviceName);
             mDeviceSwitch = (Switch) itemView.findViewById(R.id.deviceSwitch);
+            mStatusIcon = (ImageView) itemView.findViewById(R.id.statusIcon);
 
             //itemView.setOnClickListener(this);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +177,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             mDeviceSwitch.setChecked(MainActivity.m_mainDevice.getState(mDeviceID) > 0);
             mDeviceSwitch.setTag(mDeviceID);
             m_Switch[position] = mDeviceSwitch;
+            m_Icon[position] = mStatusIcon;
         }
 
         @Override

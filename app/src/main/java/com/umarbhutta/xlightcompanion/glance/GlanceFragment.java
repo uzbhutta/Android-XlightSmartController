@@ -155,13 +155,13 @@ public class GlanceFragment extends Fragment {
         devicesRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
         // Waterloo
-        //String strLocation = "Waterloo, ON";
-        //double latitude = 43.4643;
-        //double longitude = -80.5204;
+        final String strLocation = "Waterloo, ON";
+        double latitude = 43.4643;
+        double longitude = -80.5204;
         // Suzhou
-        final String strLocation = "Suzhou, China";
-        double latitude = 31.2989;
-        double longitude = 120.5852;
+        //final String strLocation = "Suzhou, China";
+        //double latitude = 31.2989;
+        //double longitude = 120.5852;
 
         String forecastUrl = "https://api.forecast.io/forecast/" + CloudAccount.DarkSky_apiKey + "/" + latitude + "," + longitude;
 
