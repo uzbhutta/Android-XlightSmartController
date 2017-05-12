@@ -178,6 +178,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
             mDeviceSwitch.setTag(mDeviceID);
             m_Switch[position] = mDeviceSwitch;
             m_Icon[position] = mStatusIcon;
+            setSwitchState(mDeviceID, MainActivity.m_mainDevice.getState(mDeviceID), MainActivity.m_mainDevice.getNodeAlive(mDeviceID));
         }
 
         @Override

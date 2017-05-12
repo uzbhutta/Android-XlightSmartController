@@ -27,7 +27,7 @@ public class BLEBridge extends BaseBridge {
     private DeviceConnector mDeviceConnector = new NullDeviceConnector();
     private boolean m_bPaired = false;
     private boolean m_bLoggedIn = false;
-    private BluetoothDevice m_bleDevice;
+    private BluetoothDevice m_bleDevice = null;
     private String m_bleAddress;
 
     public BLEBridge() {
@@ -45,6 +45,15 @@ public class BLEBridge extends BaseBridge {
             MessageHandler messageHandler = new MessageHandlerImpl(mHandler);
             mDeviceConnector = new BLEDeviceConnector(messageHandler, m_bleAddress);
             mDeviceConnector.connect();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean disconnectController() {
+        // Disconnect SmartController BLE
+        if( mDeviceConnector != null ) {
+            mDeviceConnector.disconnect();
             return true;
         }
         return false;

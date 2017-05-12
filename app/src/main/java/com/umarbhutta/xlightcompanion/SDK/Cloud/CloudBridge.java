@@ -53,7 +53,7 @@ public class CloudBridge extends BaseBridge {
                         @Override
                         public void run()
                         {
-                            JSONCommandQueryDevice();
+                            JSONCommandQueryDevice(0);
                         }
                     }, 2000);
 
@@ -63,6 +63,12 @@ public class CloudBridge extends BaseBridge {
             }
         }).start();
 
+        return true;
+    }
+
+    public boolean disconnectCloud() {
+        UnsubscribeDeviceEvents();
+        setConnect(false);
         return true;
     }
 
@@ -195,12 +201,12 @@ public class CloudBridge extends BaseBridge {
         return resultCode;
     }
 
-    public int JSONCommandQueryDevice() {
+    public int JSONCommandQueryDevice(final int nodeID) {
         new Thread() {
             @Override
             public void run() {
                 // Make the Particle call here
-                String json = "{\"cmd\":" + xltDevice.CMD_QUERY + ",\"nd\":" + getNodeID() + "}";
+                String json = "{\"cmd\":" + xltDevice.CMD_QUERY + ",\"nd\":" + (nodeID == 0 ? getNodeID() : nodeID) + "}";
                 ArrayList<String> message = new ArrayList<>();
                 message.add(json);
                 try {

@@ -21,4 +21,10 @@ public class LANBridge extends BaseBridge {
         setConnect(true);
         return isConnected();
     }
+
+    public boolean disconnectController() {
+        // ToDo: disconnect from SmartController
+        setConnect(false);
+        return isConnected();
+    }
 }

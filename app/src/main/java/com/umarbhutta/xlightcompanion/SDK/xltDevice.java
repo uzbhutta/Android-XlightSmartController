@@ -289,6 +289,14 @@ public class xltDevice {
         return true;
     }
 
+    // Disconnect all bridges from controller
+    public boolean Disconnect() {
+        DisconnectCloud();
+        DisconnectBLE();
+        DisconnectLAN();
+        return true;
+    }
+
     public boolean ConnectCloud() {
         if( !m_bInitialized ) return false;
 
@@ -311,13 +319,34 @@ public class xltDevice {
         return true;
     }
 
+    public boolean DisconnectCloud() {
+        if( isCloudOK() ) {
+            cldBridge.disconnectCloud();
+        }
+        return !isCloudOK();
+    }
+
     public boolean ConnectBLE() {
         return(bleBridge.connectController());
+    }
+
+    public boolean DisconnectBLE() {
+        if( isBLEOK() ) {
+            bleBridge.disconnectController();
+        }
+        return !isBLEOK();
     }
 
     public boolean ConnectLAN() {
         // ToDo: get IP & Port from Cloud or BLE (SmartController told it)
         return(lanBridge.connectController("192.168.0.114", 5555));
+    }
+
+    public boolean DisconnectLAN() {
+        if( isLANOK() ) {
+            lanBridge.disconnectController();
+        }
+        return !isLANOK();
     }
 
     public boolean isSunny() {
@@ -891,6 +920,10 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     // Query Status
     public int QueryStatus() {
+        return QueryStatus(m_DevID);
+    }
+
+    public int QueryStatus(final int nodeID) {
         int rc = -1;
 
         // Select Bridge
@@ -898,7 +931,7 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandQueryDevice();
+                    rc = cldBridge.JSONCommandQueryDevice(nodeID);
                     break;
                 case BLE:
                     // ToDo: call BLE API

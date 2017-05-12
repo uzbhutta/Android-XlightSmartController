@@ -185,10 +185,11 @@ public class ControlFragment extends Fragment {
                 if( ring1 && !ring2 && !ring3 ) ringID = xltDevice.RING_ID_1;
                 if( ring2 && !ring1 && !ring3 ) ringID = xltDevice.RING_ID_2;
                 if( ring3 && !ring1 && !ring2 ) ringID = xltDevice.RING_ID_3;
-                if( MainActivity.m_mainDevice.getRed(ringID) == 0 && MainActivity.m_mainDevice.getGreen(ringID) == 0 && MainActivity.m_mainDevice.getBlue(ringID) == 0) {
+                int nNodeID = MainActivity.m_mainDevice.getDeviceID();
+                if( MainActivity.m_mainDevice.getRed(nNodeID, ringID) == 0 && MainActivity.m_mainDevice.getGreen(nNodeID, ringID) == 0 && MainActivity.m_mainDevice.getBlue(nNodeID, ringID) == 0) {
                     initColor = ContextCompat.getColor(getActivity(), R.color.colorAccent);
                 } else {
-                    initColor = Color.argb(0xff, MainActivity.m_mainDevice.getRed(ringID), MainActivity.m_mainDevice.getGreen(ringID), MainActivity.m_mainDevice.getBlue(ringID));
+                    initColor = Color.argb(0xff, MainActivity.m_mainDevice.getRed(nNodeID, ringID), MainActivity.m_mainDevice.getGreen(nNodeID, ringID), MainActivity.m_mainDevice.getBlue(nNodeID, ringID));
                 }
                 Log.e(TAG, "int: " + initColor + " HEX: #" + String.format("%06X", (0xFFFFFF & initColor)));
                 new ChromaDialog.Builder()
@@ -202,6 +203,7 @@ public class ControlFragment extends Fragment {
 
                                 state = powerSwitch.isChecked();
                                 int br = brightnessSeekBar.getProgress();
+                                int nNodeID = MainActivity.m_mainDevice.getDeviceID();
                                 //int ww = (cctSeekBar.getProgress() / ((6500 - 2700) * 255));
                                 int ww = 0;
                                 int r = (color >> 16) & 0xFF;
@@ -217,71 +219,71 @@ public class ControlFragment extends Fragment {
                                 if ((ring1 && ring2 && ring3) || (!ring1 && !ring2 && !ring3)) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_ALL, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_ALL, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_ALL, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_ALL, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_ALL, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_ALL, b);
+                                    MainActivity.m_mainDevice.setWhite(ww);
+                                    MainActivity.m_mainDevice.setRed(r);
+                                    MainActivity.m_mainDevice.setGreen(g);
+                                    MainActivity.m_mainDevice.setBlue(b);
                                 } else if (ring1 && ring2) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_1, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_2, b);
                                 } else if (ring2 && ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_2, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_3, b);
 
                                 } else if (ring1 && ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_1, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_3, b);
                                 } else if (ring1) {
                                    //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_1, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_1, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_1, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_1, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_1, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_1, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_1, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_1, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_1, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_1, b);
                                 } else if (ring2) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_2, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_2, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_2, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_2, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_2, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_2, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_2, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_2, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_2, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_2, b);
                                 } else if (ring3) {
                                     //ParticleAdapter.JSONCommandColor(ParticleAdapter.DEFAULT_DEVICE_ID, ParticleAdapter.RING_3, state, br, ww, r, g, b);
                                     MainActivity.m_mainDevice.ChangeColor(xltDevice.RING_ID_3, state, br, ww, r, g, b);
-                                    MainActivity.m_mainDevice.setWhite(xltDevice.RING_ID_3, ww);
-                                    MainActivity.m_mainDevice.setRed(xltDevice.RING_ID_3, r);
-                                    MainActivity.m_mainDevice.setGreen(xltDevice.RING_ID_3, g);
-                                    MainActivity.m_mainDevice.setBlue(xltDevice.RING_ID_3, b);
+                                    MainActivity.m_mainDevice.setWhite(nNodeID, xltDevice.RING_ID_3, ww);
+                                    MainActivity.m_mainDevice.setRed(nNodeID, xltDevice.RING_ID_3, r);
+                                    MainActivity.m_mainDevice.setGreen(nNodeID, xltDevice.RING_ID_3, g);
+                                    MainActivity.m_mainDevice.setBlue(nNodeID, xltDevice.RING_ID_3, b);
                                 } else {
                                     //do nothing
                                 }

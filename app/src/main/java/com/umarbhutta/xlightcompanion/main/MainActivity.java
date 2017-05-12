@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity
 
     //constants for testing lists
     public static final String[] deviceNames = {"Living Room", "Bedroom", "Bar"};
-    public static final int[] deviceNodeIDs = {1, 8, 11};
+    public static final int[] deviceNodeIDs = {1, 8, 9};
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
     public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
