@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //constants for testing lists
-    public static final String[] deviceNames = {"Living Room", "Bedroom", "Bar"};
-    public static final int[] deviceNodeIDs = {1, 8, 9};
+    public static final String[] deviceNames = {"Living Room", "Bedroom", "Dining Room", "Bar"};
+    public static final int[] deviceNodeIDs = {1, 8, 9, 10};
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
     public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         // Initialize SmartDevice SDK
         m_mainDevice = new xltDevice();
         m_mainDevice.Init(this);
+        //m_mainDevice.setBridgePriority(xltDevice.BridgeType.BLE, 9);
 
         // Setup Device/Node List
         for( int lv_idx = 0; lv_idx < 3; lv_idx++ ) {
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         // Connect to Controller
         m_mainDevice.Connect(CloudAccount.DEVICE_ID);
+        //m_mainDevice.useBridge(xltDevice.BridgeType.BLE);
 
         // Set SmartDevice Event Notification Flag
         //m_mainDevice.setEnableEventSendMessage(false);

@@ -14,6 +14,8 @@ public class BaseBridge {
     private int m_priority = 5; // the bigger, the higher
     protected Context m_parentContext = null;
     protected xltDevice m_parentDevice = null;
+    protected EventParser m_eventParser = new EventParser();
+
 
     public boolean isConnected() {
         return m_bConnected;
@@ -37,6 +39,7 @@ public class BaseBridge {
 
     public void setName(final String name) {
         m_Name = name;
+        m_eventParser.SetTag(name);
     }
 
     public int getPriority() {
@@ -53,5 +56,6 @@ public class BaseBridge {
 
     public void setParentDevice(xltDevice device) {
         m_parentDevice = device;
+        m_eventParser.SetParentDevice(device);
     }
 }

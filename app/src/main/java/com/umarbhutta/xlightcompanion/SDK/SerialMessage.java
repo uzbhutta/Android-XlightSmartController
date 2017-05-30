@@ -146,4 +146,39 @@ public class SerialMessage {
     public static final int ST_FIRMWARE_RESPONSE = 3;
     public static final int ST_SOUND = 4;
     public static final int ST_IMAGE = 5;
+
+    // Message attributes
+    /// Peer-node-id(Dest);Remote-node-id(Orig);Cmd;Ack;Type;Payload\n
+    public boolean m_msgOK = false;
+    public int m_dest;
+    public int m_orig;
+    public int m_cmd;
+    public int m_ack;
+    public int m_type;
+    public String m_payload;
+
+    public boolean parseString(String line) {
+        m_msgOK = false;
+        String strMsg;
+        char lastCh = line.charAt(line.length());
+        if( lastCh == '\r' || lastCh == '\n') {
+            strMsg = line.substring(line.length() - 1);
+        } else {
+            strMsg = line;
+        }
+        String[] attributes = strMsg.split(";");
+        if( attributes.length >= 5 ) {
+            m_dest = Integer.parseInt(attributes[0]);
+            m_orig = Integer.parseInt(attributes[1]);
+            m_cmd = Integer.parseInt(attributes[2]);
+            m_ack = Integer.parseInt(attributes[3]);
+            m_type = Integer.parseInt(attributes[4]);
+            m_payload = "";
+            for( int i = 5; i < attributes.length; i++ ) {
+                if( i > 5 ) m_payload += ";";
+                m_payload += attributes[i];
+            }
+        }
+        return m_msgOK;
+    }
 }

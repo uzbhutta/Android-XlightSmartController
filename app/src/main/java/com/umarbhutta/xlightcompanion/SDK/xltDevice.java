@@ -88,6 +88,17 @@ public class xltDevice {
     public static final int CMD_QUERY = 6;
     public static final int CMD_EFFECT = 7;
 
+    // NodeID Convention
+    public static final int NODEID_GATEWAY = 0;
+    public static final int NODEID_MAINDEVICE = 1;
+    public static final int NODEID_MIN_DEVCIE = 8;
+    public static final int NODEID_MAX_DEVCIE = 63;
+    public static final int NODEID_MIN_REMOTE = 64;
+    public static final int NODEID_MAX_REMOTE = 127;
+    public static final int NODEID_PROJECTOR = 128;
+    public static final int NODEID_SMARTPHONE = 139;
+    public static final int NODEID_DUMMY = 255;
+
     // Device (lamp) type
     public static final int devtypUnknown = 0;
     public static final int devtypCRing3 = 1;
@@ -110,11 +121,38 @@ public class xltDevice {
     public static final int FILTER_SP_EF_FLORID = 3;            // Randomly altering color
     public static final int FILTER_SP_EF_FAST_FLORID = 4;       // Fast randomly altering color
 
+    // Bridge Connection Status
+    public static final int BCS_NOT_CONNECTED = 10;
+    public static final int BCS_CONNECTING = 11;
+    public static final int BCS_CONNECTED = 12;
+    public static final int BCS_CONNECTION_FAILED = 13;
+    public static final int BCS_CONNECTION_LOST = 14;
+
+    // Wi-Fi Authenticate Method
+    public static final int WLAN_SEC_UNSEC = 0;
+    public static final int WLAN_SEC_WEP = 1;
+    public static final int WLAN_SEC_WPA = 2;
+    public static final int WLAN_SEC_WPA2 = 3;
+
+    // Wi-Fi Cipher Method
+    public static final int WLAN_CIPHER_NOT_SET = 0;
+    public static final int WLAN_CIPHER_AES = 1;
+    public static final int WLAN_CIPHER_TKIP = 2;
+    public static final int WLAN_CIPHER_AES_TKIP = 3;
+
     public enum BridgeType {
         NONE,
         Cloud,
         BLE,
         LAN
+    }
+
+    //-------------------------------------------------------------------------
+    // Callback Interfaces
+    //-------------------------------------------------------------------------
+    // OnConnected
+    public interface callbackConnect {
+        void onConnected(final BridgeType bridge, final boolean connected);
     }
 
     //-------------------------------------------------------------------------
@@ -209,8 +247,12 @@ public class xltDevice {
     private boolean m_enableEventSendMessage = true;
 
     // Event Handler List
+    private Handler m_bcsHandler = null;
     private ArrayList<Handler> m_lstEH_DevST = new ArrayList<>();
     private ArrayList<Handler> m_lstEH_SenDT = new ArrayList<>();
+
+    // Callback members
+    public callbackConnect m_onConnected = null;
 
     //-------------------------------------------------------------------------
     // Regular Interfaces
@@ -264,6 +306,25 @@ public class xltDevice {
 
     // Connect to message bridges
     public boolean Connect(final String controllerID) {
+        return Connect(controllerID, null, null);
+    }
+
+    // Connect to message bridges with bridge connection status handler
+    public boolean Connect(final String controllerID, final Handler handler) {
+        return Connect(controllerID, handler, null);
+    }
+
+    // Connect to message bridges with callback
+    public boolean Connect(final String controllerID, callbackConnect onConnected) {
+        return Connect(controllerID, null, onConnected);
+    }
+
+    // Connect to message bridges with bridge connection status handler & callback
+    public boolean Connect(final String controllerID, final Handler handler, callbackConnect onConnected) {
+        // Set callback
+        this.m_bcsHandler = handler;
+        this.m_onConnected = onConnected;
+
         // ToDo: get device (node) list: devID, devType, devName & devBLEName by controllerID from DMI
         // If DMI cannot communicate to the Cloud, return the most recent values in cookie,
         // If there is no cookie, return default values.
@@ -306,13 +367,15 @@ public class xltDevice {
                 // Check ControllerID
                 int timeout = TIMEOUT_CLOUD_LOGIN;
                 while( !ParticleAdapter.isAuthenticated() && timeout-- > 0 ) {
-                    SystemClock.sleep(1000);
+                    SystemClock.sleep(1500);
                 }
                 if( ParticleAdapter.isAuthenticated() ) {
                     if (ParticleAdapter.checkDeviceID(m_ControllerID)) {
                         // Connect Cloud Instance
                         cldBridge.connectCloud(m_ControllerID);
                     }
+                } else {
+                    onBridgeStatusChanged(BridgeType.Cloud, BCS_CONNECTION_FAILED);
                 }
             }
         }).start();
@@ -863,7 +926,13 @@ public class xltDevice {
     }
 
     public void setBridgePriority(final BridgeType bridge, final int priority) {
-
+        if( bridge == BridgeType.Cloud ) {
+            cldBridge.setPriority(priority);
+        } else if( bridge == BridgeType.BLE ) {
+            bleBridge.setPriority(priority);
+        } else if( bridge == BridgeType.LAN ) {
+            lanBridge.setPriority(priority);
+        }
     }
 
     private BridgeType selectBridge() {
@@ -934,7 +1003,7 @@ public class xltDevice {
                     rc = cldBridge.JSONCommandQueryDevice(nodeID);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.QueryStatus(nodeID);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -946,6 +1015,10 @@ public class xltDevice {
 
     // Turn On / Off
     public int PowerSwitch(final int state) {
+        return PowerSwitch(m_DevID, state);
+    }
+
+    public int PowerSwitch(final int nodeID, final int state) {
         int rc = -1;
 
         // Select Bridge
@@ -953,10 +1026,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.FastCallPowerSwitch(state);
+                    rc = cldBridge.FastCallPowerSwitch(nodeID, state);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.PowerSwitch(nodeID, state);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -968,6 +1041,10 @@ public class xltDevice {
 
     // Change Brightness
     public int ChangeBrightness(final int value) {
+        return ChangeBrightness(m_DevID, value);
+    }
+
+    public int ChangeBrightness(final int nodeID, final int value) {
         int rc = -1;
 
         // Select Bridge
@@ -975,10 +1052,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandBrightness(value);
+                    rc = cldBridge.JSONCommandBrightness(nodeID, value);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.ChangeBrightness(nodeID, value);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -990,6 +1067,10 @@ public class xltDevice {
 
     // Change CCT
     public int ChangeCCT(final int value) {
+        return ChangeCCT(m_DevID, value);
+    }
+
+    public int ChangeCCT(final int nodeID, final int value) {
         int rc = -1;
 
         // Select Bridge
@@ -997,10 +1078,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandCCT(value);
+                    rc = cldBridge.JSONCommandCCT(nodeID, value);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.ChangeCCT(nodeID, value);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -1012,6 +1093,10 @@ public class xltDevice {
 
     // Change Color (RGBW)
     public int ChangeColor(final int ring, final boolean state, final int br, final int ww, final int r, final int g, final int b) {
+        return ChangeColor(m_DevID, ring, state, br, ww, r, g, b);
+    }
+
+    public int ChangeColor(final int nodeID, final int ring, final boolean state, final int br, final int ww, final int r, final int g, final int b) {
         int rc = -1;
 
         // Select Bridge
@@ -1019,10 +1104,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandColor(ring, state, br, ww, r, g, b);
+                    rc = cldBridge.JSONCommandColor(nodeID, ring, state, br, ww, r, g, b);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.ChangeColor(nodeID, ring, state, br, ww, r, g, b);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -1034,6 +1119,10 @@ public class xltDevice {
 
     // Change Scenario
     public int ChangeScenario(final int scenario) {
+        return ChangeScenario(m_DevID, scenario);
+    }
+
+    public int ChangeScenario(final int nodeID, final int scenario) {
         int rc = -1;
 
         // Select Bridge
@@ -1041,10 +1130,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandScenario(scenario);
+                    rc = cldBridge.JSONCommandScenario(nodeID, scenario);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.ChangeScenario(nodeID, scenario);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -1056,6 +1145,10 @@ public class xltDevice {
 
     // Set Special Effect
     public int SetSpecialEffect(final int filter) {
+        return SetSpecialEffect(m_DevID, filter);
+    }
+
+    public int SetSpecialEffect(final int nodeID, final int filter) {
         int rc = -1;
 
         // Select Bridge
@@ -1063,10 +1156,10 @@ public class xltDevice {
         if( isBridgeOK(m_currentBridge) ) {
             switch(m_currentBridge) {
                 case Cloud:
-                    rc = cldBridge.JSONCommandSpecialEffect(filter);
+                    rc = cldBridge.JSONCommandSpecialEffect(nodeID, filter);
                     break;
                 case BLE:
-                    // ToDo: call BLE API
+                    rc = bleBridge.SetSpecialEffect(nodeID, filter);
                     break;
                 case LAN:
                     // ToDo: call LAN API
@@ -1074,6 +1167,50 @@ public class xltDevice {
             }
         }
         return rc;
+    }
+
+    //-------------------------------------------------------------------------
+    // System Config Interfaces
+    //-------------------------------------------------------------------------
+    // Setup Controller Wi-Fi
+    public int sysWiFiSetup(final String sSSID, final String sPassword) {
+        return sysWiFiSetup(sSSID, sPassword, WLAN_SEC_UNSEC, WLAN_CIPHER_NOT_SET);
+    }
+
+    public int sysWiFiSetup(final String sSSID, final String sPassword, final int nAuth) {
+        return sysWiFiSetup(sSSID, sPassword, nAuth, WLAN_CIPHER_NOT_SET);
+    }
+
+    public int sysWiFiSetup(final String sSSID, final String sPassword, final int nAuth, final int nCipher) {
+        if( isBLEOK() ) {
+            return bleBridge.SysSetupWiFi(sSSID, sPassword, nAuth, nCipher);
+        }
+        return -1;
+    }
+
+    // Serial Console 'set' Command, where sCmd can be any valid 'set' command substring, e.g.
+    /// base 1
+    /// cloud 0
+    /// maindev 1
+    public int sysConfig(final String sCmd) {
+        if( isBLEOK() ) {
+            return bleBridge.SysConfig(sCmd);
+        }
+        return -1;
+    }
+
+    // Serial Console 'sys' Command, where sCmd can be any valid 'sys' command substring, e.g.
+    /// reset
+    /// safe
+    /// dfu
+    /// update
+    /// clear nodeid 1
+    /// clear credientials
+    public int sysControl(final String sCmd) {
+        if( isBLEOK() ) {
+            return bleBridge.SysControl(sCmd);
+        }
+        return -1;
     }
 
     //-------------------------------------------------------------------------
@@ -1093,6 +1230,12 @@ public class xltDevice {
 
     public void setEnableEventSendMessage(final boolean flag) {
         m_enableEventSendMessage = flag;
+    }
+
+    public void onBridgeStatusChanged(final BridgeType bridge, final int bcStatus) {
+        if( m_bcsHandler != null ) {
+            m_bcsHandler.obtainMessage(bcStatus, -1, -1, bridge.name()).sendToTarget();
+        }
     }
 
     public int addDeviceEventHandler(final Handler handler) {

@@ -162,6 +162,10 @@ public class GlanceFragment extends Fragment {
         final String strLocation = "Suzhou, China";
         double latitude = 31.2989;
         double longitude = 120.5852;
+        // Gu'an, Hebei, China
+        //final String strLocation = "Gu An, China";
+        //double latitude = 39.44;
+        //double longitude = 116.29;
 
         String forecastUrl = "https://api.forecast.io/forecast/" + CloudAccount.DarkSky_apiKey + "/" + latitude + "," + longitude;
 
