@@ -122,6 +122,8 @@ public class xltDevice {
     public static final int FILTER_SP_EF_FAST_FLORID = 4;       // Fast randomly altering color
 
     // Bridge Connection Status
+    public static final int BCS_FUNCTION_COREID = 8;
+    public static final int BCS_FUNCTION_ACK = 9;
     public static final int BCS_NOT_CONNECTED = 10;
     public static final int BCS_CONNECTING = 11;
     public static final int BCS_CONNECTED = 12;
@@ -232,7 +234,7 @@ public class xltDevice {
     private LANBridge lanBridge;
 
     // Bridge Selection
-    private BridgeType m_currentBridge = BridgeType.Cloud;
+    private BridgeType m_currentBridge = BridgeType.NONE;
     private boolean m_autoBridge = true;
 
     // Device/Node List
@@ -360,6 +362,7 @@ public class xltDevice {
 
     public boolean ConnectCloud() {
         if( !m_bInitialized ) return false;
+        if( m_ControllerID.length() == 0 ) return  false;
 
         new Thread(new Runnable() {
             @Override
@@ -873,6 +876,10 @@ public class xltDevice {
     //-------------------------------------------------------------------------
     // Bridge Selection Interfaces
     //-------------------------------------------------------------------------
+    public String getBridgeInfo() {
+        return getBridgeInfo(m_currentBridge);
+    }
+
     public String getBridgeInfo(final BridgeType bridge) {
         String desc;
         switch(bridge) {
@@ -969,10 +976,10 @@ public class xltDevice {
         if( bridge == BridgeType.Cloud && !isCloudOK() ) {
             return false;
         }
-        if( bridge == BridgeType.BLE && !isLANOK() ) {
+        if( bridge == BridgeType.BLE && !isBLEOK() ) {
             return false;
         }
-        if( bridge == BridgeType.LAN && !isBLEOK() ) {
+        if( bridge == BridgeType.LAN && !isLANOK() ) {
             return false;
         }
 
@@ -1188,6 +1195,13 @@ public class xltDevice {
         return -1;
     }
 
+    public int sysQueryCoreID() {
+        if( isBLEOK() ) {
+            return bleBridge.SysQueryCoreID();
+        }
+        return -1;
+    }
+
     // Serial Console 'set' Command, where sCmd can be any valid 'set' command substring, e.g.
     /// base 1
     /// cloud 0
@@ -1230,6 +1244,18 @@ public class xltDevice {
 
     public void setEnableEventSendMessage(final boolean flag) {
         m_enableEventSendMessage = flag;
+    }
+
+    public void onBridgeFunctionAck(final int result, final int type, final String data) {
+        if( m_bcsHandler != null ) {
+            m_bcsHandler.obtainMessage(BCS_FUNCTION_ACK, result, type, data).sendToTarget();
+        }
+    }
+
+    public void onBridgeCoreID(final String data) {
+        if( m_bcsHandler != null ) {
+            m_bcsHandler.obtainMessage(BCS_FUNCTION_COREID, -1, -1, data).sendToTarget();
+        }
     }
 
     public void onBridgeStatusChanged(final BridgeType bridge, final int bcStatus) {

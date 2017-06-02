@@ -1,5 +1,6 @@
 package com.umarbhutta.xlightcompanion.glance;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -53,7 +54,7 @@ public class GlanceFragment extends Fragment {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView devicesRecyclerView;
-    WeatherDetails mWeatherDetails;
+    private WeatherDetails mWeatherDetails;
 
     private Handler m_handlerGlance;
 
@@ -61,6 +62,9 @@ public class GlanceFragment extends Fragment {
     private Bitmap icoCloudy, icoPartlyCloudyDay, icoPartlyCloudyNight;
     private static int ICON_WIDTH = 70;
     private static int ICON_HEIGHT = 75;
+
+    private String strLocation;
+    private double latitude, longitude;
 
     private class MyDataReceiver extends DataReceiver {
         @Override
@@ -154,14 +158,33 @@ public class GlanceFragment extends Fragment {
         //divider lines
         devicesRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
+        // Get ControllerID
+        int controllerId = getContext().getSharedPreferences(MainActivity.keySettings, Activity.MODE_PRIVATE).getInt(MainActivity.keyControllerID, 0);
+        if( controllerId == 2 ) {
+            // Waterloo
+            strLocation = "Waterloo, ON";
+            latitude = 43.4643;
+            longitude = -80.5204;
+        } else if( controllerId == 3 ) {
+            // Gu'an, Hebei, China
+            strLocation = "Gu An, China";
+            latitude = 39.44;
+            longitude = 116.29;
+
+        } else {
+            // Suzhou
+            strLocation = "Suzhou, China";
+            latitude = 31.2989;
+            longitude = 120.5852;
+        }
         // Waterloo
         //final String strLocation = "Waterloo, ON";
         //double latitude = 43.4643;
         //double longitude = -80.5204;
         // Suzhou
-        final String strLocation = "Suzhou, China";
-        double latitude = 31.2989;
-        double longitude = 120.5852;
+        //final String strLocation = "Suzhou, China";
+        //double latitude = 31.2989;
+        //double longitude = 120.5852;
         // Gu'an, Hebei, China
         //final String strLocation = "Gu An, China";
         //double latitude = 39.44;
@@ -190,7 +213,6 @@ public class GlanceFragment extends Fragment {
                         String jsonData = response.body().string();
                         if (response.isSuccessful()) {
                             mWeatherDetails = getWeatherDetails(jsonData);
-                            mWeatherDetails.setLocation(strLocation);
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -235,6 +257,7 @@ public class GlanceFragment extends Fragment {
         //JSONObject for nested JSONObject inside 'forecast' for current weather details
         JSONObject currently = forecast.getJSONObject("currently");
 
+        weatherDetails.setLocation(strLocation);
         weatherDetails.setTemp(currently.getDouble("temperature"));
         weatherDetails.setIcon(currently.getString("icon"));
         weatherDetails.setApparentTemp(currently.getDouble("apparentTemperature"));

@@ -5,21 +5,79 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scheduleRecyclerView" />
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
 
-    <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="20dp"
-        android:src="@drawable/ic_add_white_24dp"
-        fab:fab_colorNormal="@color/colorAccent"
-        fab:fab_colorPressed="@color/colorAccent"
-        fab:fab_colorRipple="@color/appRipple" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarBridge"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_below="@+id/mainLightsLL"
+            android:background="@color/textDarkGrey"
+            android:minHeight="?attr/actionBarSize"
+            android:paddingLeft="20dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical"
+                    android:text="Communication"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+        <RadioGroup
+            android:id="@+id/bridgeList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </RadioGroup>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_below="@+id/mainLightsLL"
+            android:background="@color/textDarkGrey"
+            android:minHeight="?attr/actionBarSize"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical"
+                    android:text="Choose your Controller"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+        <RadioGroup
+            android:id="@+id/controllerList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </RadioGroup>
+
+    </LinearLayout>
+
 </RelativeLayout>

@@ -160,7 +160,7 @@ public class SerialMessage {
     public boolean parseString(String line) {
         m_msgOK = false;
         String strMsg;
-        char lastCh = line.charAt(line.length());
+        char lastCh = line.charAt(line.length()-1);
         if( lastCh == '\r' || lastCh == '\n') {
             strMsg = line.substring(line.length() - 1);
         } else {
@@ -178,6 +178,7 @@ public class SerialMessage {
                 if( i > 5 ) m_payload += ";";
                 m_payload += attributes[i];
             }
+            m_msgOK = true;
         }
         return m_msgOK;
     }

@@ -151,6 +151,11 @@ public class BLEBridge extends BaseBridge {
         return AsynSendMessage(strParam);
     }
 
+    public int SysQueryCoreID() {
+        String strParam = String.format("0;%d;3;1;6;1", xltDevice.NODEID_SMARTPHONE);
+        return AsynSendMessage(strParam);
+    }
+
     public int SysConfig(final String sCmd) {
         String strParam = String.format("0;%d;3;1;6;%s", xltDevice.NODEID_SMARTPHONE, sCmd);
         return AsynSendMessage(strParam);
@@ -275,6 +280,24 @@ public class BLEBridge extends BaseBridge {
                                             m_parentContext.sendBroadcast(new Intent(xltDevice.bciDeviceConfig));
                                         }
                                         break;
+                                }
+                            } else if( mMsg.m_cmd == SerialMessage.C_INTERNAL && mMsg.m_ack == 2 ) {
+                                // System command ack
+                                int result = 1;
+                                if( mMsg.m_payload.length() > 0 ) {
+                                    if (mMsg.m_payload.charAt(0) == '0') result = 0;
+                                }
+                                m_parentDevice.onBridgeFunctionAck(result, mMsg.m_type, mMsg.m_payload);
+                                // Core ID
+                                if( mMsg.m_type == SerialMessage.I_CONFIG && result == 1 ) {
+                                    if( mMsg.m_payload.length() > 10 ) {
+                                        String[] attributes = mMsg.m_payload.split(":");
+                                        if( attributes.length == 3 ) {
+                                            if (attributes[1] == "0" || attributes[1] == "1") {
+                                                m_parentDevice.onBridgeCoreID(attributes[2]);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
