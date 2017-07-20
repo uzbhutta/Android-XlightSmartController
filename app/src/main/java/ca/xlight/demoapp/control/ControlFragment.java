@@ -371,9 +371,10 @@ public class ControlFragment extends Fragment {
                     } else if (parent.getItemAtPosition(position).toString() == "Breathe") {
                         MainActivity.m_mainDevice.SetSpecialEffect(xltDevice.FILTER_SP_EF_BREATH);
                     } else if (parent.getItemAtPosition(position).toString() == "Dance") {
-                        if (isStop) {
-                            startTimer();
-                        }
+                        //if (isStop) {
+                        //    startTimer();
+                        //}
+                        MainActivity.m_mainDevice.SetSpecialEffect(xltDevice.FILTER_SP_EF_FAST_FLORID);
                     }
                 }
             }
