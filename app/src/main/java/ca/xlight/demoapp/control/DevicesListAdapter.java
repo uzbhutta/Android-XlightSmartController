@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import ca.xlight.demoapp.SDK.xltDevice;
 import ca.xlight.demoapp.Tools.StatusReceiver;
 import ca.xlight.demoapp.main.MainActivity;
@@ -26,26 +28,34 @@ import ca.xlight.demoapp.R;
 public class DevicesListAdapter extends RecyclerView.Adapter {
 
     private Handler m_handlerDeviceList;
-    public Switch[] m_Switch = new Switch[MainActivity.deviceNodeIDs.length];
-    public ImageView[] m_Icon = new ImageView[MainActivity.deviceNodeIDs.length];
+    private ArrayList<Switch> m_Switch = new ArrayList<>();
+    private ArrayList<ImageView> m_Icon = new ArrayList<>();
 
     public int findPositionByNodeID(final int _nodeID) {
-        for (int iSw = 0; iSw < m_Switch.length; iSw++) {
-            if((Integer)m_Switch[iSw].getTag() == _nodeID) {
+        for (int iSw = 0; iSw < m_Switch.size(); iSw++) {
+            if((Integer)m_Switch.get(iSw).getTag() == _nodeID) {
                 return iSw;
             }
         }
         return -1;
     }
 
-    public void setSwitchState(final int _nodeID, final int _state, final boolean _alive) {
+    public void setSwitchState(final int _nodeID, final int _state, final boolean _alive, final boolean _isSwitch) {
         int nPos = findPositionByNodeID(_nodeID);
         if( nPos >= 0 ) {
-            m_Switch[nPos].setChecked(_state > 0);
-            if( _alive ) {
-                m_Icon[nPos].setImageResource(_state > 0 ? R.drawable.ic_lightbulb_outline_green_24dp : R.drawable.ic_lightbulb_outline_black_24dp);
+            m_Switch.get(nPos).setChecked(_state > 0);
+            if (_isSwitch) {
+                if (_alive) {
+                    m_Icon.get(nPos).setImageResource(_state > 0 ? R.drawable.ic_radio_button_checked_green_24dp : R.drawable.ic_radio_button_checked_red_24dp);
+                } else {
+                    m_Icon.get(nPos).setImageResource(R.drawable.ic_radio_button_checked_grey_24dp);
+                }
             } else {
-                m_Icon[nPos].setImageResource(R.drawable.ic_lightbulb_outline_grey_24dp);
+                if (_alive) {
+                    m_Icon.get(nPos).setImageResource(_state > 0 ? R.drawable.ic_lightbulb_outline_green_24dp : R.drawable.ic_lightbulb_outline_black_24dp);
+                } else {
+                    m_Icon.get(nPos).setImageResource(R.drawable.ic_lightbulb_outline_grey_24dp);
+                }
             }
         }
     }
@@ -56,9 +66,15 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
         public void onReceive(Context context, Intent intent) {
             int nNodeID = intent.getIntExtra("nd", -1);
             if( nNodeID >= 0 ) {
-                int nState = MainActivity.m_mainDevice.getState(nNodeID);
+                int nState;
+                int nType = MainActivity.m_mainDevice.getDeviceType(nNodeID);
+                if ( MainActivity.m_mainDevice.isSwitch(nType) ) {
+                    nState = MainActivity.m_mainDevice.getKMState(nNodeID);
+                } else {
+                    nState = MainActivity.m_mainDevice.getState(nNodeID);
+                }
                 boolean bAlive = MainActivity.m_mainDevice.getNodeAlive(nNodeID);
-                setSwitchState(nNodeID, nState, bAlive);
+                setSwitchState(nNodeID, nState, bAlive, MainActivity.m_mainDevice.isSwitch(nType));
             }
         }
     }
@@ -71,9 +87,15 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
                 public void handleMessage(Message msg) {
                     int nNodeID = msg.getData().getInt("nd", -1);
                     if( nNodeID >= 0 ) {
-                        int nState = msg.getData().getInt("State", -255);
+                        int nState;
+                        int nType = MainActivity.m_mainDevice.getDeviceType(nNodeID);
+                        if ( MainActivity.m_mainDevice.isSwitch(nType) ) {
+                            nState = MainActivity.m_mainDevice.getKMState(nNodeID);
+                        } else {
+                            nState = msg.getData().getInt("State", -255);
+                        }
                         boolean bAlive = msg.getData().getBoolean("up", true);
-                        setSwitchState(nNodeID, nState, bAlive);
+                        setSwitchState(nNodeID, nState, bAlive, MainActivity.m_mainDevice.isSwitch(nType));
                     }
                 }
             };
@@ -117,7 +139,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return MainActivity.deviceNodeIDs.length;
+        return MainActivity.deviceNodeIDs.size();
     }
 
     private class DevicesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -146,15 +168,20 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
                 public boolean onLongClick(View v) {
                     // Change Current Device/Node
                     MainActivity.m_mainDevice.setDeviceID(mDeviceID);
-                    // Bring to Control Activity
-                    if( MainActivity.m_eventHandler != null ) {
-                        Message msg = MainActivity.m_eventHandler.obtainMessage();
-                        if( msg != null ) {
-                            Bundle bdlData = new Bundle();
-                            bdlData.putInt("cmd", 1); // Menu
-                            bdlData.putInt("item", R.id.nav_control); // Item
-                            msg.setData(bdlData);
-                            MainActivity.m_eventHandler.sendMessage(msg);
+                    int nType = MainActivity.m_mainDevice.getDeviceType(mDeviceID);
+                    if ( !MainActivity.m_mainDevice.isSwitch(nType) ) {
+                        // Bring to Control Activity only if node is not switch device
+                        /// ToDo: may bring to multiple switch control screen, so far we only consider single switch
+                        /// ToDo: Therefore, we don't need sub-screen.
+                        if (MainActivity.m_eventHandler != null) {
+                            Message msg = MainActivity.m_eventHandler.obtainMessage();
+                            if (msg != null) {
+                                Bundle bdlData = new Bundle();
+                                bdlData.putInt("cmd", 1); // Menu
+                                bdlData.putInt("item", R.id.nav_control); // Item
+                                msg.setData(bdlData);
+                                MainActivity.m_eventHandler.sendMessage(msg);
+                            }
                         }
                     }
                     return false;
@@ -166,19 +193,38 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
                     //ParticleAdapter.FastCallPowerSwitch(ParticleAdapter.DEFAULT_DEVICE_ID, isChecked);
                     // Change Current Device/Node
                     MainActivity.m_mainDevice.setDeviceID(mDeviceID);
-                    MainActivity.m_mainDevice.PowerSwitch(isChecked ? xltDevice.STATE_ON : xltDevice.STATE_OFF);
+                    if (MainActivity.m_mainDevice.isSwitch() ) {
+                        MainActivity.m_mainDevice.KMSwitch(isChecked, "1");
+                    } else {
+                        MainActivity.m_mainDevice.PowerSwitch(isChecked ? xltDevice.STATE_ON : xltDevice.STATE_OFF);
+                    }
                 }
             });
         }
 
         public void bindView (int position) {
-            mDeviceID = MainActivity.deviceNodeIDs[position];
-            mDeviceName.setText(MainActivity.deviceNames[position] + ": " + mDeviceID);
-            mDeviceSwitch.setChecked(MainActivity.m_mainDevice.getState(mDeviceID) > 0);
+            mDeviceID = Integer.parseInt(MainActivity.deviceNodeIDs.get(position));
+            mDeviceName.setText(MainActivity.deviceNames.get(position) + ": " + mDeviceID);
+            int nState;
+            int nType = MainActivity.m_mainDevice.getDeviceType(mDeviceID);
+            if ( MainActivity.m_mainDevice.isSwitch(nType) ) {
+                nState = MainActivity.m_mainDevice.getKMState(mDeviceID);
+            } else {
+                nState = MainActivity.m_mainDevice.getState(mDeviceID);
+            }
+            mDeviceSwitch.setChecked(nState > 0);
             mDeviceSwitch.setTag(mDeviceID);
-            m_Switch[position] = mDeviceSwitch;
-            m_Icon[position] = mStatusIcon;
-            setSwitchState(mDeviceID, MainActivity.m_mainDevice.getState(mDeviceID), MainActivity.m_mainDevice.getNodeAlive(mDeviceID));
+            if( m_Switch.size() <= position ) {
+                m_Switch.add(mDeviceSwitch);
+            } else {
+                m_Switch.set(position, mDeviceSwitch);
+            }
+            if( m_Icon.size() <= position ) {
+                m_Icon.add(mStatusIcon);
+            } else {
+                m_Icon.set(position, mStatusIcon);
+            }
+            setSwitchState(mDeviceID, nState, MainActivity.m_mainDevice.getNodeAlive(mDeviceID), MainActivity.m_mainDevice.isSwitch(nType));
         }
 
         @Override

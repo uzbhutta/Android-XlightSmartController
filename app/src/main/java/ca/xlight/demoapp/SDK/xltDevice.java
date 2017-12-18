@@ -85,6 +85,7 @@ public class xltDevice {
     public static final int CMD_CCT = 5;
     public static final int CMD_QUERY = 6;
     public static final int CMD_EFFECT = 7;
+    public static final int CMD_EXT = 8;
 
     // NodeID Convention
     public static final int NODEID_GATEWAY = 0;
@@ -101,13 +102,32 @@ public class xltDevice {
     public static final int devtypUnknown = 0;
     public static final int devtypCRing3 = 1;
     public static final int devtypCRing2 = 2;
-    public static final int devtypCRing1 = 3;
-    public static final int devtypWRing3 = 4;
-    public static final int devtypWRing2 = 5;
-    public static final int devtypWRing1 = 6;
-    public static final int devtypMRing3 = 8;
-    public static final int devtypMRing2 = 9;
-    public static final int devtypMRing1 = 10;
+    public static final int devtypCBar = 3;
+    public static final int devtypCFrame = 4;
+    public static final int devtypCWave = 5;
+    public static final int devtypCRing1 = 31;
+
+    public static final int devtypWRing3 = 32;
+    public static final int devtypWRing2 = 33;
+    public static final int devtypWBar = 34;
+    public static final int devtypWFrame = 35;
+    public static final int devtypWWave = 36;
+    public static final int devtypWSquare60 = 37;
+    public static final int devtypWPanel120_30 = 38;
+    public static final int devtypWBlackboard = 39;
+    public static final int devtypWRing1 = 95;
+
+    public static final int devtypMRing3 = 96;
+    public static final int devtypMRing2 = 97;
+    public static final int devtypMBar = 98;
+    public static final int devtypMFrame = 99;
+    public static final int devtypMWave = 100;
+    public static final int devtypMRing1 = 127;
+
+    public static final int devtypSwitch = 129;
+    public static final int devtypSwitch2 = 130;
+    public static final int devtypSwitch3 = 131;
+    public static final int devtypSwitch4 = 132;
     public static final int devtypDummy = 255;
 
     public static final int DEFAULT_DEVICE_TYPE = devtypWRing3;
@@ -214,6 +234,7 @@ public class xltDevice {
         public boolean m_isUp;
         public int m_filter;
         public String m_Name;
+        public int m_kms;       // Relay Keys Status (bitmap)
         // Rings
         public xltRing[] m_Ring = new xltRing[MAX_RING_NUM];
     }
@@ -425,6 +446,10 @@ public class xltDevice {
         return(m_currentNode != null ? isMirage(m_currentNode.m_Type) : false);
     }
 
+    public boolean isSwitch() {
+        return(m_currentNode != null ? isSwitch(m_currentNode.m_Type) : false);
+    }
+
     public boolean isSunny(final int DevType) {
         return(DevType >= devtypWRing3 && DevType <= devtypWRing1);
     }
@@ -435,6 +460,10 @@ public class xltDevice {
 
     public boolean isMirage(final int DevType) {
         return(DevType >= devtypMRing3 && DevType <= devtypMRing1);
+    }
+
+    public boolean isSwitch(final int DevType) {
+        return(DevType >= devtypSwitch && DevType <= devtypSwitch4);
     }
 
     private int getRingIndex(final int ringID) {
@@ -537,6 +566,82 @@ public class xltDevice {
         int lv_dev = findNodeFromDeviceList(nodeID);
         if( lv_dev >= 0 ) {
             m_lstNodes.get(lv_dev).m_Type = type;
+        }
+    }
+
+    public static boolean getBit(final int value, final int position)
+    {
+        return ((value & (1 << position)) != 0);
+    }
+
+    public static int setBit(final int value, final int position, final boolean on_off)
+    {
+        if( on_off ) {
+            return (value | (1 << position));
+
+        } else {
+            int mask = ~(1 << position);
+            return (value & (mask));
+        }
+    }
+
+    public boolean getKMSBit(final int key) {
+        return(m_currentNode != null ? getBit(m_currentNode.m_kms, key) : false);
+    }
+
+    public boolean getKMSBit(final int nodeID, final int key) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return getBit(m_lstNodes.get(lv_dev).m_kms, key);
+        }
+        return(false);
+    }
+
+    public void setKMSBit(final int key, final boolean on_off) {
+        setKMSBit(m_DevID, key, on_off);
+    }
+
+    public void setKMSBit(final int nodeID, final int key, final boolean on_off) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_kms = setBit(m_lstNodes.get(lv_dev).m_kms, key, on_off);
+        }
+    }
+
+    public int getKMState() {
+        return(m_currentNode != null ? m_currentNode.m_kms : 0);
+    }
+
+    public int getKMState(final int nodeID) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            return m_lstNodes.get(lv_dev).m_kms;
+        }
+        return(devtypUnknown);
+    }
+
+    public void setKMState(final int kms) {
+        setKMState(m_DevID, kms);
+    }
+
+    public void setKMState(final int nodeID, final int kms) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_kms = kms;
+        }
+    }
+
+    public void updateKMState(final String Positions, final boolean on_off) {
+        updateKMState(m_DevID, Positions, on_off);
+    }
+
+    public void updateKMState(final int nodeID, final String Positions, final boolean on_off) {
+        for (int i = 0; i < Positions.length(); i++) {
+            char ch = Positions.charAt(i);
+            if( ch > '0' && ch < '9' ) {
+                int pos = ch - 49;
+                setKMSBit(nodeID, pos, on_off);
+            }
         }
     }
 
@@ -1165,6 +1270,32 @@ public class xltDevice {
                     break;
                 case BLE:
                     rc = bleBridge.SetSpecialEffect(nodeID, filter);
+                    break;
+                case LAN:
+                    // ToDo: call LAN API
+                    break;
+            }
+        }
+        return rc;
+    }
+
+    // Switch On / Off
+    public int KMSwitch(final boolean on_off, final String keys) {
+        return KMSwitch(m_DevID, on_off, keys);
+    }
+
+    public int KMSwitch(final int nodeID, final boolean on_off, final String keys) {
+        int rc = -1;
+
+        // Select Bridge
+        selectBridge();
+        if( isBridgeOK(m_currentBridge) ) {
+            switch(m_currentBridge) {
+                case Cloud:
+                    rc = cldBridge.JSONCommandRelaySwitch(nodeID, on_off, keys);
+                    break;
+                case BLE:
+                    rc = bleBridge.SetRelayKey(nodeID, on_off, keys);
                     break;
                 case LAN:
                     // ToDo: call LAN API

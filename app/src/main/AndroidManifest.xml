@@ -7,12 +7,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo"
-        android:label= "@string/app_name"
+        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -40,7 +42,12 @@
         <receiver
             android:name=".Tools.StatusReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
+
+        <activity
+            android:name=".glance.AddNewDevice"
+            android:label="@string/title_activity_add_new_device"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

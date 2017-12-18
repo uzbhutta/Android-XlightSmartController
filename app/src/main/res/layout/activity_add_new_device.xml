@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/addDeviceL1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbarWiFi"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="33dp"
             android:layout_below="@+id/mainLightsLL"
@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical"
-                    android:text="Setup Controller WiFi"
+                    android:text="Add Device"
                     android:textColor="@android:color/white" />
 
             </LinearLayout>
@@ -49,18 +49,53 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textSSID"
-                    android:layout_width="70dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="left|start"
                     android:paddingLeft="5dp"
-                    android:text="SSID" />
+                    android:text="Name     "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/textColorPrimary" />
 
                 <EditText
-                    android:id="@+id/editSSID"
+                    android:id="@+id/editDeviceName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="text|textPersonName" />
+                    android:inputType="text|textPersonName"
+                    android:paddingRight="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="left|start"
+                    android:paddingLeft="5dp"
+                    android:text="Node ID "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/textColorPrimary" />
+
+                <EditText
+                    android:id="@+id/editNodeID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="10dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -70,66 +105,33 @@
                 android:paddingLeft="5dp">
 
                 <TextView
-                    android:id="@+id/textPassword"
-                    android:layout_width="70dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Password" />
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="left|start"
+                    android:text="Type     "
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/textColorPrimary" />
 
-                <EditText
-                    android:id="@+id/editPWD"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPassword" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioGroup
-                    android:id="@+id/authList"
+                <Spinner
+                    android:id="@+id/DeviceTypeSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                </RadioGroup>
+                    android:layout_gravity="center_vertical"
+                    android:gravity="right"
+                    android:paddingRight="20dp"></Spinner>
 
-                <RadioGroup
-                    android:id="@+id/cipherList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                </RadioGroup>
             </LinearLayout>
 
             <Button
-                android:id="@+id/btnSetupWiFi"
+                android:id="@+id/btnAddDone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Setup WiFi" />
-            <Button
-                android:id="@+id/btnClearCredentials"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Clear Credentials" />
-            <Button
-                android:id="@+id/btnResetController"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Reset Controller" />
-            <Button
-                android:id="@+id/btnSafe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter Safe Mode" />
-            <Button
-                android:id="@+id/btnDFU"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter DFU Mode" />
+                android:text="DONE" />
+
         </LinearLayout>
 
     </LinearLayout>

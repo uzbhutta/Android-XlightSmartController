@@ -116,7 +116,7 @@ public class BLEBridge extends BaseBridge {
 
     public int ChangeColor(final int nodeID, final int ring, final boolean state, final int br, final int ww, final int r, final int g, final int b) {
         //1;139;1;1;13;70:0:255\n
-        String strParam = String.format("%d;%d;1;1;13;%d;%d;%d;%d;%d", nodeID, xltDevice.NODEID_SMARTPHONE, br, ww, r, g, b);
+        String strParam = String.format("%d;%d;1;1;13;%d:%d:%d:%d:%d", nodeID, xltDevice.NODEID_SMARTPHONE, br, ww, r, g, b);
         return AsynSendMessage(strParam);
     }
 
@@ -129,6 +129,12 @@ public class BLEBridge extends BaseBridge {
     public int SetSpecialEffect(final int nodeID, final int filter) {
         //1;139;1;1;17;1\n
         String strParam = String.format("%d;%d;1;1;17;%d", nodeID, xltDevice.NODEID_SMARTPHONE, filter);
+        return AsynSendMessage(strParam);
+    }
+
+    public int SetRelayKey(final int nodeID, final boolean on_off, final String keys) {
+        //130;139;1;1;19;65:keys\n
+        String strParam = String.format("%d;%d;1;1;19;%d:%s", nodeID, xltDevice.NODEID_SMARTPHONE, keys);
         return AsynSendMessage(strParam);
     }
 

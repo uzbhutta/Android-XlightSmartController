@@ -42,6 +42,18 @@ public class EventParser {
                         m_parentDevice.setDeviceType(nodeId, jObject.getInt("tp"));
                         bdlControl.putInt("type", jObject.getInt("tp"));
                     }
+                    if (jObject.has("km")) {
+                        m_parentDevice.setKMState(nodeId, jObject.getInt("km"));
+                        bdlControl.putInt("km", jObject.getInt("km"));
+                    }
+                    if (jObject.has("k_on")) {
+                        m_parentDevice.updateKMState(nodeId, jObject.getString("k_on"), true);
+                        bdlControl.putString("k_on", jObject.getString("k_on"));
+                    }
+                    if (jObject.has("k_off")) {
+                        m_parentDevice.updateKMState(nodeId, jObject.getString("k_off"), false);
+                        bdlControl.putString("k_off", jObject.getString("k_off"));
+                    }
                     if (jObject.has("filter")) {
                         m_parentDevice.setFilter(nodeId, jObject.getInt("filter"));
                         bdlControl.putInt("filter", jObject.getInt("filter"));

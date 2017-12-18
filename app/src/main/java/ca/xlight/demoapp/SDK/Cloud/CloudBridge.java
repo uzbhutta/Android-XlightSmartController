@@ -227,6 +227,26 @@ public class CloudBridge extends BaseBridge {
         return resultCode;
     }
 
+    public int JSONCommandRelaySwitch(final int nodeID, final boolean on_off, final String keys) {
+        new Thread() {
+            @Override
+            public void run() {
+                // Make the Particle call here
+                String json = "{\"cmd\":" + xltDevice.CMD_EXT + ",\"nd\":" + nodeID + ",\"msg\":1" + ",\"ack\":1" + ",\"tag\":" + (on_off ? 65 : 66) + ",\"pl\":\"" + keys + "\"}";
+                ArrayList<String> message = new ArrayList<>();
+                message.add(json);
+                try {
+                    Log.d(TAG, "JSONCommandRelaySwitch" + message.get(0));
+                    resultCode = currDevice.callFunction("JSONCommand", message);
+                } catch (ParticleCloudException | ParticleDevice.FunctionDoesNotExistException | IOException e) {
+                    e.printStackTrace();
+                }
+                message.clear();
+            }
+        }.start();
+        return resultCode;
+    }
+
     public int JSONConfigScenario(final int scenarioId, final int brightness, final int cw, final int ww, final int r, final int g, final int b, final int filter) {
         new Thread() {
             @Override

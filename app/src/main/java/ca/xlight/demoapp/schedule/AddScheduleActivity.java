@@ -57,8 +57,6 @@ public class AddScheduleActivity extends AppCompatActivity {
         //initialize all views
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         isRepeatCheckbox = (CheckBox) findViewById(R.id.isRepeatCheckbox);
-        scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);
-        deviceSpinner = (Spinner) findViewById(R.id.deviceSpinner);
         addButton = (Button) findViewById(R.id.addButton);
         backImageView = (ImageView) findViewById(R.id.backImageView);
 
@@ -69,7 +67,6 @@ public class AddScheduleActivity extends AppCompatActivity {
         checkboxThursday = (CheckBox) findViewById(R.id.checkboxThursday);
         checkboxFriday = (CheckBox) findViewById(R.id.checkboxFriday);
         checkboxSaturday = (CheckBox) findViewById(R.id.checkboxSaturday);
-
 
         //initialize scenario spinner
         scenarioSpinner = (Spinner) findViewById(R.id.scenarioSpinner);

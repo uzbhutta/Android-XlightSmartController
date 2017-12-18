@@ -49,10 +49,16 @@ import java.io.IOException;
  */
 public class GlanceFragment extends Fragment {
     private com.github.clans.fab.FloatingActionButton fab;
+
     TextView txtLocation, outsideTemp, degreeSymbol, roomTemp, roomHumidity, roomBrightness, outsideHumidity, apparentTemp;
     ImageView imgWeather;
 
+    public static String DEVICE_NAME = "DEVICE_NAME";
+    public static String DEVICE_NODE_ID = "DEVICE_NODE_ID";
+    public static String DEVICE_NODE_TYPE = "DEVICE_NODE_TYPE";
+
     private static final String TAG = MainActivity.class.getSimpleName();
+    private DevicesListAdapter devicesListAdapter;
     private RecyclerView devicesRecyclerView;
     private WeatherDetails mWeatherDetails;
 
@@ -119,6 +125,13 @@ public class GlanceFragment extends Fragment {
         icoPartlyCloudyDay = Bitmap.createBitmap(weatherIcons, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
         icoPartlyCloudyNight = Bitmap.createBitmap(weatherIcons, ICON_WIDTH * 2, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFabPressed(view);
+            }
+        });
+
         if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
             IntentFilter intentFilter = new IntentFilter(xltDevice.bciSensorData);
             intentFilter.setPriority(3);
@@ -148,7 +161,7 @@ public class GlanceFragment extends Fragment {
         //setup recycler view
         devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
         //create list adapter
-        DevicesListAdapter devicesListAdapter = new DevicesListAdapter();
+        devicesListAdapter = new DevicesListAdapter();
         //attach adapter to recycler view
         devicesRecyclerView.setAdapter(devicesListAdapter);
         //set LayoutManager for recycler view
@@ -327,5 +340,31 @@ public class GlanceFragment extends Fragment {
         } else {
             return icoDefault;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                String incomingName = data.getStringExtra(DEVICE_NAME);
+                String incomingID = data.getStringExtra(DEVICE_NODE_ID);
+                String incomingType = data.getStringExtra(DEVICE_NODE_TYPE);
+
+                MainActivity.deviceNames.add(incomingName);
+                MainActivity.deviceNodeIDs.add(incomingID);
+                MainActivity.deviceNodeTypeIDs.add(incomingType);
+                MainActivity.m_mainDevice.addNodeToDeviceList(Integer.parseInt(incomingID), Integer.parseInt(incomingType), incomingName);
+
+                devicesListAdapter.notifyDataSetChanged();
+                Toast.makeText(getActivity(), "Device has been successfully added", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void onFabPressed(View view) {
+        Intent intent = new Intent(getContext(), AddNewDevice.class);
+        startActivityForResult(intent, 1);
     }
 }

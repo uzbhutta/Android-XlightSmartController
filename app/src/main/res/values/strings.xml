@@ -71,4 +71,21 @@
         <item>2</item>
         <item>3</item>
     </string-array>
+
+    <string-array name="device_type_list">
+        <item>Sunny</item>
+        <item>Rainbow</item>
+        <item>Mirage</item>
+        <item>Switch</item>
+    </string-array>
+    <string-array name="device_type_list_value">
+        <item>32</item>
+        <item>1</item>
+        <item>96</item>
+        <item>129</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_add_new_device">AddNewDevice</string>
 </resources>

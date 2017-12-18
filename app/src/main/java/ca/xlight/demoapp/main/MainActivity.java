@@ -16,7 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewDebug;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import ca.xlight.demoapp.SDK.BLE.BLEPairedDeviceList;
 import ca.xlight.demoapp.SDK.CloudAccount;
@@ -36,6 +41,8 @@ public class MainActivity extends AppCompatActivity
     public static String keySettings = "Settings";
     public static String keyControllerID = "ControllerID";
     public static String keyBridgeID = "BridgeID";
+    public static String keyDeviceCount = "DeviceCount";
+    public static String keyDeviceList = "DeviceList";
 
     private SharedPreferences m_sp;
     public static int mControllerId, mBridgeId;
@@ -43,8 +50,11 @@ public class MainActivity extends AppCompatActivity
     public static String[] mBridgeNames;
     public static String[] mWiFiAuthNames;
     public static String[] mWiFiCipherNames;
-    public static final String[] deviceNames = {"Living Room", "Bedroom", "Dining Room", "Bar"};
-    public static final int[] deviceNodeIDs = {1, 8, 9, 10};
+    public static String[] mDeviceTypes;
+    public static String[] mDeviceTypeIDs;
+    public static ArrayList<String> deviceNames = new ArrayList<>();
+    public static ArrayList<String> deviceNodeIDs = new ArrayList<>();
+    public static ArrayList<String> deviceNodeTypeIDs = new ArrayList<>();
     public static final String[] scheduleTimes = {"10:30 AM", "12:45 PM", "02:00 PM", "06:45 PM", "08:00 PM", "11:30 PM"};
     public static final String[] scheduleDays = {"Mo Tu We Th Fr", "Every day", "Mo We Th Sa Su", "Tomorrow", "We", "Mo Tu Fr Sa Su"};
     public static final String[] scenarioNames = {"Brunching", "Guests", "Naptime", "Dinner", "Sunset", "Bedtime"};
@@ -71,7 +81,51 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = m_sp.edit();
         editor.putInt(keyControllerID, mControllerId);
         editor.putInt(keyBridgeID, mBridgeId);
+
+        editor.putInt(keyDeviceCount, deviceNames.size());
+        for (int i = 0; i <  deviceNames.size(); i++) {
+            String item = deviceNodeIDs.get(i) + "," + deviceNodeTypeIDs.get(i) + "," + deviceNames.get(i);
+            editor.putString(keyDeviceList + String.valueOf(i), item);
+        }
+
         editor.commit();
+    }
+
+    public void loadSettings() {
+        m_sp = getSharedPreferences(keySettings, MODE_PRIVATE);
+        mControllerId = m_sp.getInt(keyControllerID, 0);
+        mBridgeId = m_sp.getInt(keyBridgeID, 0);
+
+        deviceNames.clear();
+        deviceNodeIDs.clear();
+        deviceNodeTypeIDs.clear();
+
+        int dev_cnt = m_sp.getInt(keyDeviceCount, 0);
+        if (dev_cnt > 0) {
+            for (int i = 0; i <  dev_cnt; i++) {
+                String item = m_sp.getString(keyDeviceList + String.valueOf(i), "");
+                if (item.length() > 4) {
+                    String [] temps = item.split(",");
+                    if( temps.length >= 3 ) {
+                        deviceNodeIDs.add(temps[0]);
+                        deviceNodeTypeIDs.add(temps[1]);
+                        deviceNames.add(temps[2]);
+                    }
+                }
+            }
+        }
+
+        if (deviceNames.size() == 0 ) {
+            deviceNames.add("Living Room");
+            deviceNames.add("Bedroom");
+            deviceNames.add("Dining Room");
+            deviceNodeIDs.add("1");
+            deviceNodeIDs.add("8");
+            deviceNodeIDs.add("9");
+            deviceNodeTypeIDs.add(String.valueOf(xltDevice.DEFAULT_DEVICE_TYPE));
+            deviceNodeTypeIDs.add(String.valueOf(xltDevice.DEFAULT_DEVICE_TYPE));
+            deviceNodeTypeIDs.add(String.valueOf(xltDevice.DEFAULT_DEVICE_TYPE));
+        }
     }
 
     public void selectBridge() {
@@ -96,6 +150,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Load Settings
+        loadSettings();
 
         m_bcsHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -142,16 +199,13 @@ public class MainActivity extends AppCompatActivity
         //m_mainDevice.setBridgePriority(xltDevice.BridgeType.BLE, 9);
 
         // Setup Device/Node List
-        for( int lv_idx = 0; lv_idx < 3; lv_idx++ ) {
-            m_mainDevice.addNodeToDeviceList(deviceNodeIDs[lv_idx], xltDevice.DEFAULT_DEVICE_TYPE, deviceNames[lv_idx]);
+        for( int lv_idx = 0; lv_idx < deviceNodeTypeIDs.size(); lv_idx++ ) {
+            m_mainDevice.addNodeToDeviceList(Integer.parseInt(deviceNodeIDs.get(lv_idx)), Integer.parseInt(deviceNodeTypeIDs.get(lv_idx)), deviceNames.get(lv_idx));
         }
-        m_mainDevice.setDeviceID(deviceNodeIDs[0]);
+        m_mainDevice.setDeviceID(Integer.parseInt(deviceNodeIDs.get(0)));
 
         // Connect to Controller
         // Get ControllerID
-        m_sp = getSharedPreferences(keySettings, MODE_PRIVATE);
-        mControllerId = m_sp.getInt(keyControllerID, 0);
-        mBridgeId = m_sp.getInt(keyBridgeID, 0);
         mControllerNames = getResources().getStringArray(R.array.controller_list);
         mBridgeNames = getResources().getStringArray(R.array.bridge_list);
         String strControllerID = CloudAccount.DEVICE_ID;
@@ -169,6 +223,8 @@ public class MainActivity extends AppCompatActivity
 
         mWiFiAuthNames = getResources().getStringArray(R.array.wifi_auth_list);
         mWiFiCipherNames = getResources().getStringArray(R.array.wifi_cipher_list);
+        mDeviceTypes = getResources().getStringArray(R.array.device_type_list);
+        mDeviceTypeIDs = getResources().getStringArray(R.array.device_type_list_value);
 
         //setup drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
