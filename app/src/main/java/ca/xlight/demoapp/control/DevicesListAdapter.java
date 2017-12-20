@@ -14,11 +14,14 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import ca.xlight.demoapp.SDK.xltDevice;
 import ca.xlight.demoapp.Tools.StatusReceiver;
+import ca.xlight.demoapp.glance.AddNewDevice;
+import ca.xlight.demoapp.glance.GlanceFragment;
 import ca.xlight.demoapp.main.MainActivity;
 import ca.xlight.demoapp.R;
 
@@ -142,7 +145,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
         return MainActivity.deviceNodeIDs.size();
     }
 
-    private class DevicesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class DevicesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView mDeviceName;
         private Switch mDeviceSwitch;
         private ImageView mStatusIcon;
@@ -150,43 +153,22 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
         public DevicesListViewHolder(View itemView) {
             super(itemView);
+
+            View main = itemView.findViewById(R.id.main);
+            main.setOnClickListener(this);
+            main.setOnLongClickListener(this);
+
+            View mark = itemView.findViewById(R.id.mark);
+            mark.setOnClickListener(this);
+            View delete = itemView.findViewById(R.id.delete);
+            delete.setOnClickListener(this);
+
             mDeviceName = (TextView) itemView.findViewById(R.id.deviceName);
             mDeviceSwitch = (Switch) itemView.findViewById(R.id.deviceSwitch);
             mStatusIcon = (ImageView) itemView.findViewById(R.id.statusIcon);
 
-            //itemView.setOnClickListener(this);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Change Current Device/Node
-                    MainActivity.m_mainDevice.setDeviceID(mDeviceID);
-                }
-            });
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    // Change Current Device/Node
-                    MainActivity.m_mainDevice.setDeviceID(mDeviceID);
-                    int nType = MainActivity.m_mainDevice.getDeviceType(mDeviceID);
-                    if ( !MainActivity.m_mainDevice.isSwitch(nType) ) {
-                        // Bring to Control Activity only if node is not switch device
-                        /// ToDo: may bring to multiple switch control screen, so far we only consider single switch
-                        /// ToDo: Therefore, we don't need sub-screen.
-                        if (MainActivity.m_eventHandler != null) {
-                            Message msg = MainActivity.m_eventHandler.obtainMessage();
-                            if (msg != null) {
-                                Bundle bdlData = new Bundle();
-                                bdlData.putInt("cmd", 1); // Menu
-                                bdlData.putInt("item", R.id.nav_control); // Item
-                                msg.setData(bdlData);
-                                MainActivity.m_eventHandler.sendMessage(msg);
-                            }
-                        }
-                    }
-                    return false;
-                }
-            });
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
             mDeviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -229,6 +211,57 @@ public class DevicesListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View v) {
+            int pos;
+            switch (v.getId()) {
+                case R.id.main:
+                    MainActivity.m_mainDevice.setDeviceID(mDeviceID);
+                    break;
+
+                case R.id.mark:
+                    pos = getAdapterPosition();
+                    if (GlanceFragment.wndHandler != null) {
+                        (GlanceFragment.wndHandler).showDeivceInfoUpdate(MainActivity.deviceNodeIDs.get(pos), MainActivity.deviceNames.get(pos), MainActivity.deviceNodeTypeIDs.get(pos));
+                    }
+                    notifyItemChanged(pos);
+                    break;
+
+                case R.id.delete:
+                    pos = getAdapterPosition();
+                    MainActivity.m_mainDevice.removeNodeFromDeviceList(Integer.parseInt(MainActivity.deviceNodeIDs.get(pos)));
+                    MainActivity.deviceNames.remove(pos);
+                    MainActivity.deviceNodeIDs.remove(pos);
+                    MainActivity.deviceNodeTypeIDs.remove(pos);
+                    notifyItemRemoved(pos);
+                    Toast.makeText(v.getContext(), "Device has been removed", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            switch (v.getId()) {
+                case R.id.main:
+                    // Change Current Device/Node
+                    MainActivity.m_mainDevice.setDeviceID(mDeviceID);
+                    int nType = MainActivity.m_mainDevice.getDeviceType(mDeviceID);
+                    if ( !MainActivity.m_mainDevice.isSwitch(nType) ) {
+                        // Bring to Control Activity only if node is not switch device
+                        /// ToDo: may bring to multiple switch control screen, so far we only consider single switch
+                        /// ToDo: Therefore, we don't need sub-screen.
+                        if (MainActivity.m_eventHandler != null) {
+                            Message msg = MainActivity.m_eventHandler.obtainMessage();
+                            if (msg != null) {
+                                Bundle bdlData = new Bundle();
+                                bdlData.putInt("cmd", 1); // Menu
+                                bdlData.putInt("item", R.id.nav_control); // Item
+                                msg.setData(bdlData);
+                                MainActivity.m_eventHandler.sendMessage(msg);
+                            }
+                        }
+                    }
+                    break;
+            }
+            return false;
         }
     }
 }

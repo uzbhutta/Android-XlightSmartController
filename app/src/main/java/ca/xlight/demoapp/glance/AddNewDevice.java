@@ -25,9 +25,33 @@ public class AddNewDevice extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_device);
 
+        TextView m_txtTitle = (TextView) findViewById(R.id.lblTitleDevInfo);
         m_txtName = (TextView) findViewById(R.id.editDeviceName);
         m_txtNodeID = (TextView) findViewById(R.id.editNodeID);
         m_btnDone = (Button) findViewById(R.id.btnAddDone);
+
+        Intent data = getIntent();
+        String incomingID = data.getStringExtra(GlanceFragment.DEVICE_NODE_ID);
+        String w_title, incomingName, incomingType;
+        int selectedType = -1;
+        if (incomingID.length() > 0) {
+            incomingName = data.getStringExtra(GlanceFragment.DEVICE_NAME);
+            incomingType = data.getStringExtra(GlanceFragment.DEVICE_NODE_TYPE);
+            for (int i = 0; i < MainActivity.mDeviceTypeIDs.length; i++ ) {
+                if (MainActivity.mDeviceTypeIDs[i].equalsIgnoreCase(incomingType)  ) {
+                    selectedType = i;
+                    break;
+                }
+            }
+            w_title = "Update Device";
+            m_txtNodeID.setKeyListener(null);
+        } else {
+            incomingName = "";
+            w_title = "Add Device";
+        }
+        m_txtTitle.setText(w_title);
+        m_txtNodeID.setText(incomingID);
+        m_txtName.setText(incomingName);
 
         //initialize device type spinner
         m_typeSpinner = (Spinner) findViewById(R.id.DeviceTypeSpinner);
@@ -37,6 +61,7 @@ public class AddNewDevice extends AppCompatActivity {
         deviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the scenarioAdapter to the spinner
         m_typeSpinner.setAdapter(deviceAdapter);
+        m_typeSpinner.setSelection(selectedType, true);
 
         //on click for add button
         m_btnDone.setOnClickListener(new View.OnClickListener() {

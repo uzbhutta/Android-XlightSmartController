@@ -17,7 +17,6 @@
             android:layout_height="33dp"
             android:layout_below="@+id/mainLightsLL"
             android:background="@color/textDarkGrey"
-            android:minHeight="?attr/actionBarSize"
             android:paddingLeft="20dp"
             android:paddingTop="10dp">
 
@@ -28,6 +27,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/lblTitleDevInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"

@@ -657,6 +657,17 @@ public class xltDevice {
         return("");
     }
 
+    public void setDeviceName(final String name) {
+        setDeviceName(m_DevID, name);
+    }
+
+    public void setDeviceName(final int nodeID, final String name) {
+        int lv_dev = findNodeFromDeviceList(nodeID);
+        if( lv_dev >= 0 ) {
+            m_lstNodes.get(lv_dev).m_Name = name;
+        }
+    }
+
     public boolean getNodeAlive() {
         return getNodeAlive(m_DevID);
     }

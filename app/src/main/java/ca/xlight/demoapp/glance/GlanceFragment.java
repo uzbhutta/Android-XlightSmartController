@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,6 +40,7 @@ import ca.xlight.demoapp.main.MainActivity;
 import ca.xlight.demoapp.R;
 import ca.xlight.demoapp.main.SimpleDividerItemDecoration;
 import ca.xlight.demoapp.control.DevicesListAdapter;
+import ca.xlight.demoapp.swipeitemlayout.SwipeItemLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +51,9 @@ import java.io.IOException;
  * Created by Umar Bhutta.
  */
 public class GlanceFragment extends Fragment {
+    private View root;
     private com.github.clans.fab.FloatingActionButton fab;
+    public static GlanceFragment wndHandler;
 
     TextView txtLocation, outsideTemp, degreeSymbol, roomTemp, roomHumidity, roomBrightness, outsideHumidity, apparentTemp;
     ImageView imgWeather;
@@ -84,6 +89,7 @@ public class GlanceFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        wndHandler = null;
         devicesRecyclerView.setAdapter(null);
         MainActivity.m_mainDevice.removeDataEventHandler(m_handlerGlance);
         if( MainActivity.m_mainDevice.getEnableEventBroadcast() ) {
@@ -95,21 +101,22 @@ public class GlanceFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_glance, container, false);
+        wndHandler = this;
+        root = inflater.inflate(R.layout.fragment_glance, container, false);
 
-        fab = (com.github.clans.fab.FloatingActionButton) view.findViewById(R.id.fab);
-        txtLocation = (TextView) view.findViewById(R.id.location);
-        outsideTemp = (TextView) view.findViewById(R.id.outsideTemp);
-        degreeSymbol = (TextView) view.findViewById(R.id.degreeSymbol);
-        outsideHumidity = (TextView) view.findViewById(R.id.valLocalHumidity);
-        apparentTemp = (TextView) view.findViewById(R.id.valApparentTemp);
-        roomTemp = (TextView) view.findViewById(R.id.valRoomTemp);
+        fab = (com.github.clans.fab.FloatingActionButton) root.findViewById(R.id.fab);
+        txtLocation = (TextView) root.findViewById(R.id.location);
+        outsideTemp = (TextView) root.findViewById(R.id.outsideTemp);
+        degreeSymbol = (TextView) root.findViewById(R.id.degreeSymbol);
+        outsideHumidity = (TextView) root.findViewById(R.id.valLocalHumidity);
+        apparentTemp = (TextView) root.findViewById(R.id.valApparentTemp);
+        roomTemp = (TextView) root.findViewById(R.id.valRoomTemp);
         roomTemp.setText(MainActivity.m_mainDevice.m_Data.m_RoomTemp + "\u00B0");
-        roomHumidity = (TextView) view.findViewById(R.id.valRoomHumidity);
+        roomHumidity = (TextView) root.findViewById(R.id.valRoomHumidity);
         roomHumidity.setText(MainActivity.m_mainDevice.m_Data.m_RoomHumidity + "\u0025");
-        roomBrightness = (TextView) view.findViewById(R.id.valRoomBrightness);
+        roomBrightness = (TextView) root.findViewById(R.id.valRoomBrightness);
         roomBrightness.setText(MainActivity.m_mainDevice.m_Data.m_RoomBrightness + "\u0025");
-        imgWeather = (ImageView) view.findViewById(R.id.weatherIcon);
+        imgWeather = (ImageView) root.findViewById(R.id.weatherIcon);
 
         Resources res = getResources();
         Bitmap weatherIcons = decodeResource(res, R.drawable.weather_icons_1, 420, 600);
@@ -159,7 +166,7 @@ public class GlanceFragment extends Fragment {
         }
 
         //setup recycler view
-        devicesRecyclerView = (RecyclerView) view.findViewById(R.id.devicesRecyclerView);
+        devicesRecyclerView = (RecyclerView) root.findViewById(R.id.devicesRecyclerView);
         //create list adapter
         devicesListAdapter = new DevicesListAdapter();
         //attach adapter to recycler view
@@ -170,6 +177,8 @@ public class GlanceFragment extends Fragment {
         devicesRecyclerView.setLayoutManager(layoutManager);
         //divider lines
         devicesRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
+
+        devicesRecyclerView.addOnItemTouchListener(new SwipeItemLayout.OnSwipeItemTouchListener(getContext()));
 
         // Get ControllerID
         int controllerId = getContext().getSharedPreferences(MainActivity.keySettings, Activity.MODE_PRIVATE).getInt(MainActivity.keyControllerID, 0);
@@ -245,7 +254,7 @@ public class GlanceFragment extends Fragment {
             Toast.makeText(getActivity(), "Please connect to the network before continuing.", Toast.LENGTH_SHORT).show();
         }
 
-        return view;
+        return root;
     }
 
     private void updateDisplay() {
@@ -352,19 +361,43 @@ public class GlanceFragment extends Fragment {
                 String incomingID = data.getStringExtra(DEVICE_NODE_ID);
                 String incomingType = data.getStringExtra(DEVICE_NODE_TYPE);
 
-                MainActivity.deviceNames.add(incomingName);
-                MainActivity.deviceNodeIDs.add(incomingID);
-                MainActivity.deviceNodeTypeIDs.add(incomingType);
-                MainActivity.m_mainDevice.addNodeToDeviceList(Integer.parseInt(incomingID), Integer.parseInt(incomingType), incomingName);
-
-                devicesListAdapter.notifyDataSetChanged();
-                Toast.makeText(getActivity(), "Device has been successfully added", Toast.LENGTH_SHORT).show();
+                int pos = searchDeviceID(incomingID);
+                if( pos >= 0 ) {
+                    // Update
+                    MainActivity.deviceNames.set(pos, incomingName);
+                    MainActivity.deviceNodeTypeIDs.set(pos, incomingType);
+                    MainActivity.m_mainDevice.setDeviceType(Integer.parseInt(incomingID), Integer.parseInt(incomingType));
+                    MainActivity.m_mainDevice.setDeviceName(Integer.parseInt(incomingID), incomingName);
+                    devicesListAdapter.notifyItemChanged(pos);
+                } else {
+                    // Add new
+                    MainActivity.deviceNames.add(incomingName);
+                    MainActivity.deviceNodeIDs.add(incomingID);
+                    MainActivity.deviceNodeTypeIDs.add(incomingType);
+                    MainActivity.m_mainDevice.addNodeToDeviceList(Integer.parseInt(incomingID), Integer.parseInt(incomingType), incomingName);
+                    devicesListAdapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(), "Device has been successfully added", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
     private void onFabPressed(View view) {
+        showDeivceInfoUpdate("", "", "");
+    }
+
+    public int searchDeviceID(String nid) {
+        for (int pos = 0; pos < MainActivity.deviceNodeIDs.size(); pos++) {
+            if (MainActivity.deviceNodeIDs.get(pos).equalsIgnoreCase(nid) ) return pos;
+        }
+        return -1;
+    }
+
+    public void showDeivceInfoUpdate(String nid, String name, String type) {
         Intent intent = new Intent(getContext(), AddNewDevice.class);
+        intent.putExtra(DEVICE_NODE_ID, nid);
+        intent.putExtra(DEVICE_NAME, name);
+        intent.putExtra(DEVICE_NODE_TYPE, type);
         startActivityForResult(intent, 1);
     }
 }
