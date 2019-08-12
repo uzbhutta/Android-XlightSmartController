@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarWiFi"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_below="@+id/mainLightsLL"
+            android:background="@color/textDarkGrey"
+            android:minHeight="?attr/actionBarSize"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical"
+                    android:text="Setup Controller WiFi"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textSSID"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:text="SSID" />
+
+                <EditText
+                    android:id="@+id/editSSID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text|textPersonName" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp">
+
+                <TextView
+                    android:id="@+id/textPassword"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="Password" />
+
+                <EditText
+                    android:id="@+id/editPWD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/authList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                </RadioGroup>
+
+                <RadioGroup
+                    android:id="@+id/cipherList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                </RadioGroup>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSetupWiFi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Setup WiFi" />
+            <Button
+                android:id="@+id/btnClearCredentials"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Clear Credentials" />
+            <Button
+                android:id="@+id/btnResetController"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Controller" />
+            <Button
+                android:id="@+id/btnSafe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enter Safe Mode" />
+            <Button
+                android:id="@+id/btnDFU"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enter DFU Mode" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

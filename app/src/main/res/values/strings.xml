@@ -1,8 +1,89 @@
 <resources>
-    <string name="app_name">XLight</string>
+    <string name="app_name">XLight Demo</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
+    <string-array name="controller_list">
+        <item>New (Unknown)</item>
+        <item>Suzhou Demo</item>
+        <item>Reactor Demo</item>
+        <item>Gu An Demo</item>
+        <item>Redboard</item>
+        <item>Suzhou Sunny Mini</item>
+    </string-array>
+    <string-array name="controller_list_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="location_list">
+        <item>Waterloo, ON</item>
+        <item>Suzhou, China</item>
+        <item>Gu An, China</item>
+    </string-array>
+    <string-array name="location_list_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="bridge_list">
+        <item>Auto</item>
+        <item>Cloud</item>
+        <item>Bluetooth</item>
+    </string-array>
+    <string-array name="bridge_list_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="wifi_auth_list">
+        <item>Open</item>
+        <item>WEP</item>
+        <item>WPA</item>
+        <item>WPA2</item>
+    </string-array>
+    <string-array name="wifi_auth_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="wifi_cipher_list">
+        <item>Not Set</item>
+        <item>AES</item>
+        <item>TKIP</item>
+        <item>AES_TKIP</item>
+    </string-array>
+    <string-array name="wifi_cipher_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="device_type_list">
+        <item>Sunny</item>
+        <item>Rainbow</item>
+        <item>Mirage</item>
+        <item>Switch</item>
+    </string-array>
+    <string-array name="device_type_list_value">
+        <item>32</item>
+        <item>1</item>
+        <item>96</item>
+        <item>129</item>
+    </string-array>
+
+    <string name="title_activity_add_new_device">AddNewDevice</string>
 </resources>
